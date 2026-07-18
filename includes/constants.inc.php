@@ -18,7 +18,8 @@ $languages = array(
     "en-US" => "English (US)",
     "fr-FR" => "French",
     "hu-HU" => "Hungarian",
-    "es-419" => "Spanish (Latin America)"
+    "es-419" => "Spanish (Latin America)",
+    "ko-KR" => "한국어"
 );
 
 /** -------------------------- Theme File Names and Display Name -------------------------------
