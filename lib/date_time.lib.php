@@ -9,6 +9,7 @@ function get_timezone($offset) {
 	// are both UTC+9, but display KST vs JST respectively).
 	// Set $override_timezone in config.php to the desired PHP timezone
 	// identifier (e.g., 'Asia/Seoul') to override the offset-based mapping.
+	global $override_timezone;
 	if (isset($override_timezone) && !empty($override_timezone)) {
 		return $override_timezone;
 	}
