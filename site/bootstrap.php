@@ -76,6 +76,10 @@ if ($setup_success) {
 		$valid_langs = array_keys($languages);
 		if (in_array($_GET['lang'], $valid_langs)) {
 			setcookie('userLanguage', $_GET['lang'], time() + (86400 * 30), "/");
+			// Also update $_COOKIE so language.lang.php sees the new value
+			// immediately on this same page load (setcookie only affects
+			// the response header; $_COOKIE still holds the old request value).
+			$_COOKIE['userLanguage'] = $_GET['lang'];
 			$_SESSION['prefsLanguage'] = $_GET['lang'];
 			$lang_folder_parts = explode("-", $_GET['lang']);
 			$_SESSION['prefsLanguageFolder'] = strtolower($lang_folder_parts[0]);
