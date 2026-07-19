@@ -2,7 +2,17 @@
 function get_timezone($offset) {
 	
 	$offset = number_format($offset,3);
-	
+
+	// Allow per-installation timezone override via config.php.
+	// Some regions share the same UTC offset but need different timezone
+	// identifiers for correct display (e.g., Asia/Seoul vs Asia/Tokyo
+	// are both UTC+9, but display KST vs JST respectively).
+	// Set $override_timezone in config.php to the desired PHP timezone
+	// identifier (e.g., 'Asia/Seoul') to override the offset-based mapping.
+	if (isset($override_timezone) && !empty($override_timezone)) {
+		return $override_timezone;
+	}
+
 	$timezones = array(
         '-12.000' => 'Pacific/Kwajalein',
         '-11.000' => 'Pacific/Midway',
