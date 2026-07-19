@@ -68,8 +68,10 @@ if ($setup_success) {
 	require (INCLUDES.'constants.inc.php');
 
 	// ---------------------------- Per-Session Language Override ----------------------------
-	// Handle ?lang=XX URL parameter to switch the user's language.
-	// Sets a 30-day cookie and session variable, then redirects to clean the URL.
+	// Handle ?lang=XX URL parameter to switch the user's display language.
+	// Sets a 30-day cookie and session variable, then continues rendering
+	// the current page (no redirect, so users don't lose form data).
+	// The cookie is checked on every subsequent page load in language.lang.php.
 	if (isset($_GET['lang'])) {
 		$valid_langs = array_keys($languages);
 		if (in_array($_GET['lang'], $valid_langs)) {
@@ -78,16 +80,8 @@ if ($setup_success) {
 			$lang_folder_parts = explode("-", $_GET['lang']);
 			$_SESSION['prefsLanguageFolder'] = strtolower($lang_folder_parts[0]);
 		}
-		// Redirect to the same page without the ?lang= parameter
-		$redirect_url = strtok($_SERVER["REQUEST_URI"], '?');
-		// Preserve other query params if any
-		$query_params = $_GET;
-		unset($query_params['lang']);
-		if (!empty($query_params)) {
-			$redirect_url .= '?' . http_build_query($query_params);
-		}
-		header("Location: " . $redirect_url);
-		exit;
+		// No redirect — continue rendering the current page with the new language.
+		// The ?lang= parameter is simply ignored on this page load.
 	}
 
 	require (LANG.'language.lang.php');
