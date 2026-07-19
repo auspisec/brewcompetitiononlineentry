@@ -2129,77 +2129,77 @@ $brewer_info_020 = "<strong>You have already been assigned to a table as a judge
  * Version 3.0.0 Additions
  * ------------------------------------------
  */
-$label_not_started = "Not Started";
-$label_in_progress = "In Progress";
-$label_concluded = "Concluded";
-$label_start = "Start";
-$label_end = "End";
-$label_visit = "Visit";
-$label_no_website = "No Website";
+$label_not_started = "시작 전";
+$label_in_progress = "진행 중";
+$label_concluded = "종료됨";
+$label_start = "시작";
+$label_end = "종료";
+$label_visit = "방문";
+$label_no_website = "웹사이트 없음";
 $label_register_as_judge = "심사위원 등록하기";
 $label_register_as_steward = "스튜어드 등록하기";
-$label_create_account = "Create Your Account";
-$label_log_in_to_enter = "Register or Log In to Enter";
-$label_not_available = "Not Available";
-$label_fyi = "For Your Information";
-$label_results = "Results";
-$label_entries_remaining = "Entries Remaining Until Current Limit";
-$label_entry_limit_enforced = "Entry Limit Enforced Until";
+$label_create_account = "계정 만들기";
+$label_log_in_to_enter = "출품하려면 등록 또는 로그인하세요";
+$label_not_available = "사용할 수 없음";
+$label_fyi = "참고 사항";
+$label_results = "결과";
+$label_entries_remaining = "현재 한도까지 남은 출품 수";
+$label_entry_limit_enforced = "출품 한도 적용 기한";
 $label_button_no_steward = "스튜어드로 참여하기를 희망하지 않습니다";
 $label_button_no_judge = "심사위원으로 참여하기를 희망하지 않습니다";
-$label_staff_availability = "Staff Availability";
-$label_original_gravity = "Original Gravity";
-$label_verified = "Verified";
-$label_style_type = "Style Type";
-$label_entry_limit_style = "Entry Limits Per Style Category";
-$label_current_count = "Current Count";
-$label_scroll = "Scroll";
-$label_opt_out = "Opt Out";
-$label_opening = "Opening";
-$label_entry_limits = "Entry Limits";
-$label_entry_limit_participant = "Entry Limit Per Participant";
-$label_entry_limit_substyle = "Per Style Entry Limit";
-$label_entry_limit_exception = "Per Style Exceptions Limit";
-$label_exceptions = "Exceptions";
-$label_style_excepted = "Style Exceptions";
-$label_no_sessions = "No Sessions Selected";
-$label_resume_updates = "Resume Updates";
-$label_recorded = "Recorded";
-$label_other_info = "Other Info"; 
+$label_staff_availability = "스태프 가능 시간";
+$label_original_gravity = "초기 비중";
+$label_verified = "확인됨";
+$label_style_type = "스타일 유형";
+$label_entry_limit_style = "스타일 카테고리별 출품 한도";
+$label_current_count = "현재 집계";
+$label_scroll = "스크롤";
+$label_opt_out = "참여 안 함";
+$label_opening = "개시";
+$label_entry_limits = "출품 한도";
+$label_entry_limit_participant = "참가자당 출품 한도";
+$label_entry_limit_substyle = "세부 스타일당 출품 한도";
+$label_entry_limit_exception = "스타일별 예외 한도";
+$label_exceptions = "예외";
+$label_style_excepted = "스타일 예외";
+$label_no_sessions = "선택된 세션 없음";
+$label_resume_updates = "업데이트 재개";
+$label_recorded = "기록됨";
+$label_other_info = "기타 정보"; 
 
-$brewer_text_056 = "Select &quot;Opt Out&quot; above if you do not wish to participate in any Pro-Am opportunities associated with this competition.";
+$brewer_text_056 = "이 대회와 관련된 프로암(Pro-Am) 기회에 참여하기를 원하지 않는 경우 위의 &quot;참여 안 함&quot;을 선택하세요.";
 
-$brew_text_056 = "Please provide the entry's carbonation level.";
-$brew_text_057 = "Please provide the entry's sweetness level.";
-$brew_text_058 = "Please provide the entry's strength.";
-$brew_text_059 = "Please provide the entry's color.";
-$brew_text_060 = "Please enter gravity up to the thousandth place (e.g., 1.120 or 1.014, etc.).";
-$brew_text_061 = "Counts update every two minutes.";
-$brew_text_062 = "Counts paused while window is inactive. Click or tap to reactivate.";
-$brew_text_063 = "Counts update every minute.";
-$brew_text_064 = "Count updates paused.";
-$brew_text_065 = "Count updates timed out. Select Resume Updates to restart.";
+$brew_text_056 = "출품작의 탄산감을 입력해 주세요.";
+$brew_text_057 = "출품작의 당도를 입력해 주세요.";
+$brew_text_058 = "출품작의 도수를 입력해 주세요.";
+$brew_text_059 = "출품작의 색을 입력해 주세요.";
+$brew_text_060 = "비중은 소수점 셋째 자리까지 입력해 주세요 (예: 1.120 또는 1.014 등).";
+$brew_text_061 = "집계는 2분마다 업데이트됩니다.";
+$brew_text_062 = "창이 비활성 상태일 때 집계가 일시정지됩니다. 클릭하거나 탭하여 다시 활성화하세요.";
+$brew_text_063 = "집계는 1분마다 업데이트됩니다.";
+$brew_text_064 = "집계 업데이트가 일시정지되었습니다.";
+$brew_text_065 = "집계 업데이트 시간이 초과되었습니다. 업데이트 재개를 선택하여 다시 시작하세요.";
 
-$bottle_labels_008 = "Make sure your browser printing settings are <strong>Portrait layout</strong> and <strong>100&#37; scale</strong>.";
+$bottle_labels_008 = "브라우저 인쇄 설정이 <strong>세로 레이아웃</strong>이고 <strong>100&#37; 배율</strong>인지 확인하세요.";
 
-$contact_text_005 = "Select or search for a contact.";
-$contact_text_006 = "Please select a person.";
-$contact_text_007 = "Please provide your first and last name.";
-$contact_text_008 = "Please provide a valid email address.";
-$contact_text_009 = "Please provide a subject.";
-$contact_text_010 = "Please provide a message.";
+$contact_text_005 = "연락처를 선택하거나 검색하세요.";
+$contact_text_006 = "담당자를 선택해 주세요.";
+$contact_text_007 = "이름과 성을 입력해 주세요.";
+$contact_text_008 = "유효한 이메일 주소를 입력해 주세요.";
+$contact_text_009 = "제목을 입력해 주세요.";
+$contact_text_010 = "메시지를 입력해 주세요.";
 
-$contact_text_011 = "Select the email address to launch your native email application. Copy the address and paste it into a new message if using a web-based email services such as Gmail, etc.";
-$contact_text_012 = "Please note: this window is a result of multiple measures attempting to mitigate email address exposure to spambot crawlers. If there is an error or the competition contact's email address is not available above, it has been obfuscated for security reasons. If this is the case, contact this competition official via other means (social media, organization website, etc.).";
-$contact_text_013 = "<strong>Pasting text is disabled.</strong> Please type your information.";
+$contact_text_011 = "이메일 주소를 선택하여 기본 이메일 애플리케이션을 실행하세요. Gmail 등 웹 기반 이메일 서비스를 사용하는 경우 주소를 복사하여 새 메시지에 붙여넣기 하세요.";
+$contact_text_012 = "참고: 이 창은 스팸봇 크롤러로부터 이메일 주소 노출을 방지하기 위한 여러 조치의 결과입니다. 오류가 있거나 대회 연락처의 이메일 주소가 위에 표시되지 않는 경우, 보안상의 이유로 난독화된 것입니다. 이 경우 소셜 미디어, 조직 웹사이트 등 다른 방법을 통해 대회 관계자에게 연락하세요.";
+$contact_text_013 = "<strong>텍스트 붙여넣기가 비활성화되어 있습니다.</strong> 정보를 직접 입력해 주세요.";
 
-$error_text_000 = "Please use the main navigation above to get where you want to go.";
-$error_text_001 = "If the links above aren't working, please contact a site representative.";
-$error_text_400 = "Invalid request.";
-$error_text_401 = "Permission is needed for your request.";
-$error_text_403 = "Action forbidden.";
-$error_text_404 = "Page not found.";
-$error_text_500 = "Server misconfiguration.";
+$error_text_000 = "원하시는 페이지로 이동하려면 위의 메인 내비게이션을 사용하세요.";
+$error_text_001 = "위의 링크가 작동하지 않으면 사이트 담당자에게 문의하세요.";
+$error_text_400 = "잘못된 요청입니다.";
+$error_text_401 = "요청에 대한 권한이 필요합니다.";
+$error_text_403 = "접근이 금지되었습니다.";
+$error_text_404 = "페이지를 찾을 수 없습니다.";
+$error_text_500 = "서버 구성 오류입니다.";
 
 $styles_entry_text_C1A_2025 = "Entrants MUST specify both carbonation and sweetness levels. Entrants MAY specify apple varieties, particularly if those varieties introduce unusual characteristics.";
 $styles_entry_text_C1B_2025 = "Entrants MUST specify both carbonation and sweetness levels. Entrants MAY specify varieties of apples used; if specified, a varietal character will be expected.";
@@ -2218,14 +2218,14 @@ $styles_entry_text_C4B_2025 = "Entrants MUST specify both carbonation and sweetn
 $styles_entry_text_C4C_2025 = "Entrants MUST specify starting gravity, final gravity or residual sugar, and alcohol level. Entrants MUST specify carbonation level.";
 $styles_entry_text_C4D_2025 = "Entrants MUST specify the ingredients or processes that make the entry an experimental perry. Entrants MUST specify both carbonation and sweetness levels. Entrants MAY specify a base style, or provide a more detailed description of the concept.";
 
-$login_text_028 = "The user name you entered was not found. Please check it and try again.";
-$login_text_029 = "If you cannot remember your user name, contact an administrator of this site.";
-$login_text_030 = "Email provided is not valid. Please check it and try again.";
+$login_text_028 = "입력하신 사용자 이름을 찾을 수 없습니다. 확인 후 다시 시도해 주세요.";
+$login_text_029 = "사용자 이름을 기억할 수 없다면 사이트 관리자에게 문의하세요.";
+$login_text_030 = "입력하신 이메일 주소가 유효하지 않습니다. 확인 후 다시 시도해 주세요.";
 
-$entry_info_text_056 = "Limit reached. No more entries accepted.";
-$entry_info_text_057 = "<i class=\"fa fa-times-circle text-danger-emphasis me-1\"></i>Indicates that the style's entry limit has been reached and no more entries of that style will be accepted.";
+$entry_info_text_056 = "한도에 도달했습니다. 더 이상 출품을 받지 않습니다.";
+$entry_info_text_057 = "<i class="fa fa-times-circle text-danger-emphasis me-1"></i>해당 스타일의 출품 한도에 도달하여 더 이상 해당 스타일의 출품을 받지 않음을 나타냅니다.";
 
-$output_text_034 = "No BOS Judge points were be awarded since the total number of entries judged was less than the minimum threshold of 30 set by the BJCP.";
+$output_text_034 = "심사된 출품작 총 수가 BJCP가 정한 최소 기준인 30건에 미달하여 BOS 심사위원 포인트가 부여되지 않습니다.";
 
 /**
  * ------------------------------------------
@@ -2233,16 +2233,16 @@ $output_text_034 = "No BOS Judge points were be awarded since the total number o
  * ------------------------------------------
  */
 
-$label_medal_category = "Medal Category";
-$label_entry_limit_medal_category = "Entry Limits by Medal Category";
-$label_practice_session = "Practice Session";
-$label_practice_beer = "Practice Beer";
-$label_practice_cider = "Practice Cider";
-$label_practice_mead = "Practice Mead";
-$label_practice_entry = "Practice Entry";
-$label_scoresheet_practice = "Scoresheet Practice";
+$label_medal_category = "메달 카테고리";
+$label_entry_limit_medal_category = "메달 카테고리별 출품 한도";
+$label_practice_session = "모의 세션";
+$label_practice_beer = "맥주 모의";
+$label_practice_cider = "사이더 모의";
+$label_practice_mead = "미드 모의";
+$label_practice_entry = "모의 출품작";
+$label_scoresheet_practice = "모의 심사표";
 
-$entry_info_text_058 = "Log in to view the location and its address, if available.";
+$entry_info_text_058 = "위치 및 주소(있는 경우)를 보려면 로그인하세요.";
 
 /**
  * ------------------------------------------
@@ -2250,7 +2250,7 @@ $entry_info_text_058 = "Log in to view the location and its address, if availabl
  * ------------------------------------------
  */
 
-$contact_text_014 = "Display of competition contacts has been disabled by the site administrators. Use other means to reach out to any competition official (social media, the organization's website, etc.).";
+$contact_text_014 = "대회 연락처 표시가 사이트 관리자에 의해 비활성화되었습니다. 소셜 미디어, 조직 웹사이트 등 다른 방법을 통해 대회 관계자에게 연락하세요.";
 
 /**
  * ------------------------------------------
