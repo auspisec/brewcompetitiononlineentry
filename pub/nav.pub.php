@@ -117,10 +117,23 @@ if ($logged_in) {
 	                <a class="nav-item nav-link" href="<?php echo $base_url."index.php?section=admin"; ?>"><?php echo $label_admin_short; ?></a>
 	                <?php } ?>
 
-	                <?php // --- Per-Session Language Toggle --- ?>
-	                <?php if (count($languages) > 1) { ?>
+	                <?php
+	                // --- Per-Session Language Toggle ---
+	                // Shows a globe icon dropdown with available languages.
+	                // Only displayed if more than one language is enabled.
+	                // Users' selection is stored in a 30-day cookie (see bootstrap.php).
+	                // Links to the current page URL with ?lang= appended so users
+	                // don't lose their place when switching languages.
+	                if (count($languages) > 1) {
+	                    // Build the current page URL (without existing ?lang= param)
+	                    $current_url = $_SERVER['REQUEST_URI'];
+	                    // Strip any existing ?lang= parameter
+	                    $current_url = preg_replace('/[?&]lang=[^&]+/', '', $current_url);
+	                    // Determine separator (? or &)
+	                    $lang_sep = (strpos($current_url, '?') !== false) ? '&' : '?';
+	                ?>
 	                <div class="nav-item dropdown">
-	                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+	                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="<?php echo $label_language ?? 'Language'; ?>">
 	                        <i class="fa fa-lg fa-fw fa-globe"></i>
 	                    </a>
 	                    <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
@@ -128,7 +141,7 @@ if ($logged_in) {
 	                            $lang_active = (isset($_SESSION['prefsLanguage']) && $_SESSION['prefsLanguage'] == $lang_code);
 	                        ?>
 	                        <li class="small">
-	                            <a class="dropdown-item <?php if ($lang_active) echo "active"; ?>" href="<?php echo $base_url; ?>index.php?lang=<?php echo $lang_code; ?>">
+	                            <a class="dropdown-item <?php if ($lang_active) echo "active"; ?>" href="<?php echo $current_url . $lang_sep . 'lang=' . $lang_code; ?>">
 	                                <?php if ($lang_active) { ?><i class="fa fa-check text-success me-1"></i><?php } ?>
 	                                <?php echo $lang_name; ?>
 	                            </a>
