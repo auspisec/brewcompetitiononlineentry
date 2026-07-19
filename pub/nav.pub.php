@@ -116,6 +116,28 @@ if ($logged_in) {
 	                <?php } if ($admin_user) { ?>
 	                <a class="nav-item nav-link" href="<?php echo $base_url."index.php?section=admin"; ?>"><?php echo $label_admin_short; ?></a>
 	                <?php } ?>
+
+	                <?php // --- Per-Session Language Toggle --- ?>
+	                <?php if (count($languages) > 1) { ?>
+	                <div class="nav-item dropdown">
+	                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+	                        <i class="fa fa-lg fa-fw fa-globe"></i>
+	                    </a>
+	                    <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
+	                        <?php foreach ($languages as $lang_code => $lang_name) {
+	                            $lang_active = (isset($_SESSION['prefsLanguage']) && $_SESSION['prefsLanguage'] == $lang_code);
+	                        ?>
+	                        <li class="small">
+	                            <a class="dropdown-item <?php if ($lang_active) echo "active"; ?>" href="<?php echo $base_url; ?>index.php?lang=<?php echo $lang_code; ?>">
+	                                <?php if ($lang_active) { ?><i class="fa fa-check text-success me-1"></i><?php } ?>
+	                                <?php echo $lang_name; ?>
+	                            </a>
+	                        </li>
+	                        <?php } ?>
+	                    </ul>
+	                </div>
+	                <?php } ?>
+
 	                <?php if ($logged_in) { ?>
                 	<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-lg fa-fw fa-user"></i></a>

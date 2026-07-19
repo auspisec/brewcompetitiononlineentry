@@ -66,6 +66,30 @@ if ($setup_success) {
 	require (DB.'brewer.db.php');
 	require (DB.'entries.db.php');
 	require (INCLUDES.'constants.inc.php');
+
+	// ---------------------------- Per-Session Language Override ----------------------------
+	// Handle ?lang=XX URL parameter to switch the user's language.
+	// Sets a 30-day cookie and session variable, then redirects to clean the URL.
+	if (isset($_GET['lang'])) {
+		$valid_langs = array_keys($languages);
+		if (in_array($_GET['lang'], $valid_langs)) {
+			setcookie('userLanguage', $_GET['lang'], time() + (86400 * 30), "/");
+			$_SESSION['prefsLanguage'] = $_GET['lang'];
+			$lang_folder_parts = explode("-", $_GET['lang']);
+			$_SESSION['prefsLanguageFolder'] = strtolower($lang_folder_parts[0]);
+		}
+		// Redirect to the same page without the ?lang= parameter
+		$redirect_url = strtok($_SERVER["REQUEST_URI"], '?');
+		// Preserve other query params if any
+		$query_params = $_GET;
+		unset($query_params['lang']);
+		if (!empty($query_params)) {
+			$redirect_url .= '?' . http_build_query($query_params);
+		}
+		header("Location: " . $redirect_url);
+		exit;
+	}
+
 	require (LANG.'language.lang.php');
 	require (INCLUDES.'headers.inc.php');
 	require (INCLUDES.'scrubber.inc.php');

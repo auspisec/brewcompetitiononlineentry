@@ -22,6 +22,14 @@ $languages = array(
     "ko-KR" => "한국어"
 );
 
+// Allow per-installation language override via config.php.
+// Set $override_languages in config.php to restrict which languages
+// are available (e.g., only Korean and English for a Korean competition).
+// If not set, all languages defined above are available.
+if (isset($override_languages) && !empty($override_languages)) {
+    $languages = $override_languages;
+}
+
 /** -------------------------- Theme File Names and Display Name -------------------------------
  * As of version 3.0.0, themes only apply to Admin functions.
  * The first item is the the CSS file name (without .css).

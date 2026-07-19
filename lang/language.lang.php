@@ -39,6 +39,19 @@ elseif ((!HOSTED) && (isset($_SESSION['prefsEmailSMTP']))) {
 $prefsLanguage = "en-US";
 $prefsLanguageFolder = "en";
 
+// Per-session language override: check for a user language cookie.
+// This allows users to switch languages independently of the site-wide default.
+// The cookie is set by the language toggle in the navigation bar.
+// The site-wide preference (from DB) remains the default when no cookie is set.
+if (isset($_COOKIE['userLanguage'])) {
+  $valid_langs = array_keys($languages);
+  if (in_array($_COOKIE['userLanguage'], $valid_langs)) {
+    $_SESSION['prefsLanguage'] = $_COOKIE['userLanguage'];
+    $lang_folder_parts = explode("-", $_COOKIE['userLanguage']);
+    $_SESSION['prefsLanguageFolder'] = strtolower($lang_folder_parts[0]);
+  }
+}
+
 if ((isset($_SESSION['prefsLanguage'])) && (!empty($_SESSION['prefsLanguage']))) {
   
   if (($_SESSION['prefsLanguage'] == "English") || ($_SESSION['prefsLanguage'] == "english")) {
