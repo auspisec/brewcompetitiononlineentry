@@ -21,6 +21,25 @@ $languages = array(
     "es-419" => "Spanish (Latin America)"
 );
 
+/**
+ * Allow per-installation language override via config.php.
+ *
+ * Set $override_languages in config.php to restrict which languages
+ * are available on a given site. For example, a Korean competition
+ * might want only Korean and English:
+ *
+ *   $override_languages = array(
+ *       "ko-KR" => "한국어",
+ *       "en-US" => "English (US)"
+ *   );
+ *
+ * If $override_languages is not set, all languages defined above
+ * are available (default behavior, backwards-compatible).
+ */
+if (isset($override_languages) && !empty($override_languages)) {
+    $languages = $override_languages;
+}
+
 /** -------------------------- Theme File Names and Display Name -------------------------------
  * As of version 3.0.0, themes only apply to Admin functions.
  * The first item is the the CSS file name (without .css).
