@@ -51,7 +51,7 @@ $prefsLanguageFolder = "en";
  * no cookie is set. This runs on every page load, so the override
  * takes effect immediately and persists across sessions (30-day cookie).
  */
-if (isset($_COOKIE['userLanguage'])) {
+if (isset($_COOKIE['userLanguage']) && isset($languages) && is_array($languages)) {
   $valid_langs = array_keys($languages);
   if (in_array($_COOKIE['userLanguage'], $valid_langs)) {
     $_SESSION['prefsLanguage'] = $_COOKIE['userLanguage'];
