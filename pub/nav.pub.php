@@ -120,11 +120,9 @@ if ($logged_in) {
 	                <?php
 	                // --- Per-Session Language Toggle ---
 	                // Shows a globe icon dropdown with available languages.
-	                // Only displayed if more than one language is enabled.
-	                // Users' selection is stored in a 30-day cookie (see bootstrap.php).
-	                // Links to the current page URL with ?lang= appended so users
-	                // don't lose their place when switching languages.
-	                if (count($languages) > 1) {
+	                // Requires $enable_language_toggle = TRUE in config.php.
+	                global $enable_language_toggle;
+	                if (isset($enable_language_toggle) && $enable_language_toggle && count($languages) > 1) {
 	                    // Build the current page URL (without existing ?lang= param)
 	                    $current_url = $_SERVER['REQUEST_URI'];
 	                    // Strip any existing ?lang= parameter

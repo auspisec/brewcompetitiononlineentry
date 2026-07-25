@@ -43,7 +43,9 @@ $prefsLanguageFolder = "en";
 // This allows users to switch languages independently of the site-wide default.
 // The cookie is set by the language toggle in the navigation bar.
 // The site-wide preference (from DB) remains the default when no cookie is set.
-if (isset($_COOKIE['userLanguage']) && isset($languages) && is_array($languages)) {
+// Requires $enable_language_toggle = TRUE in config.php to activate.
+global $enable_language_toggle;
+if (isset($_COOKIE['userLanguage']) && isset($enable_language_toggle) && $enable_language_toggle && isset($languages) && is_array($languages)) {
   $valid_langs = array_keys($languages);
   if (in_array($_COOKIE['userLanguage'], $valid_langs)) {
     $_SESSION['prefsLanguage'] = $_COOKIE['userLanguage'];
