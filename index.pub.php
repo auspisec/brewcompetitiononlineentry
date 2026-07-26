@@ -48,17 +48,19 @@
 
     $bg_hero_images = array(
         "0-a" => "misc-cropped-bottles_3000x500.jpg",
-        "0-b" => "misc-brussels-bottles_3000x500.jpg",
-        "0-c" => "misc-plzen-fermenters_3000x500.jpg",
-        "0-d" => "misc-bottles_3000x500.jpg",
+        #"0-b" => "misc-brussels-bottles_3000x500.jpg",
+        #"0-c" => "misc-plzen-fermenters_3000x500.jpg",
+        #"0-d" => "misc-bottles_3000x500.jpg",
         "1-a" => "beer-barley-malt_3000x500.jpg",
-        "1-b" => "beer-brussels-barrels_3000x500.jpg",
-        "1-c" => "beer-hop-cones_3000x500.jpg",
-        "1-d" => "beer-kegs_3000x500.jpg",
+        #"1-b" => "beer-brussels-barrels_3000x500.jpg",
+        #"1-c" => "beer-hop-cones_3000x500.jpg",
+        #"1-d" => "beer-kegs_3000x500.jpg",
         "1-e" => "beer-munich-mugs_3000x500.jpg",
-        "1-f" => "beer-on-bar_3000x500.jpg",
-        "2-a" => "cider-bottles_3000x500.jpg",
-        "3-a" => "mead-bottles_3000x500.jpg",     
+        #"1-f" => "beer-on-bar_3000x500.jpg",
+        #"2-a" => "cider-bottles_3000x500.jpg",
+        #"3-a" => "mead-bottles_3000x500.jpg",
+        "0-b" => "SAAZ_Background_Medals.JPG",
+        "1-b" => "SAAZ_Background_Bottles.JPG"     
     );
 
     if ((!isset($_SESSION['bg_hero_image_types'])) || (empty($_SESSION['bg_hero_image_types']))) {
