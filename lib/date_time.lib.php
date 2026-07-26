@@ -1,6 +1,6 @@
 <?php
 function get_timezone($offset) {
-	
+
 	$offset = number_format($offset,3);
 
 	// Allow per-installation timezone override via config.php.
@@ -101,18 +101,85 @@ function convert_timestamp($time_string, $timezone, $offset, $method) {
 
 }
 
+/**
+ * Map a BCOE&M language code (e.g. "ko-KR", "en-US") to an ICU locale
+ * string suitable for IntlDateFormatter. Returns null for English
+ * so the caller can fall back to the original date() behaviour
+ * (which is already correct for English).
+ *
+ * @param string|null $lang_code  BCOE&M prefsLanguage value
+ * @return string|null  ICU locale or null to use default date() behaviour
+ */
+function get_locale_from_language($lang_code = null) {
+	if (!isset($lang_code) || empty($lang_code)) return null;
+	if ($lang_code == "en-US" || $lang_code == "en-GB") return null;
+	// BCOE&M language codes are already in the correct format for ICU
+	// (e.g. "ko-KR", "fr-FR", "es-419", "cs-CZ", "hu-HU", "pt-BR")
+	return $lang_code;
+}
+
+/**
+ * Format a timestamp using IntlDateFormatter for locale-aware output.
+ * Falls back to date() if the intl extension is not available.
+ *
+ * @param int    $timestamp  Unix timestamp
+ * @param string $locale     ICU locale (e.g. "ko_KR")
+ * @param string $tz         PHP timezone identifier
+ * @param string $pattern     ICU date/time pattern
+ * @return string  Formatted date/time string
+ */
+function format_locale_date($timestamp, $locale, $tz, $pattern) {
+	if (!class_exists('IntlDateFormatter')) {
+		return null; // caller should fall back
+	}
+	$fmt = new IntlDateFormatter($locale, IntlDateFormatter::FULL, IntlDateFormatter::FULL, $tz, null, $pattern);
+	return $fmt->format($timestamp);
+}
+
 function getTimeZoneDateTime($timezone_offset, $timestamp, $date_format, $time_format, $display_format, $return_format) {
 
 	$tz = get_timezone($timezone_offset); // convert offset number to PHP timezone
   
   date_default_timezone_set($tz);
 
+	// Determine the user's locale for locale-aware formatting.
+	// When the user's language is non-English and the intl extension
+	// is available, "long" and "xml" formats use IntlDateFormatter so
+	// that day and month names are rendered in the user's language
+	// (e.g. "일요일 7월 26, 2026" for Korean instead of
+	// "Sunday 26 July, 2026").
+	$locale = null;
+	if (isset($_SESSION['prefsLanguage'])) {
+		$locale = get_locale_from_language($_SESSION['prefsLanguage']);
+	}
+
 	switch($display_format) {
-		
+
 		// Long Format
 		case "long":
-			if ($date_format == "1") $date = date('l, F j, Y', $timestamp);
-			else $date = date('l j F, Y', $timestamp);
+			if ($locale !== null) {
+				// Locale-aware formatting via IntlDateFormatter
+				// Map the existing date_format preferences:
+				//   1 => "Weekday, Month D, YYYY" (US style)
+				//   else => "Weekday D Month, YYYY" (intl style)
+				if ($date_format == "1")
+					$pattern = 'EEEE, MMMM d, y';
+				else
+					$pattern = 'EEEE d MMMM, y';
+
+				$formatted = format_locale_date($timestamp, $locale, $tz, $pattern);
+				if ($formatted !== null) {
+					$date = $formatted;
+				} else {
+					// Fallback: intl extension not available
+					if ($date_format == "1") $date = date('l, F j, Y', $timestamp);
+					else $date = date('l j F, Y', $timestamp);
+				}
+			} else {
+				// English: keep original date() behaviour for backwards compat
+				if ($date_format == "1") $date = date('l, F j, Y', $timestamp);
+				else $date = date('l j F, Y', $timestamp);
+			}
 		break;
 
 		// Short Format
@@ -130,13 +197,37 @@ function getTimeZoneDateTime($timezone_offset, $timestamp, $date_format, $time_f
 
 		// XML Report Format
 		case "xml":
-			$date = date('l j F Y', $timestamp);
+			if ($locale !== null) {
+				$formatted = format_locale_date($timestamp, $locale, $tz, 'EEEE d MMMM y');
+				if ($formatted !== null) {
+					$date = $formatted;
+				} else {
+					$date = date('l j F Y', $timestamp);
+				}
+			} else {
+				$date = date('l j F Y', $timestamp);
+			}
 		break;
-	
+
 	}
 
-	if ($time_format == "1") $time = date('H:i',$timestamp);
-	else $time = date('g:i A',$timestamp);
+	// Time formatting
+	if ($time_format == "1") {
+		// 24-hour format is locale-neutral (numeric only)
+		$time = date('H:i',$timestamp);
+	} else {
+		// 12-hour format with AM/PM
+		if ($locale !== null) {
+			$formatted_time = format_locale_date($timestamp, $locale, $tz, 'h:mm a');
+			if ($formatted_time !== null) {
+				$time = $formatted_time;
+			} else {
+				$time = date('g:i A',$timestamp);
+			}
+		} else {
+			$time = date('g:i A',$timestamp);
+		}
+	}
 
 	switch($return_format) {
 		
