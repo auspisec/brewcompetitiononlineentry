@@ -358,7 +358,7 @@ $label_awards_ceremony = "Awards Ceremony";
 $label_circuit = "Circuit Qualification";
 $label_hosted = "Hosted Edition";
 $label_entry_check_in = "Entry Check-In";
-$label_cash = "Cash";
+$label_cash = "Bank Account Transfer";
 $label_check = "Check";
 $label_pay_online = "Pay Online";
 $label_cancel = "Cancel";
@@ -745,7 +745,7 @@ $brewer_text_001 = "Choose one. This question will be used to verify your identi
 $brewer_text_003 = "To be considered for a GABF Pro-Am brewing opportunity you must be an AHA member.";
 $brewer_text_004 = "Provide any information that you believe the competition organizer, judge coordinator, or competition staff should know (e.g., allergies, special dietary restrictions, shirt size, etc.).";
 $brewer_text_005 = "Not Applicable";
-$brewer_text_006 = "Are you willing and qualified to serve as a judge in this competition?";
+$brewer_text_006 = "Are you willing and qualified to serve as a judge in this competition?  (Please note all judging will be electronic. Judges must bring a device for judging. Electronic devices will not be provided to judges.)";
 $brewer_text_007 = "Have you passed the BJCP Mead Judge exam?";
 $brewer_text_008 = "* The <em>Non-BJCP</em> rank is for those who haven't taken the BJCP Beer Judge Entrance Exam, and are <em>not</em> a professional brewer.";
 $brewer_text_009 = "** The <em>Provisional</em> rank is for those have taken and passed the BJCP Beer Judge Entrance Exam, but have not yet taken the BJCP Beer Judging Exam.";
@@ -991,7 +991,20 @@ $register_text_001 = "Are you ";
 $register_text_002 = "Registration has closed.";
 $register_text_003 = "Thank you for your interest.";
 $register_text_004 = "The information you provide beyond your first name, last name, and club is strictly for record-keeping and contact purposes.";
-$register_text_005 = "A condition of entry into the competition is providing this information. Your name and club may be displayed should one of your entries place, but no other information will be made public.";
+$register_text_005 = "<p><b>Consent for collecting and using personal information</b></p>
+</p>[Convention Name] Organizers want to protect your personal information in accordance with the Personal Information Protection Act. Please check the contents below and submit this form.</p>
+<p>1. Collection Items</p>
+<ul><li>Name</li><li>Address</li><li>Contact contact (phone number)</li><li>E-mail address</li></ul>
+<p>2. Purpose of collection and use </p>
+<p>The collected personal information is used only for the following purposes:</p>
+<ul><li>Registration and management of participants</li><li>Delivering information and notices related to the contest</li><li>Notification of winners and delivery of prizes</li><li> Posting the list of winners on the official website</li></ul>
+<p>3. Period of retention and use </p>
+<p>General participants' personal information (name, address, contact information) will be safely destroyed after three months of storage from the end date of the competition. Winners' names may be posted on the official website and kept indefinitely from the end date of the competition.</p>
+<p>4. Right to refuse consent and disadvantages </p>
+<p>You have the right to disagree with the provision of your personal information, however, participation in the competition may be restricted if you do not agree.</p>
+<p>5. Confirmation of consent </p>
+<p>By submitting this form, you are deemed to consent to the collection and use of personal information in accordance with the above.</p>
+</br></br>";
 $register_text_006 = "Reminder: You are only allowed to enter one region and once you have registered at a location, you will NOT be able to change it.";
 $register_text_007 = "Quick";
 $register_text_008 = "Register";
