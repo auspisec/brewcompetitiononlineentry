@@ -750,7 +750,7 @@ $brewer_text_007 = "Have you passed the BJCP Mead Judge exam?";
 $brewer_text_008 = "* The <em>Non-BJCP</em> rank is for those who haven't taken the BJCP Beer Judge Entrance Exam, and are <em>not</em> a professional brewer.";
 $brewer_text_009 = "** The <em>Provisional</em> rank is for those have taken and passed the BJCP Beer Judge Entrance Exam, but have not yet taken the BJCP Beer Judging Exam.";
 $brewer_text_010 = "Only the first two designations will appear on your printed scoresheet labels.";
-$brewer_text_011 = "How many competitions have you previously served as a <strong>".strtolower($label_judge)."</strong>?";
+$brewer_text_011 = "How many competitions have you previously served as a judge?";
 $brewer_text_012 = "For preferences ONLY. Leaving a style unchecked indicates that you are available to judge it – there's no need to check all styles that you're available to judge.";
 $brewer_text_013 = "Select or tap the button above to expand the non-preferred styles to judge list.";
 $brewer_text_014 = "There is no need to mark those styles for which you have entries; the system will not allow you to be assigned to any table where you have entries.";
@@ -1950,7 +1950,7 @@ $register_text_048 = "If you did not initiate this change, your account may be c
 $register_text_049 = "If you aren't able to log into your account, you should immediately contact a site administrator to update your password and other vital account information.";
 $register_text_050 = "Your security question's answer is encrypted and cannot be read by site administrators. It must be entered if you elect to change your security question and/or answer.";
 $register_text_051 = "Account Information Updated";
-$register_text_052 = "A \"Yes\" or \"No\" response is required for each location below.";
+$register_text_052 = "A \"Yes\" or \"No\" response is required for each location above.";
 
 $brewer_text_044 = "Do you wish to change your security question and/or answer?";
 $brewer_text_045 = "No results have been recorded.";
@@ -2067,7 +2067,7 @@ $brew_text_047 = "How should your entry be poured for the judges?";
 $brew_text_048 = "Should any yeast be roused before pouring?";
 $brew_text_049 = "Provide further information regarding how your entry should be poured or other related items (e.g., possible gushing, etc.).";
 $brewer_text_055 = "Select all brewing partners that your are affiliated with. This is to make sure there are not any conflicts of interest when assigning judges and stewards to evaluate entries."; 
-$brewer_text_054 = "<strong>If any person's name is <u>not</u> listed in the drop-down above, enter their FULL name here (e.g., John Doe, Wyatt Earp, Selina Kyle, etc.). Add any brewing team names here as well.</strong> Separate each team or person's name by comma (,) or semi-colon (;). Some symbols are not allowed, including double-quotation marks (&quot;) and percent (&#37;).";
+$brewer_text_054 = "<strong>List all brewing partners or co-brewers that you are affiliated with. This is to make sure there are not any conflicts of interest when assigning judges and stewards to evaluate entries. Enter their FULL name here (e.g., John Doe, Wyatt Earp, Selina Kyle, etc.). Add any brewing team names here as well.</strong> Separate each team or person's name by comma (,) or semi-colon (;). Some symbols are not allowed, including double-quotation marks (&quot;) and percent (&#37;).";
 
 $brew_text_050 = "Some styles are disabled since the limit for their corresponding style type (e.g., beer, mead, cider, etc.) has been reached.";
 $entry_info_text_053 = "Entry limits per style type:";
