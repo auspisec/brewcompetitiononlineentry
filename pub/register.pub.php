@@ -63,7 +63,6 @@ else { // THIS ELSE ENDS at the end of the script
 	include_once (DB.'stewarding.db.php');
 	include_once (DB.'styles.db.php');
 	include_once (DB.'brewer.db.php');
-	include_once (DB.'consent.db.php');
 	if (NHC) $totalRows_log = $totalRows_entry_count;
 	else $totalRows_log = $totalRows_log;
 	if ($go != "default") {
@@ -1209,43 +1208,6 @@ if ($go == "default") {  ?>
         </div>
     </section>
     <?php } // END if (((!$judge_hidden) || (!$steward_hidden)) && ($section != "admin")) ?>
-    
-    <?php
-    // --- Privacy Consent Section (PIPA) ---
-    // Only show for non-admin (public) registration
-    if ($filter != "admin") {
-        $consent_row = get_active_consent_text($_SESSION['prefsLanguage']);
-        if ($consent_row) {
-    ?>
-    <!-- Privacy Consent Section -->
-    <div class="row mb-3">
-        <div class="col-sm-12">
-            <h4 class="text-teal"><i class="fa fa-shield-alt me-2"></i><?php echo $consent_text_001; ?></h4>
-            <div class="alert alert-info" style="max-height: 300px; overflow-y: auto;">
-                <?php echo $consent_row['consent_text']; ?>
-            </div>
-            <input type="hidden" name="consent_text_id" value="<?php echo (int)$consent_row['id']; ?>">
-        </div>
-    </div>
-    <div class="row mb-3">
-        <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_001; ?></strong></label>
-        <div class="col-sm-12 col-md-10">
-            <p class="fw-bold"><?php echo $consent_text_002; ?></p>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="privacy_consent" value="1" id="privacy_consent_yes" required />
-                <label class="form-check-label" for="privacy_consent_yes"><?php echo $consent_text_003; ?></label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="privacy_consent" value="0" id="privacy_consent_no" />
-                <label class="form-check-label" for="privacy_consent_no"><?php echo $consent_text_004; ?></label>
-            </div>
-            <div class="help-block invalid-feedback text-danger"><?php echo $consent_text_005; ?></div>
-        </div>
-    </div>
-    <?php
-        } // end if ($consent_row)
-    } // end if ($filter != "admin")
-    ?>
     
     <?php if ($_SESSION['prefsCAPTCHA'] == "1") { ?>
     <!-- CAPTCHA -->
