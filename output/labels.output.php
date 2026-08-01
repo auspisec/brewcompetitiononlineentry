@@ -866,7 +866,7 @@ if (isset($_SESSION['loginUsername'])) {
 
 			do {
 
-				$bjcp_rank = explode(",",$row_brewer['brewerJudgeRank']);
+				$bjcp_rank = explode(",",clean_designation_other($row_brewer['brewerJudgeRank']));
 				$rank = bjcp_rank($bjcp_rank[0],2);
 				if (((strpos($rank, "Non-BJCP Judge") !== false)) && (($row_brewer['brewerJudgeMead'] == "Y") || ($row_brewer['brewerJudgeCider'] == "Y"))) $rank = "BJCP Cider or Mead Judge";
 				$mead = "";
@@ -1165,7 +1165,7 @@ if (isset($_SESSION['loginUsername'])) {
 
 		$character_limit = $character_limit + 6; // Arial allows for more characters per line
 
-		$bjcp_rank = explode(",",$row_brewer['brewerJudgeRank']);
+		$bjcp_rank = explode(",",clean_designation_other($row_brewer['brewerJudgeRank']));
 		$rank = bjcp_rank($bjcp_rank[0],2);
 		if (((strpos($rank, "Non-BJCP Judge") !== false)) && (($row_brewer['brewerJudgeMead'] == "Y") || ($row_brewer['brewerJudgeCider'] == "Y"))) $rank = "BJCP Cider or Mead Judge";
 		$mead = "";
