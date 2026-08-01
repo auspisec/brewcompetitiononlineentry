@@ -2,36 +2,44 @@
 /**
  * Admin: Privacy Consent Management
  * Manage consent text versions and view consent acceptance log.
+ * Language-generic: iterates over $languages from constants.inc.php.
  */
+include_once(DB.'consent.db.php');
+
 if ($_SESSION['userLevel'] > 1) {
     $redirect = $base_url . "index.php?section=list";
     header(sprintf("Location: %s", $redirect));
     exit();
 }
 
-// Handle form submission
-if (isset($_POST['action']) && $_POST['action'] == 'save_consent') {
+// Handle inline form submission (when posted directly to admin page)
+if (isset($_POST['consent_action']) && $_POST['consent_action'] == 'save_consent') {
     $language = sterilize($_POST['consent_language']);
-    $consent_text = $_POST['consent_text']; // Allow HTML
-    // Sanitize but allow basic tags
+    $consent_text = $_POST['consent_text'];
     $allowed_tags = '<p><br><strong><em><ul><ol><li><a><b><i>';
     $consent_text = strip_tags($consent_text, $allowed_tags);
     create_consent_version($language, $consent_text);
     $success_msg = $consent_text_019;
 }
 
+// Get the languages array (from constants.inc.php, or use override_languages if set)
+$consent_languages = $GLOBALS['languages'] ?? array('en-US' => 'English (US)');
+
 // Get data for display
-$en_texts = get_all_consent_texts('en-US');
-$ko_texts = get_all_consent_texts('ko-KR');
-$en_active = get_active_consent_text('en-US');
-$ko_active = get_active_consent_text('ko-KR');
+$all_texts = array();
+$active_texts = array();
+foreach ($consent_languages as $lang_code => $lang_name) {
+    $all_texts[$lang_code] = get_all_consent_texts($lang_code);
+    $active_texts[$lang_code] = get_active_consent_text($lang_code);
+}
 $log_entries = get_consent_log_entries(100);
 $active_tab = $_GET['tab'] ?? 'current';
+$default_lang = $_SESSION['prefsLanguage'] ?? 'en-US';
 ?>
 
 <div class="bcoem-admin-element">
     <div class="btn-group" role="group">
-        <a class="btn btn-default" href="<?php echo $base_url; ?>index.php?section=admin"><span class="fa fa-arrow-circle-left"></span> <?php echo $label_admin_home; ?></a>
+        <a class="btn btn-default" href="<?php echo $base_url; ?>index.php?section=admin"><span class="fa fa-arrow-circle-left"></span> Admin</a>
     </div>
 </div>
 
@@ -52,28 +60,25 @@ $active_tab = $_GET['tab'] ?? 'current';
 <div style="margin-top: 20px;">
     <h3><?php echo $consent_text_007; ?></h3>
 
-    <!-- English -->
-    <h4>English (en-US) <?php echo $consent_text_008; ?>: <?php echo $en_active ? $en_active['version'] : 'N/A'; ?></h4>
+    <?php foreach ($consent_languages as $lang_code => $lang_name): ?>
+    <h4><?php echo htmlspecialchars($lang_name); ?> (<?php echo htmlspecialchars($lang_code); ?>) <?php echo $consent_text_008; ?>: <?php echo $active_texts[$lang_code] ? $active_texts[$lang_code]['version'] : 'N/A'; ?></h4>
     <div class="well">
-        <?php echo $en_active ? $en_active['consent_text'] : '<em>No consent text configured.</em>'; ?>
+        <?php echo $active_texts[$lang_code] ? $active_texts[$lang_code]['consent_text'] : '<em>No consent text configured.</em>'; ?>
     </div>
-
-    <!-- Korean -->
-    <h4>한국어 (ko-KR) <?php echo $consent_text_008; ?>: <?php echo $ko_active ? $ko_active['version'] : 'N/A'; ?></h4>
-    <div class="well">
-        <?php echo $ko_active ? $ko_active['consent_text'] : '<em>No consent text configured.</em>'; ?>
-    </div>
+    <?php endforeach; ?>
 
     <hr>
 
     <h3><?php echo $consent_text_011; ?></h3>
-    <form method="POST" action="">
-        <input type="hidden" name="action" value="save_consent">
+    <form method="POST" action="<?php echo $base_url; ?>includes/process.inc.php?action=save_consent&amp;section=admin&amp;go=consent">
+        <input type="hidden" name="consent_action" value="save_consent">
+        <input type="hidden" name="user_session_token" value="<?php if (isset($_SESSION['user_session_token'])) echo htmlspecialchars($_SESSION['user_session_token'], ENT_QUOTES, 'UTF-8'); ?>">
         <div class="form-group">
             <label for="consent_language"><?php echo $consent_text_009; ?></label>
-            <select class="form-control" name="consent_language" id="consent_language" style="width: 200px;">
-                <option value="en-US">English (en-US)</option>
-                <option value="ko-KR">한국어 (ko-KR)</option>
+            <select class="form-control" name="consent_language" id="consent_language" style="width: 300px;">
+                <?php foreach ($consent_languages as $lang_code => $lang_name): ?>
+                <option value="<?php echo htmlspecialchars($lang_code); ?>" <?php if ($lang_code == $default_lang) echo 'selected'; ?>><?php echo htmlspecialchars($lang_name); ?> (<?php echo htmlspecialchars($lang_code); ?>)</option>
+                <?php endforeach; ?>
             </select>
         </div>
         <div class="form-group">
@@ -90,7 +95,8 @@ $active_tab = $_GET['tab'] ?? 'current';
 <div style="margin-top: 20px;">
     <h3><?php echo $consent_text_022; ?></h3>
 
-    <h4>English (en-US)</h4>
+    <?php foreach ($consent_languages as $lang_code => $lang_name): ?>
+    <h4><?php echo htmlspecialchars($lang_name); ?> (<?php echo htmlspecialchars($lang_code); ?>)</h4>
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -101,7 +107,8 @@ $active_tab = $_GET['tab'] ?? 'current';
             </tr>
         </thead>
         <tbody>
-        <?php foreach ($en_texts as $text): ?>
+        <?php if (!empty($all_texts[$lang_code])): ?>
+        <?php foreach ($all_texts[$lang_code] as $text): ?>
             <tr>
                 <td><?php echo $text['version']; ?></td>
                 <td><?php echo $text['is_active'] ? '<span class="label label-success">' . $consent_text_010 . '</span>' : ''; ?></td>
@@ -109,30 +116,12 @@ $active_tab = $_GET['tab'] ?? 'current';
                 <td><small><?php echo substr(strip_tags($text['consent_text']), 0, 100); ?>...</small></td>
             </tr>
         <?php endforeach; ?>
+        <?php else: ?>
+            <tr><td colspan="4"><em>No versions.</em></td></tr>
+        <?php endif; ?>
         </tbody>
     </table>
-
-    <h4>한국어 (ko-KR)</h4>
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th><?php echo $consent_text_008; ?></th>
-                <th><?php echo $consent_text_024; ?></th>
-                <th><?php echo $consent_text_023; ?></th>
-                <th><?php echo $consent_text_007; ?></th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($ko_texts as $text): ?>
-            <tr>
-                <td><?php echo $text['version']; ?></td>
-                <td><?php echo $text['is_active'] ? '<span class="label label-success">' . $consent_text_010 . '</span>' : ''; ?></td>
-                <td><?php echo $text['created_at']; ?></td>
-                <td><small><?php echo substr(strip_tags($text['consent_text']), 0, 100); ?>...</small></td>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
+    <?php endforeach; ?>
 </div>
 
 <?php elseif ($active_tab == 'log'): ?>
@@ -152,6 +141,7 @@ $active_tab = $_GET['tab'] ?? 'current';
             </tr>
         </thead>
         <tbody>
+        <?php if (!empty($log_entries)): ?>
         <?php foreach ($log_entries as $entry): ?>
             <tr>
                 <td><?php echo htmlspecialchars($entry['brewerFirstName'] . ' ' . $entry['brewerLastName']); ?></td>
@@ -163,6 +153,9 @@ $active_tab = $_GET['tab'] ?? 'current';
                 <td><?php echo $entry['created_at']; ?></td>
             </tr>
         <?php endforeach; ?>
+        <?php else: ?>
+            <tr><td colspan="7"><em>No consent log entries.</em></td></tr>
+        <?php endif; ?>
         </tbody>
     </table>
 </div>
