@@ -81,9 +81,15 @@ else { // THIS ELSE ENDS at the end of the script
 		foreach ($countries as $country) {
 			$country_select .= "<option value=\"".$country."\" ";
 			if (($msg != "default") && (isset($_COOKIE['brewerCountry'])) && ($_COOKIE['brewerCountry'] == $country)) $country_select .= "SELECTED";
+			// SAAZ customization: default to Korea, South for new registrations
+			elseif ($msg == "default") {
+				$default_country = "Korea, South";
+				if (isset($_COOKIE['brewerCountry']) && $_COOKIE['brewerCountry'] == $country) $country_select .= "SELECTED";
+				elseif (!isset($_COOKIE['brewerCountry']) && $country == $default_country) $country_select .= "SELECTED";
+			}
 			$country_select .= ">";
 			$country_select .= $country."</option>\n";
-     	}
+    	}
 
      	$us_state_select = "";
 		foreach ($us_state_abbrevs_names as $key => $value) {
@@ -478,7 +484,7 @@ if ($go == "default") {  ?>
 			<div class="input-group has-warning">
 				<span class="input-group-addon" id="email-addon1"><span class="fa fa-envelope"></span></span>
 				<!-- Input Here -->
-				<input class="form-control" name="user_name" id="user_name" type="email" placeholder="" data-error="<?php echo $register_text_019; ?>" onBlur="checkAvailability()" onchange="AjaxFunction(this.value);" value="<?php if (($msg != "default") && (isset($_COOKIE['user_name']))) echo htmlspecialchars($_COOKIE['user_name'], ENT_QUOTES, 'UTF-8'); ?>" required <?php if ($_SESSION['prefsProEdition'] == 0) echo "autofocus"; ?>>
+				<input class="form-control" name="user_name" id="user_name" type="email" placeholder="" data-error="<?php echo $register_text_019; ?>" onBlur="checkAvailability()" onchange="AjaxFunction(this.value);" value="<?php if (($msg != "default") && (isset($_COOKIE['user_name']))) echo htmlspecialchars($_COOKIE['user_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
 			</div>
             <div class="help-block"><?php echo $register_text_021; ?></div>
 			<div class="help-block with-errors"></div>
@@ -604,6 +610,13 @@ if ($go == "default") {  ?>
 	</div><!-- ./Form Group -->
 
 
+	<!-- SAAZ customization: address fields removed — not collecting personal address data.
+	     Hidden inputs submit "." to satisfy DB NOT NULL constraints. Original code commented out below. -->
+	<input type="hidden" name="brewerAddress" value=".">
+	<input type="hidden" name="brewerCity" value=".">
+	<input type="hidden" name="brewerStateNon" value=".">
+	<input type="hidden" name="brewerZip" value=".">
+	<!--
 	<section id="address-fields">
     <!-- General Entry Fields: Address, Phone, Dropoff Locations, Club, AHA -->
 	<div class="form-group"><!-- Form Group REQUIRED Text Input -->
@@ -638,19 +651,19 @@ if ($go == "default") {  ?>
 			</div>
 			<div id="us-state" class="input-group has-warning">
 				<select class="selectpicker" name="brewerStateUS" id="brewerStateUS" data-live-search="true" data-size="10" data-width="fit" data-header="<?php echo $label_select_state; ?>" title="<?php echo $label_select_state; ?>" data-error="<?php echo $register_text_030; ?>" required>
-	    			<?php echo $us_state_select; ?>
-	    		</select>
-	    	</div>
-	    	<div id="aus-state" class="has-warning">
+	    	    		<?php echo $us_state_select; ?>
+	    	    	</select>
+	    	    </div>
+	    	    <div id="aus-state" class="has-warning">
 				<select class="selectpicker" name="brewerStateAUS" id="brewerStateAUS" data-live-search="true" data-size="10" data-width="fit" data-header="<?php echo $label_select_state; ?>" title="<?php echo $label_select_state; ?>" data-error="<?php echo $register_text_030; ?>" required>
-	    			<?php echo $aus_state_select; ?>
-	    		</select>
-	    	</div>
-	    	<div id="ca-state" class="has-warning">
+	    	    		<?php echo $aus_state_select; ?>
+	    	    	</select>
+	    	    </div>
+	    	    <div id="ca-state" class="has-warning">
 				<select class="selectpicker" name="brewerStateCA" id="brewerStateCA" data-live-search="true" data-size="10" data-width="fit" data-header="<?php echo $label_select_state; ?>" title="<?php echo $label_select_state; ?>" data-error="<?php echo $register_text_030; ?>" required>
-	    			<?php echo $ca_state_select; ?>
-	    		</select>
-	    	</div>
+	    	    		<?php echo $ca_state_select; ?>
+	    	    	</select>
+	    	    </div>
             <div class="help-block with-errors"></div>
 		</div>
 	</div><!-- ./Form Group -->
@@ -667,6 +680,7 @@ if ($go == "default") {  ?>
 		</div>
 	</div><!-- ./Form Group -->
 	</section>
+	-->
     <div class="form-group"><!-- Form Group REQUIRED Text Input -->
 		<label for="" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label text-warning"><i class="fa fa-sm fa-star"></i> <?php if (($_SESSION['prefsProEdition'] == 1) && ($go == "entrant")) echo $label_contact." "; echo $label_phone_primary; ?></label>
 		<div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">
@@ -753,6 +767,10 @@ if ($go == "default") {  ?>
     <input type="hidden" name="brewerProAm" value="0">
     <?php } ?>
 </div>
+	<!-- SAAZ customization: AHA Member Number field removed — not applicable outside the US.
+	     Original code commented out below. -->
+	<input type="hidden" name="brewerAHA" value="">
+	<!--
 	<div class="form-group"><!-- Form Group Text Input -->
 		<label for="" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label"><?php echo $label_aha_number; ?></label>
 		<div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">
@@ -765,6 +783,7 @@ if ($go == "default") {  ?>
             <div id="ahaProAmText" class="help-block"><?php echo $register_text_033; ?></div>
 		</div>
 	</div><!-- ./Form Group -->
+	-->
 	<section id="mhp-number">
 	    <div class="form-group">
 	        <label for="brewerMHP" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label"><?php echo $label_mhp_number; ?></label>
@@ -778,6 +797,10 @@ if ($go == "default") {  ?>
     <?php } // END if ($view == "default") ?>
     <?php if (($_SESSION['prefsProEdition'] == 0) || (($_SESSION['prefsProEdition'] == 1) && (($go == "judge") || ($go == "steward")))) { ?>
 
+    <!-- SAAZ customization: Staff Yes/No field removed from public registration form.
+         Staff can be assigned via admin interface if needed. Original code commented out below. -->
+    <input type="hidden" name="brewerStaff" value="N">
+    <!--
     <!-- Staff preferences -->
     <div class="form-group"><!-- Form Group Radio INLINE -->
         <label for="brewerStaff" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label"><?php echo $label_staff; ?></label>
@@ -808,8 +831,7 @@ if ($go == "default") {  ?>
         </div>
     </div>
     <?php } // end if (!empty($staff_location_avail)) ?>
-
-
+    -->
 
     <?php } // END if (($_SESSION['prefsProEdition'] == 0) || (($_SESSION['prefsProEdition'] == 1) && (($go == "judge") || ($go == "steward"))))?>
     <?php if (!$judge_hidden) {

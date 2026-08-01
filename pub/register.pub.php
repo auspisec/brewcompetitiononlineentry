@@ -72,9 +72,15 @@ else { // THIS ELSE ENDS at the end of the script
 		foreach ($countries as $country) {
 			$country_select .= "<option value=\"".$country."\" ";
 			if (($msg != "default") && (isset($_COOKIE['brewerCountry'])) && ($_COOKIE['brewerCountry'] == $country)) $country_select .= "SELECTED";
+			// SAAZ customization: default to Korea, South for new registrations
+			elseif ($msg == "default") {
+				$default_country = "Korea, South";
+				if (isset($_COOKIE['brewerCountry']) && $_COOKIE['brewerCountry'] == $country) $country_select .= "SELECTED";
+				elseif (!isset($_COOKIE['brewerCountry']) && $country == $default_country) $country_select .= "SELECTED";
+			}
 			$country_select .= ">";
 			$country_select .= $country."</option>\n";
-     	}
+    	}
 
      	$us_state_select = "";
 		foreach ($us_state_abbrevs_names as $key => $value) {
@@ -528,7 +534,7 @@ if ($go == "default") {  ?>
 	<div class="row mb-3">
         <label for="user_name" class="col-xs-12 col-sm-3 col-lg-2 col-form-label text-teal"><i class="fa fa-star me-1"></i><strong><?php echo $label_email; ?></strong></label>
         <div class="col-xs-12 col-sm-9 col-lg-10">
-            <input class="form-control" id="user_name" name="user_name" type="email" onBlur="checkAvailability()" onchange="AjaxFunction(this.value);" placeholder="" value="<?php if (($msg != "default") && (isset($_COOKIE['user_name']))) echo htmlspecialchars($_COOKIE['user_name'], ENT_QUOTES, 'UTF-8'); ?>" <?php if ($_SESSION['prefsProEdition'] == 0) echo "autofocus"; ?> required>
+            <input class="form-control" id="user_name" name="user_name" type="email" onBlur="checkAvailability()" onchange="AjaxFunction(this.value);" placeholder="" value="<?php if (($msg != "default") && (isset($_COOKIE['user_name']))) echo htmlspecialchars($_COOKIE['user_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
             <div class="help-block invalid-feedback text-danger"><?php echo $register_text_019; ?></div>
             <div id="msg_email" class="mt-2"></div>
 			<div id="username-status" class="mt-2"></div>
@@ -618,6 +624,13 @@ if ($go == "default") {  ?>
 	    </div>
 	</div>
 
+	<!-- SAAZ customization: address fields removed — not collecting personal address data.
+	     Hidden inputs submit "." to satisfy DB NOT NULL constraints. Original code commented out below. -->
+	<input type="hidden" name="brewerAddress" value=".">
+	<input type="hidden" name="brewerCity" value=".">
+	<input type="hidden" name="brewerStateNon" value=".">
+	<input type="hidden" name="brewerZip" value=".">
+	<?php /* SAAZ: address fields commented out — not collecting personal address data
 	<!-- General Entry Fields: Address, Phone, Dropoff Locations, Club, AHA -->
 	<section id="address-fields">
 
@@ -666,7 +679,7 @@ if ($go == "default") {  ?>
 	                    <?php echo $ca_state_select; ?>
 	                </select>
 	                <div class="help-block mb-1 invalid-feedback text-danger"><?php echo $register_text_030; ?></div>
-	            </div> 
+	            </div>
 			</div>
 		</div>
 
@@ -680,7 +693,7 @@ if ($go == "default") {  ?>
 		</div>
 
 	</section>
-
+	*/ ?>
 	<!-- Phone Number -->
 	<div class="mb-3 row">
 	    <label for="brewerPhone1" class="col-xs-12 col-sm-3 col-lg-2 col-form-label text-teal"><i class="fa fa-star me-1"></i><strong><?php if (($_SESSION['prefsProEdition'] == 1) && ($go == "entrant")) echo $label_contact." "; echo $label_phone_primary; ?></strong></label>
@@ -780,6 +793,9 @@ if ($go == "default") {  ?>
 	    <?php } ?>
 	</section>
 
+	<!-- SAAZ customization: AHA Member Number field removed — not applicable outside the US. -->
+	<input type="hidden" name="brewerAHA" value="">
+	<?php /* SAAZ: AHA field commented out — not applicable outside the US
 	<section id="aha-number">
 	    <div class="mb-3 row">
 	        <label for="brewerAHA" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $label_aha_number; ?></strong></label>
@@ -789,6 +805,7 @@ if ($go == "default") {  ?>
 	        </div>
 	    </div>
 	</section>
+	*/ ?>
 	<?php if ($_SESSION['prefsMHPDisplay'] == 1) { ?>
 	<section id="mhp-number">
 	    <div class="mb-3 row">
@@ -804,6 +821,10 @@ if ($go == "default") {  ?>
     <?php } // END if ($view == "default") ?>
     <?php if (($_SESSION['prefsProEdition'] == 0) || (($_SESSION['prefsProEdition'] == 1) && (($go == "judge") || ($go == "steward")))) { ?>
 
+    <!-- SAAZ customization: Staff Yes/No field removed from public registration form.
+         Staff can be assigned via admin interface if needed. -->
+    <input type="hidden" name="brewerStaff" value="N">
+    <?php /* SAAZ: Staff field commented out — removed from public registration
     <!-- Staff preferences -->
 
     <div class="mb-3 row">
@@ -830,6 +851,7 @@ if ($go == "default") {  ?>
         </div>
     </div>
     <?php } // end if (!empty($staff_location_avail)) ?>
+    */ ?>
     <?php } // END if (($_SESSION['prefsProEdition'] == 0) || (($_SESSION['prefsProEdition'] == 1) && (($go == "judge") || ($go == "steward"))))?>
 
 
