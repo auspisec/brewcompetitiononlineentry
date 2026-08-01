@@ -401,8 +401,8 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 
 				
 				// Log privacy consent
-				if ($filter != "admin" && isset($_POST['consent_given']) && $_POST['consent_given'] == '1') {
-					include_once(INCLUDES.'db/consent.db.php');
+				if ($filter != "admin" && isset($_POST['privacy_consent']) && $_POST['privacy_consent'] == '1') {
+					include_once(DB.'consent.db.php');
 					$consent_text_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US');
 					if ($consent_text_id) {
 						log_consent($row_user['id'], $consent_text_id, 1);
