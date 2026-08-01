@@ -52,6 +52,10 @@ if ((!isset($_SESSION['loginUsername'])) || ((isset($_SESSION['loginUsername']))
                 <input type="checkbox" name="brewerJudgeRank[]" value="Certified Cider Guide" <?php if (($action == "edit") && in_array("Certified Cider Guide",$judge_array)) echo "CHECKED"; ?>>Certified Cider Guide<br />
                 <input type="checkbox" name="brewerJudgeRank[]" value="Certified Pommelier" <?php if (($action == "edit") && in_array("Certified Pommelier",$judge_array)) echo "CHECKED"; ?>>Certified Pommelier<br />
                 <input type="checkbox" name="brewerJudgeRank[]" value="Judge with Sensory Training" <?php if (($action == "edit") && in_array("Judge with Sensory Training",$judge_array)) echo "CHECKED"; ?>>Judge with Sensory Training
+                <br /><input type="checkbox" name="brewerJudgeRank[]" value="[other]" id="brewerJudgeRankOtherCheckbox" <?php if (($action == "edit") && (preg_match('/\[other:.*\]/', $row_brewer['brewerJudgeRank']))) echo "CHECKED"; ?>><?php echo $label_other; ?>
+                <span id="brewerJudgeRankOtherWrap"<?php if (($action != "edit") || !preg_match('/\[other:.*\]/', $row_brewer['brewerJudgeRank'])) echo ' style="display:none;"'; ?>>
+                    <input type="text" name="brewerJudgeRankOther" id="brewerJudgeRankOther" maxlength="100" value="<?php if (preg_match('/\[other:(.*?)\]/', $row_brewer['brewerJudgeRank'], $m)) echo htmlspecialchars($m[1], ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($label_other, ENT_QUOTES, 'UTF-8'); ?>">
+                </span>
 				<br /><em>* Only the first two checked will appear on your Judge Scoresheet Labels</em></td>
             </tr>
        </table>
@@ -63,7 +67,7 @@ if ((!isset($_SESSION['loginUsername'])) || ((isset($_SESSION['loginUsername']))
           <li>The <em>Non-BJCP</em> rank is for those who haven't taken the BJCP Beer Judge Entrance Exam, and are <em>not</em> a professional brewer.</li>
           <li>The <em>Apprentice</em> rank is for those who have taken the BJCP Legacy Beer Exam, but did not pass one or more of the sections. This rank will be phased out in 2014.</li>
           <li>The <em>Provisional</em> rank is for those have taken the BJCP Beer Judge Entrance Exam, have passed, but have not yet taken the BJCP Beer Judging Exam.</li>
-      	</ul>
+    	</ul>
         </td>
     </tr>
     <?php if (!$table_assignment) { ?>
@@ -131,4 +135,16 @@ if ((!isset($_SESSION['loginUsername'])) || ((isset($_SESSION['loginUsername']))
         </table>
       </td>
 	</tr>
-    <?php } ?>
+	<?php } ?>
+	<script type="text/javascript">
+	$(document).ready(function() {
+	$('#brewerJudgeRankOtherCheckbox').on('change', function() {
+	if ($(this).is(':checked')) {
+	$("#brewerJudgeRankOtherWrap").show("slow");
+	$("#brewerJudgeRankOther").focus();
+	} else {
+	$("#brewerJudgeRankOtherWrap").hide("slow");
+	}
+	});
+	});
+	</script>

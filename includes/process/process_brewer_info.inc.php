@@ -52,7 +52,29 @@ if (isset($_POST['brewerJudgeID'])) {
 
 if (isset($_POST['brewerJudgeMead'])) $brewerJudgeMead = $_POST['brewerJudgeMead'];
 if (isset($_POST['brewerJudgeCider'])) $brewerJudgeCider = $_POST['brewerJudgeCider'];
-if (isset($_POST['brewerJudgeRank'])) $brewerJudgeRank = $_POST['brewerJudgeRank'];
+if (isset($_POST['brewerJudgeRank'])) {
+    $brewerJudgeRank = $_POST['brewerJudgeRank'];
+    // Handle the "Other" custom designation: replace [other] sentinel with [other:text]
+    // Using square bracket format because sterilize() calls strip_tags() which would
+    // strip angle-bracket tags like <other>text</other>
+    if (is_array($brewerJudgeRank)) {
+        $other_key = array_search('[other]', $brewerJudgeRank);
+        if ($other_key !== false) {
+            $other_text = '';
+            if (isset($_POST['brewerJudgeRankOther']) && trim($_POST['brewerJudgeRankOther']) != '') {
+                $other_text = trim($_POST['brewerJudgeRankOther']);
+                $other_text = htmlspecialchars($other_text, ENT_QUOTES, 'UTF-8');
+                $other_text = sterilize($other_text);
+            }
+            if (!empty($other_text)) {
+                $brewerJudgeRank[$other_key] = '[other:' . $other_text . ']';
+            } else {
+                // "Other" was checked but no text provided — remove the sentinel
+                unset($brewerJudgeRank[$other_key]);
+            }
+        }
+    }
+}
 if (isset($_POST['brewerAHA'])) $brewerAHA = sterilize($_POST['brewerAHA']);
 if (isset($_POST['brewerMHP'])) $brewerMHP = sterilize($_POST['brewerMHP']);
 if (isset($_POST['brewerProAm'])) $brewerProAm = $_POST['brewerProAm'];

@@ -144,7 +144,13 @@ if (!$entrant_type_brewery) {
                 <span class="help-block"><?php echo $brewer_text_035; ?></span>
             </div>
         </div>
-        <?php $judge_array = explode(",",$row_brewer['brewerJudgeRank']); ?>
+        <?php $judge_array = explode(",",$row_brewer['brewerJudgeRank']);
+        // Extract "Other" custom designation from <other>...</other> tags
+        $other_designation = "";
+        if (preg_match('/\[other:(.*?)\]/', $row_brewer['brewerJudgeRank'], $other_match)) {
+            $other_designation = $other_match[1];
+        }
+        ?>
         <div class="form-group"><!-- Form Group Radio STACKED -->
             <label for="brewerJudgeRank" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label"><?php echo $label_bjcp_rank; ?></label>
             <div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">
@@ -255,6 +261,14 @@ if (!$entrant_type_brewery) {
                         <label>
                             <input type="checkbox" name="brewerJudgeRank[]" value="Master Cicerone" <?php if (($action == "edit") && in_array("Master Cicerone",$judge_array)) echo "CHECKED"; ?>> Master Cicerone
                         </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="brewerJudgeRank[]" value="[other]" id="brewerJudgeRankOtherCheckbox" <?php if (($action == "edit") && (!empty($other_designation))) echo "CHECKED"; ?>> <?php echo $label_other; ?>
+                        </label>
+                    </div>
+                    <div class="checkbox" id="brewerJudgeRankOtherWrap"<?php if (($action != "edit") || empty($other_designation)) echo ' style="display:none;"'; ?>>
+                        <input type="text" class="form-control input-sm" name="brewerJudgeRankOther" id="brewerJudgeRankOther" maxlength="100" value="<?php if (!empty($other_designation)) echo htmlspecialchars($other_designation, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($label_other, ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
 
                  </div>
@@ -390,3 +404,16 @@ if (!$entrant_type_brewery) {
 </section>
 <?php } // end if ($show_partners_orgs) ?>
 <?php } // end if (!$entrant_type_brewery) ?>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#brewerJudgeRankOtherCheckbox').on('change', function() {
+        if ($(this).is(':checked')) {
+            $("#brewerJudgeRankOtherWrap").show("slow");
+            $("#brewerJudgeRankOther").focus();
+        } else {
+            $("#brewerJudgeRankOtherWrap").hide("slow");
+        }
+    });
+});
+</script>

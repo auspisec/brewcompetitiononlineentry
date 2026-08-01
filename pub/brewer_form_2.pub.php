@@ -144,7 +144,13 @@ if (((!$table_assignment) || ($go == "admin")) && (!$entrant_type_brewery)) {
             </div>
         </div>
 
-        <?php $judge_array = explode(",",$row_brewer['brewerJudgeRank']); ?>
+        <?php $judge_array = explode(",",$row_brewer['brewerJudgeRank']);
+        // Extract "Other" custom designation from <other>...</other> tags
+        $other_designation = "";
+        if (preg_match('/\[other:(.*?)\]/', $row_brewer['brewerJudgeRank'], $other_match)) {
+            $other_designation = $other_match[1];
+        }
+        ?>
         <div class="mb-3 row">
             <label for="brewerJudgeRank" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $label_bjcp_rank; ?></strong></label>
             <div class="col-xs-12 col-sm-9 col-lg-10">
@@ -242,6 +248,13 @@ if (((!$table_assignment) || ($go == "admin")) && (!$entrant_type_brewery)) {
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" name="brewerJudgeRank[]" value="Master Cicerone" <?php if (($action == "edit") && in_array("Master Cicerone",$judge_array)) echo "CHECKED"; ?>>
                     <label class="form-check-label">Master Cicerone</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="brewerJudgeRank[]" value="[other]" id="brewerJudgeRankOtherCheckbox" <?php if (($action == "edit") && (!empty($other_designation))) echo "CHECKED"; ?>>
+                    <label class="form-check-label"><?php echo $label_other; ?></label>
+                </div>
+                <div class="form-check form-check-inline" id="brewerJudgeRankOtherWrap"<?php if (($action != "edit") || empty($other_designation)) echo ' style="display:none;"'; ?>>
+                    <input class="form-control form-control-sm" type="text" name="brewerJudgeRankOther" id="brewerJudgeRankOther" maxlength="100" value="<?php if (!empty($other_designation)) echo htmlspecialchars($other_designation, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($label_other, ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
                 <div class="help-block mt-1"><?php echo $brewer_text_010; ?></div>
             </div>
@@ -364,3 +377,16 @@ if (((!$table_assignment) || ($go == "admin")) && (!$entrant_type_brewery)) {
 </section>
 
 <?php } // end if ((!$table_assignment) || ($go == "admin")) ?>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#brewerJudgeRankOtherCheckbox').on('change', function() {
+        if ($(this).is(':checked')) {
+            $("#brewerJudgeRankOtherWrap").show("slow");
+            $("#brewerJudgeRankOther").focus();
+        } else {
+            $("#brewerJudgeRankOtherWrap").hide("slow");
+        }
+    });
+});
+</script>

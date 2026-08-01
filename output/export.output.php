@@ -1076,7 +1076,7 @@ if (($admin_role) || ((($judging_past == 0) && ($registration_open == 2) && ($en
                             $brewerFirstName,
                             $brewerLastName,
                             $brewerEmail,
-                            str_replace(",",", ",$row_sql['brewerJudgeRank']),
+                            clean_designation_other(str_replace(",",", ",$row_sql['brewerJudgeRank'])),
                             $brewerJudgeMead,
                             $brewerJudgeCider,
                             strtoupper(strtr($row_sql['brewerJudgeID'],$bjcp_num_replace)),
@@ -1280,7 +1280,7 @@ if (($admin_role) || ((($judging_past == 0) && ($registration_open == 2) && ($en
                         judge_entries($row_sql['uid'],0),
                         $assignment,
                         $row_sql['brewerJudgeID'],
-                        str_replace(",",", ",$row_sql['brewerJudgeRank']),
+                        clean_designation_other(str_replace(",",", ",$row_sql['brewerJudgeRank'])),
                         style_convert($row_sql['brewerJudgeLikes'],'6',$base_url),
                         style_convert($row_sql['brewerJudgeDislikes'],'6',$base_url)
                     );
@@ -1301,7 +1301,7 @@ if (($admin_role) || ((($judging_past == 0) && ($registration_open == 2) && ($en
                     judge_entries($row_sql['uid'],0),
                     $assignment,
                     $row_sql['brewerJudgeID'],
-                    str_replace(",",", ",$row_sql['brewerJudgeRank']),
+                    clean_designation_other(str_replace(",",", ",$row_sql['brewerJudgeRank'])),
                     $brewerJudgeMead,
                     $brewerJudgeCider,
                     style_convert($row_sql['brewerJudgeLikes'],'6',$base_url),
