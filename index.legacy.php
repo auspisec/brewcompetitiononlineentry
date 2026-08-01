@@ -132,6 +132,7 @@ include (SECTIONS.'alerts.sec.php');
             if ($go == "count_by_style") include (ADMIN.'entries_by_style.admin.php');
             if ($go == "count_by_substyle") include (ADMIN.'entries_by_substyle.admin.php');
             if ($action == "register") include (SECTIONS.'register.sec.php');
+            if ($go == "consent") include(ADMIN.'consent.admin.php');
             if ($go == "upload_scoresheets") include (ADMIN.'upload_scoresheets.admin.php');
             if ($go == "payments") include (ADMIN.'payments.admin.php');
 

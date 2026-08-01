@@ -2420,6 +2420,9 @@ if ($recently_updated) {
                                     <li><a href="<?php echo $base_url; ?>index.php?section=admin&amp;go=preferences&amp;action=payment">Currency and Payment</a></li>
                                     <li><a href="<?php echo $base_url; ?>index.php?section=admin&amp;go=preferences&amp;action=best">Best Brewer and/or Club</a></li>
                                     <li><a href="<?php echo $base_url; ?>index.php?section=admin&amp;go=judging_preferences">Judging/Competition Organization</a></li>
+                                    <?php if ($_SESSION['userLevel'] <= 1): ?>
+                                    <li><a href="<?php echo $base_url; ?>index.php?section=admin&amp;go=consent">Privacy Consent</a></li>
+                                    <?php endif; ?>
                                 </ul>
                             </div>
                             </div>

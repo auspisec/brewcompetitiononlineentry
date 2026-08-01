@@ -202,6 +202,7 @@ if (((isset($_SERVER['HTTP_REFERER'])) && ($referrer['host'] == $_SERVER['SERVER
 
 	// Delete
 	elseif ($action == "delete") include (PROCESS.'process_delete.inc.php');
+	elseif ($action == "save_consent") include (PROCESS.'process_consent.inc.php');
 
 	// Create a practice judging session
 	//elseif ($action == "practice_session") include (PROCESS.'process_judging_practice_session.inc.php');
