@@ -254,6 +254,8 @@ if ((isset($row_judging3)) && (!empty($row_judging3))) {
 
         $location_yes = "";
         $location_no = "";
+        // SAAZ customization: default judging availability to "Yes" for new registrations
+        if ($msg == "default") $location_yes = "selected";
         $judge_avail_info = "";
         $judge_avail_option = "";
         $staff_avail_info = "";
@@ -261,6 +263,8 @@ if ((isset($row_judging3)) && (!empty($row_judging3))) {
 
         $location_steward_no = "";
         $location_steward_yes = "";
+        // SAAZ customization: default stewarding availability to "Yes" for new registrations
+        if ($msg == "default") $location_steward_yes = "selected";
         $steward_avail_info = "";
         $steward_avail_option = "";
 
@@ -1176,18 +1180,13 @@ if ($go == "default") {  ?>
     <?php } // END if (!$steward_hidden) ?>
 
     <?php if (((!$judge_hidden) || (!$steward_hidden)) && ($section != "admin")) {
-    include(DB.'organizations.db.php');
-    $org_array_lower = array();
-    foreach ($org_array as $value) {
-        $org_array_lower[] = strtolower($value);
-    }
-    $org_array = implode(",",$org_array_lower);
-
+    // SAAZ customization: brewing partners dropdown removed for privacy — exposes all entrant names.
+    // Keeping only the "Other" text field. Original dropdown code commented out below.
     if ($_SESSION['prefsProEdition'] == 1) $participant_orgs_label = $label_industry_affiliations;
     else $participant_orgs_label = $label_brewing_partners;
-
-    ?>    
+    ?>
     <section id="participant-orgs">
+        <?php /* SAAZ: brewing partners dropdown removed for privacy
         <div class="mb-3 row">
             <label for="brewerAssignment" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $participant_orgs_label; ?></strong></label>
             <div class="col-lg-9 col-md-6 col-sm-8 col-xs-12">  
@@ -1198,6 +1197,7 @@ if ($go == "default") {  ?>
             </div>
         </div>
         <input name="allOrgs" type="hidden" value="<?php echo $org_array; ?>">
+        */ ?>
         <div id="brewerAssignmentOther" class="mb-3 row">
             <label for="brewerAssignmentOther" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $participant_orgs_label." &ndash; ".$label_other; ?></strong></label>
             <div class="col-xs-12 col-sm-9 col-lg-10">

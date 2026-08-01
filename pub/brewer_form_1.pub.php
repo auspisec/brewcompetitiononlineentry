@@ -62,6 +62,9 @@ if ($_SESSION['prefsProEdition'] == 0) { ?>
         </div>
     </div>
 </section>
+<!-- SAAZ customization: AHA Member Number removed from account edit form. -->
+<input type="hidden" name="brewerAHA" value="<?php if ($action == "edit") echo $row_brewer['brewerAHA']; ?>">
+<?php /* SAAZ: AHA field removed — not applicable outside the US
 <section id="aha-number">
     <div class="mb-3 row">
         <label for="brewerAHA" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $label_aha_number; ?></strong></label>
@@ -71,6 +74,7 @@ if ($_SESSION['prefsProEdition'] == 0) { ?>
         </div>
     </div>
 </section>
+*/ ?>
 <?php if ($_SESSION['prefsMHPDisplay'] == 1) { ?>
 <section id="mhp-number">
     <div class="mb-3 row">
@@ -87,6 +91,7 @@ if ($_SESSION['prefsProEdition'] == 0) { ?>
     <input type="hidden" name="brewerMHP" value="0">
 <?php } ?>
 <section id="participant-orgs">
+    <?php /* SAAZ: brewing partners dropdown removed for privacy — exposes all entrant names
     <div class="mb-3 row">
         <label for="brewerAssignment" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $participant_orgs_label; ?></strong></label>
         <div class="col-lg-9 col-md-6 col-sm-8 col-xs-12">  
@@ -97,6 +102,7 @@ if ($_SESSION['prefsProEdition'] == 0) { ?>
         </div>
     </div>
     <input name="allOrgs" type="hidden" value="<?php echo $org_array; ?>">
+    */ ?>
     <div id="brewerAssignmentOther" class="mb-3 row">
         <label for="brewerAssignmentOther" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $participant_orgs_label." &ndash; ".$label_other; ?></strong></label>
         <div class="col-xs-12 col-sm-9 col-lg-10">

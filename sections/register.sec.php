@@ -242,6 +242,8 @@ if ((isset($row_judging3)) && (!empty($row_judging3))) {
 
         $location_yes = "";
         $location_no = "";
+        // SAAZ customization: default judging availability to "Yes" for new registrations
+        if ($msg == "default") $location_yes = "selected";
         $judge_avail_info = "";
         $judge_avail_option = "";
         $staff_avail_info = "";
@@ -249,6 +251,8 @@ if ((isset($row_judging3)) && (!empty($row_judging3))) {
 
         $location_steward_no = "";
         $location_steward_yes = "";
+        // SAAZ customization: default stewarding availability to "Yes" for new registrations
+        if ($msg == "default") $location_steward_yes = "selected";
         $steward_avail_info = "";
         $steward_avail_option = "";
 
@@ -1006,18 +1010,13 @@ if ($go == "default") {  ?>
     
 
     <?php if (((!$judge_hidden) || (!$steward_hidden)) && ($section != "admin")) {
-    include(DB.'organizations.db.php');
-    $org_array_lower = array();
-    foreach ($org_array as $value) {
-        $org_array_lower[] = strtolower($value);
-    }
-    $org_array = implode(",",$org_array_lower);
-
+    // SAAZ customization: brewing partners dropdown removed for privacy — exposes all entrant names.
+    // Keeping only the "Other" text field. Original dropdown code commented out below.
     if ($_SESSION['prefsProEdition'] == 1) $participant_orgs_label = $label_industry_affiliations;
     else $participant_orgs_label = $label_brewing_partners;
-
     ?>
     <section id="participant-orgs">
+        <?php /* SAAZ: brewing partners dropdown removed for privacy
         <div class="form-group">
             <label for="brewerAssignment" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label"><?php echo $participant_orgs_label; ?></label>
             <div class="col-lg-9 col-md-6 col-sm-8 col-xs-12">  
@@ -1028,6 +1027,7 @@ if ($go == "default") {  ?>
             </div>
         </div>
         <input name="allOrgs" type="hidden" value="<?php echo $org_array; ?>">
+        */ ?>
         <div id="brewerAssignmentOther" class="form-group">
             <label for="brewerAssignmentOther" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label"><?php echo $participant_orgs_label." &ndash; ".$label_other; ?></label>
             <div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">

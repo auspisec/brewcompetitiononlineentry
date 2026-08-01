@@ -217,6 +217,13 @@ if (($pro_entrant) && (!$show_judge_steward_fields)) {
         </div>
     </div>
 
+    <!-- SAAZ customization: address fields removed from account edit form — not collecting personal address data.
+         Hidden inputs preserve existing values. Original code commented out below. -->
+    <input type="hidden" name="brewerAddress" value="<?php if ($action == "edit") echo $row_brewer['brewerAddress']; ?>">
+    <input type="hidden" name="brewerCity" value="<?php if ($action == "edit") echo $row_brewer['brewerCity']; ?>">
+    <input type="hidden" name="brewerStateNon" value="<?php if ($action == "edit") echo $row_brewer['brewerState']; ?>">
+    <input type="hidden" name="brewerZip" value="<?php if ($action == "edit") echo $row_brewer['brewerZip']; ?>">
+    <?php /* SAAZ: address fields removed — not collecting personal address data
     <!-- Address -->
     <div class="mb-3 row">
         <label for="brewerAddress" class="col-xs-12 col-sm-3 col-lg-2 col-form-label text-teal"><i class="fa fa-star me-1"></i><strong><?php if (($_SESSION['prefsProEdition'] == 1) && ($go == "entrant")) echo $label_organization." "; echo $label_street_address; ?></strong></label>
@@ -276,6 +283,7 @@ if (($pro_entrant) && (!$show_judge_steward_fields)) {
             <div class="help-block mb-1 invalid-feedback text-danger"><?php echo $brewer_text_030; ?></div>
         </div>
     </div>
+    */ ?>
 </section>
 
 <?php if (($_SESSION['prefsProEdition'] == 0) || (($_SESSION['prefsProEdition'] == 1) && ($entrant_type_brewery))) { ?>

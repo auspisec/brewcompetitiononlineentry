@@ -319,6 +319,7 @@ if (($_SESSION['prefsProEdition'] == 1) && (!$show_judge_steward_fields)) {
 		
 }
 
+/* SAAZ customization: address fields removed from account display for privacy.
 $account_display .= "<div class=\"row bcoem-account-info\">";
 $account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$label_organization.$label_address);
 $account_display .= "<div class=\"".$display_right_cols."\">".$address."</div>";
@@ -338,6 +339,7 @@ $account_display .= "<div class=\"row bcoem-account-info\">";
 $account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$label_organization.$label_zip);
 $account_display .= "<div class=\"".$display_right_cols."\">".$zip."</div>";
 $account_display .= "</div>";
+*/
 
 $account_display .= "<div class=\"row bcoem-account-info\">";
 $account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$label_organization.$label_country);
@@ -356,17 +358,19 @@ if ($_SESSION['prefsProEdition'] == 0) {
 	}
 
 	if ($show_judge_steward_fields) {
+		/* SAAZ customization: AHA Member Number display removed — not applicable outside the US.
 		$account_display .= "<div class=\"row bcoem-account-info\">";
 		$account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$label_aha_number);
 		$account_display .= sprintf("<div class=\"".$display_right_cols."\"><a class=\"hide-loader\" href=\"http://www.homebrewersassociation.org/membership/join-or-renew/\" target=\"_blank\" data-toggle=\"tooltip\" title=\"%s\" data-placement=\"right\">".$aha_number."</a></div>",$brewer_info_005);
 		$account_display .= "</div>";
+		*/
 		if (($_SESSION['prefsProEdition'] == 0) && ($_SESSION['brewerCountry'] == "United States")) {
 			$account_display .= "<div class=\"row bcoem-account-info\">";
 			$account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$label_pro_am);
 			$account_display .= sprintf("<div class=\"".$display_right_cols."\">%s</div>",$pro_am);
 			$account_display .= "</div>";
 		}
-	} 
+	}
 
 	$account_display .= "<div class=\"row bcoem-account-info\">";
 	$account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$label_drop_off);
@@ -381,12 +385,10 @@ if ($_SESSION['prefsProEdition'] == 0) {
 	$account_display .= "</div>";
 
 	if ($entry_discount) {
-
 		$account_display .= "<div class=\"row bcoem-account-info\">";
 		$account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$label_discount);
 		$account_display .= "<div class=\"".$display_right_cols."\">".$discount."</div>";
 		$account_display .= "</div>";
-
 	}
 
 }
@@ -394,6 +396,7 @@ if ($_SESSION['prefsProEdition'] == 0) {
 if ($_SESSION['prefsProEdition'] == 1) $participant_orgs_label = $label_industry_affiliations;
 else $participant_orgs_label = $label_brewing_partners;
 
+/* SAAZ customization: brewing partners display removed for privacy.
 $account_display .= "<div class=\"row bcoem-account-info\">";
 $account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$participant_orgs_label);
 $account_display .= "<div class=\"".$display_right_cols."\">";
@@ -433,7 +436,7 @@ if (!empty($_SESSION['brewerAssignment'])) {
 else $account_display .= $label_none;
 $account_display .= "</div>";
 $account_display .= "</div>";
-
+*/
 
 if (($_SESSION['brewerJudge'] == "Y") || ($_SESSION['brewerSteward'] == "Y")) {
 
