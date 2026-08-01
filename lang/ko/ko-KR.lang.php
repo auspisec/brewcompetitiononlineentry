@@ -743,7 +743,7 @@ $brew_text_026 = "Other fermentation in days.";
 $brewer_text_000 = "<em>한</em> 사람의 이름만 입력해 주세요. 공동 양조자가 있다면 참가 작품을 등록할 때 입력하실 수 있습니다.";
 $brewer_text_001 = "하나를 선택하세요. 이 질문은 비밀번호를 잊으셨을 때 본인 확인을 위해 사용됩니다.";
 $brewer_text_003 = "Input only accepts numeric characters. To be considered for a GABF Pro-Am brewing opportunity you must be an AHA member.";
-$brewer_text_004 = "Provide any information that you believe the competition organizer, judge coordinator, or competition staff should know.";
+$brewer_text_004 = "대회 주최자, 심사 코디네이터 또는 대회 운영진에게 전달해야 할 참고사항이 있다면 입력해 주십시오.";
 $brewer_text_005 = "해당 없음";
 $brewer_text_006 = "이 대회에서 심사위원으로 참여할 의사와 자격이 있으신가요?<br></br>모든 심사는 전자 방식으로 진행됩니다. 심사위원은 심사를 위해 개인 기기를 지참해야 합니다. 노트북 또는 태블릿 사용을 권장하며, 휴대전화도 사용 가능하지만 권장하지 않습니다. 심사위원에게 전자 기기는 제공되지 않습니다.";
 $brewer_text_007 = "BJCP 미드(Mead) 심사위원 시험에 합격하셨습니까?";
@@ -992,9 +992,9 @@ $register_text_002 = "Registration has closed.";
 $register_text_003 = "Thank you for your interest.";
 $register_text_004 = "제공하신 성명을 제외한 모든 개인정보는 대회 기록 관리 및 연락 목적에만 사용되며, 수상자의 성명은 대회 종료 후 공식 웹사이트에 게시됩니다..";
 $register_text_005 = "<p><b>개인정보 수집·이용 동의서</b></p>
-</p>[대회명] 주최 측은 「개인정보 보호법」에 따라 귀하의 개인정보를 보호하고자 합니다. 아래 내용을 확인하시고 본 양식을 제출해 주시기 바랍니다.</p>
+</p>SAAZ Seoul Cup 주최 측은 개인정보 보호법에 따라 귀하의 개인정보를 보호하고자 합니다. 아래 내용을 확인하시고 본 양식을 제출해 주시기 바랍니다.</p>
 <p>1. 수집 항목</p>
-<ul><li>성명</li><li>주소</li><li>연락처(전화번호)</li><li>이메일 주소</li></ul>
+<ul><li>성명</li><li>연락처(전화번호)</li><li>이메일 주소</li></ul>
 <p>2. 수집·이용 목적</p>
 <p>수집된 개인정보는 다음의 목적을 위해서만 이용됩니다.</p>
 <ul><li>대회 참가자 등록 및 관리</li><li>대회 관련 안내 및 공지 전달</li><li>수상자 통지 및 경품 전달</li><li>수상자 명단을 공식 웹사이트에 게시</li></ul>
@@ -1948,18 +1948,18 @@ if ((isset($_SESSION['prefsStyleSet'])) && (($_SESSION['prefsStyleSet'] == "BJCP
 $register_text_047 = "Your security question and/or answer has changed.";
 $register_text_048 = "If you did not initiate this change, your account may be compromised. You should immediately log into your account and change your password in addition to updating your security question and answer.";
 $register_text_049 = "If you aren't able to log into your account, you should immediately contact a site administrator to update your password and other vital account information.";
-$register_text_050 = "Your security question's answer is encrypted and cannot be read by site administrators. It must be entered if you elect to change your security question and/or answer.";
+$register_text_050 = "보안 질문의 답변은 암호화되어 저장되므로 사이트 관리자도 열람할 수 없습니다. 보안 질문이나 답변을 변경하시는 경우, 답변 항목을 반드시 입력해 주셔야 합니다.";
 $register_text_051 = "Account Information Updated";
 $register_text_052 = "위의 각 장소(세션)에 대해 \"예\" 또는 \"아니오\" 중 하나를 반드시 선택해 주셔야 합니다.";
 
-$brewer_text_044 = "Do you wish to change your security question and/or answer?";
+$brewer_text_044 = "보안 질문이나 답변을 변경하시겠습니까?";
 $brewer_text_045 = "No results have been recorded.";
 $brewer_text_046 = "For free-form club name entry, some symbols are not allowed, including ampersand (&amp;), single-quotation marks (&#39;), double-quotation marks (&quot;), and percent (&#37;).";
 $brewer_text_047 = "If you are not available for any of the sessions listed when you select \"Yes\" above, but still are able to serve as as staff member in another capacity, please keep \"Yes\" as your response.";
 $brewer_text_048 = "출품작 배송";
 $brewer_text_049 = "현재 대회에 출품할 계획이 없다면, \"해당 없음\"을 선택해 주세요.";
 $brewer_text_050 = "출품작을 직접 전달하거나 포장하여 지정된 배송지로 보내실 예정이라면, \"출품작 배송\"을 선택해 주세요.";
-$label_change_security = "Change Security Question/Answer?";
+$label_change_security = "보안 질문 또는 답변을 변경하시겠습니까?";
 $label_semi_dry = "Semi-Dry";
 $label_semi_sweet = "Semi-Sweet";
 $label_shipping_location = "Shipping Location";

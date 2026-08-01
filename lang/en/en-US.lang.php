@@ -992,9 +992,9 @@ $register_text_002 = "Registration has closed.";
 $register_text_003 = "Thank you for your interest.";
 $register_text_004 = "The information you provide beyond your first name, last name, and club is strictly for record-keeping and contact purposes.";
 $register_text_005 = "<p><b>Consent for collecting and using personal information</b></p>
-</p>[Convention Name] Organizers want to protect your personal information in accordance with the Personal Information Protection Act. Please check the contents below and submit this form.</p>
+</p>SAAZ Seoul Cup Organizers want to protect your personal information in accordance with the Personal Information Protection Act. Please check the contents below and submit this form.</p>
 <p>1. Collection Items</p>
-<ul><li>Name</li><li>Address</li><li>Contact contact (phone number)</li><li>E-mail address</li></ul>
+<ul><li>Name</li><li>Contact contact (phone number)</li><li>E-mail address</li></ul>
 <p>2. Purpose of collection and use </p>
 <p>The collected personal information is used only for the following purposes:</p>
 <ul><li>Registration and management of participants</li><li>Delivering information and notices related to the contest</li><li>Notification of winners and delivery of prizes</li><li> Posting the list of winners on the official website</li></ul>
