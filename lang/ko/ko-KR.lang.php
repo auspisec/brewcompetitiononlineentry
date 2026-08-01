@@ -1410,9 +1410,9 @@ $best_brewer_text_012 = "The highest average score.";
 $best_brewer_text_013 = "Unused.";
 $best_brewer_text_014 = "participating clubs";
 $dropoff_qualifier_text_001 = "각 방문 접수처별 안내사항을 주의 깊게 확인해 주시기 바랍니다. 일부 접수처는 마감일이 더 빠르거나, 특정 시간에만 접수를 받거나, 지정된 담당자에게만 출품작을 전달해야 할 수도 있습니다. <strong class=\"text-danger\">모든 출품자는 주최측이 제공한 각 접수처별 정보를 숙지할 책임이 있습니다.</strong>";
-$brewer_text_036 = "Since you have chosen \"<em>Other</em>,\" please make sure the club you have entered is not on our list in some similar form.";
-$brewer_text_037 = "For example, you may have entered the acronym of your club instead of the full name.";
-$brewer_text_038 = "Consistent club names across users is essential if for \"Best Club\" calculations if implemented for this competition.";
+$brewer_text_036 = "\"<em>기타(Other)</em>\"를 선택하신 경우, 입력하려는 클럽이 이미 목록에 비슷한 형태로 존재하는지 먼저 확인해 주십시오.";
+$brewer_text_037 = "예: 클럽의 전체 명칭 대신 약어나 줄임말로 입력하셨을 수 있습니다.";
+$brewer_text_038 = "본 대회에서 \"최우수 클럽(Best Club)\" 집계가 실시될 경우, 참가자 간 클럽명이 동일하게 통일되어야 정확한 산출이 가능합니다.";
 $brewer_text_039 = "The club you entered previously does not match one on our list.";
 $brewer_text_040 = "Please choose from the list or choose <em>Other</em> and enter your club name.";
 
@@ -1954,7 +1954,7 @@ $register_text_052 = "위의 각 장소(세션)에 대해 \"예\" 또는 \"아�
 
 $brewer_text_044 = "보안 질문이나 답변을 변경하시겠습니까?";
 $brewer_text_045 = "No results have been recorded.";
-$brewer_text_046 = "For free-form club name entry, some symbols are not allowed, including ampersand (&amp;), single-quotation marks (&#39;), double-quotation marks (&quot;), and percent (&#37;).";
+$brewer_text_046 = "클럽명을 직접 입력하시는 경우, 앰퍼샌드(&amp;), 작은따옴표(&#39;), 큰따옴표(&quot;), 퍼센트(&#37;)를 포함한 일부 특수문자는 입력하실 수 없습니다.";
 $brewer_text_047 = "If you are not available for any of the sessions listed when you select \"Yes\" above, but still are able to serve as as staff member in another capacity, please keep \"Yes\" as your response.";
 $brewer_text_048 = "출품작 배송";
 $brewer_text_049 = "현재 대회에 출품할 계획이 없다면, \"해당 없음\"을 선택해 주세요.";
@@ -2251,6 +2251,38 @@ $entry_info_text_058 = "위치 및 주소(있는 경우)를 보려면 로그인�
  */
 
 $contact_text_014 = "대회 연락처 표시가 사이트 관리자에 의해 비활성화되었습니다. 소셜 미디어, 조직 웹사이트 등 다른 방법을 통해 대회 관계자에게 연락하세요.";
+
+/**
+ * ------------------------------------------
+ * Privacy Consent Text Variables (PIPA)
+ * ------------------------------------------
+ */
+
+$consent_text_001 = "개인정보 수집 및 이용 동의";
+$consent_text_002 = "위와 같이 개인정보를 수집 및 이용하는 것에 동의하십니까?";
+$consent_text_003 = "동의합니다";
+$consent_text_004 = "동의하지 않습니다";
+$consent_text_005 = "등록을 진행하시려면 개인정보 수집 및 이용에 동의하셔야 합니다.";
+$consent_text_006 = "Privacy Consent Management";
+$consent_text_007 = "Consent Text";
+$consent_text_008 = "Version";
+$consent_text_009 = "Language";
+$consent_text_010 = "Active";
+$consent_text_011 = "Save New Version";
+$consent_text_012 = "Consent History";
+$consent_text_013 = "Consent Log";
+$consent_text_014 = "User";
+$consent_text_015 = "Date/Time";
+$consent_text_016 = "IP Address";
+$consent_text_017 = "계속 진행하시려면 동의가 필요합니다. 개인정보 처리방침을 확인하신 후 동의해 주십시오.";
+$consent_text_018 = "Consent Text Updated";
+$consent_text_019 = "New consent version saved.";
+$consent_text_020 = "Consent logged successfully.";
+$consent_text_021 = "Manage Privacy Consent";
+$consent_text_022 = "Version History";
+$consent_text_023 = "Created";
+$consent_text_024 = "Status";
+$consent_text_025 = "View Log";
 
 /**
  * ------------------------------------------

@@ -2258,7 +2258,7 @@ $contact_text_014 = "Display of competition contacts has been disabled by the si
  * ------------------------------------------
  */
 
-$consent_text_001 = "Privacy Consent";
+$consent_text_001 = "Consent to the Collection and Use of Personal Information";
 $consent_text_002 = "Do you consent to the collection and use of your personal information as described above?";
 $consent_text_003 = "Yes, I consent";
 $consent_text_004 = "No, I do not consent";
@@ -2309,33 +2309,5 @@ if (strpos($section, "step") === FALSE) $alert_text_070 = $alert_text_070; else 
 if (strpos($section, "step") === FALSE) $label_character_limit = $label_character_limit; else $label_character_limit = "";
 if (strpos($section, "step") === FALSE) $header_text_031 = $header_text_031; else $header_text_031 = "";
 if (strpos($section, "step") === FALSE) $beerxml_text_007 = $beerxml_text_007; else $beerxml_text_007 = "";
-
-
-// Privacy Consent
-$consent_text_001 = "Privacy Consent";
-$consent_text_002 = "Do you consent to the collection and use of your personal information as described above?";
-$consent_text_003 = "Yes, I consent";
-$consent_text_004 = "No, I do not consent";
-$consent_text_005 = "You must consent to register.";
-$consent_text_006 = "Privacy Consent Management";
-$consent_text_007 = "Consent Text";
-$consent_text_008 = "Version";
-$consent_text_009 = "Language";
-$consent_text_010 = "Active";
-$consent_text_011 = "Save New Version";
-$consent_text_012 = "Consent History";
-$consent_text_013 = "Consent Log";
-$consent_text_014 = "User";
-$consent_text_015 = "Date/Time";
-$consent_text_016 = "IP Address";
-$consent_text_017 = "Your consent is required to continue. Please review and accept the privacy policy.";
-$consent_text_018 = "Consent Text Updated";
-$consent_text_019 = "New consent version saved.";
-$consent_text_020 = "Consent logged successfully.";
-$consent_text_021 = "Manage Privacy Consent";
-$consent_text_022 = "Version History";
-$consent_text_023 = "Created";
-$consent_text_024 = "Status";
-$consent_text_025 = "View Log";
 
 ?>
