@@ -399,7 +399,17 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 
 				} // end if ($_SESSION['prefsEmailRegConfirm'] == 1)
 
-				if ($filter == "default") {
+				
+				// Log privacy consent
+				if ($filter != "admin" && isset($_POST['consent_given']) && $_POST['consent_given'] == '1') {
+					include_once(INCLUDES.'db/consent.db.php');
+					$consent_text_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US');
+					if ($consent_text_id) {
+						log_consent($row_user['id'], $consent_text_id, 1);
+					}
+				}
+
+			if ($filter == "default") {
 					
 					unset($_SESSION['user_info'.$prefix_session]);
 					$_SESSION['loginUsername'] = $username;

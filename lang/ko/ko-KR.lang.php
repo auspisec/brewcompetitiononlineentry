@@ -2278,4 +2278,32 @@ if (strpos($section, "step") === FALSE) $label_character_limit = $label_characte
 if (strpos($section, "step") === FALSE) $header_text_031 = $header_text_031; else $header_text_031 = "";
 if (strpos($section, "step") === FALSE) $beerxml_text_007 = $beerxml_text_007; else $beerxml_text_007 = "";
 
+
+// Privacy Consent
+$consent_text_001 = "개인정보 수집 및 이용 동의";
+$consent_text_002 = "위 내용에 동의하십니까?";
+$consent_text_003 = "동의합니다";
+$consent_text_004 = "동의하지 않습니다";
+$consent_text_005 = "등록하려면 동의가 필요합니다.";
+$consent_text_006 = "개인정보 수집 동의 관리";
+$consent_text_007 = "동의 텍스트";
+$consent_text_008 = "버전";
+$consent_text_009 = "언어";
+$consent_text_010 = "활성";
+$consent_text_011 = "새 버전 저장";
+$consent_text_012 = "동의 내역";
+$consent_text_013 = "동의 로그";
+$consent_text_014 = "사용자";
+$consent_text_015 = "날짜/시간";
+$consent_text_016 = "IP 주소";
+$consent_text_017 = "계속하려면 동의가 필요합니다. 개인정보 처리방침을 검토하고 동의해 주세요.";
+$consent_text_018 = "동의 텍스트가 업데이트되었습니다";
+$consent_text_019 = "새 동의 버전이 저장되었습니다.";
+$consent_text_020 = "동의가 기록되었습니다.";
+$consent_text_021 = "개인정보 수집 동의 관리";
+$consent_text_022 = "버전 기록";
+$consent_text_023 = "생성일";
+$consent_text_024 = "상태";
+$consent_text_025 = "로그 보기";
+
 ?>
