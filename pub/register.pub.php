@@ -65,7 +65,6 @@ else { // THIS ELSE ENDS at the end of the script
 	include_once (DB.'brewer.db.php');
 	include_once (DB.'consent.db.php');
 	$consent_active = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
-	$consent_publication_active = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'publication');
 	if (NHC) $totalRows_log = $totalRows_entry_count;
 	else $totalRows_log = $totalRows_log;
 	if ($go != "default") {
@@ -1265,15 +1264,12 @@ if ($go == "default") {  ?>
         </div>
     </div>
 
-    <?php if ($consent_publication_active): ?>
+    <?php if ($consent_active): ?>
     <!-- Publication Consent (Award Publication) -->
     <div class="row mb-3">
         <div class="col-sm-12">
             <h5 class="text-teal"><i class="fa fa-trophy me-2"></i><?php echo $consent_text_026; ?></h5>
-            <div class="alert alert-info" style="max-height: 250px; overflow-y: auto; font-size: 0.9em;">
-                <?php echo $consent_publication_active['consent_text']; ?>
-            </div>
-            <input type="hidden" name="consent_text_id_publication" value="<?php echo (int)$consent_publication_active['id']; ?>">
+            <input type="hidden" name="consent_text_id_publication" value="<?php echo (int)$consent_active['id']; ?>">
         </div>
     </div>
     <div class="row mb-3">

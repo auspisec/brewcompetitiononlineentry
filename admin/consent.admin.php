@@ -2,8 +2,7 @@
 /**
  * Admin: Privacy Consent Management
  * Manage consent text versions and view consent acceptance log.
- * Language-generic: iterates over $languages from constants.inc.php.
- * Supports two consent types: 'privacy' and 'publication'.
+ * Single consent text per language; two consent decisions (privacy + publication) logged separately.
  */
 include_once(DB.'consent.db.php');
 
@@ -16,39 +15,28 @@ if ($_SESSION['userLevel'] > 1) {
 // Handle inline form submission
 if (isset($_POST['consent_action']) && $_POST['consent_action'] == 'save_consent') {
     $language = sterilize($_POST['consent_language']);
-    $consent_type = sterilize($_POST['consent_type'] ?? 'privacy');
     $consent_text = $_POST['consent_text'];
     $allowed_tags = '<p><br><strong><em><ul><ol><li><a><b><i>';
     $consent_text = strip_tags($consent_text, $allowed_tags);
-    create_consent_version($language, $consent_text, $consent_type);
+    create_consent_version($language, $consent_text, 'privacy');
     $success_msg = $consent_text_019;
 }
 
 // Get the languages array
 $consent_languages = $GLOBALS['languages'] ?? array('en-US' => 'English (US)');
 
-// Consent types
-$consent_types = array(
-    'privacy' => $consent_text_001,
-    'publication' => $consent_text_026,
-);
-
-// Get data for display
+// Get data for display — all consent text is 'privacy' type (single text covers both consent questions)
 $all_texts = array();
 $active_texts = array();
 foreach ($consent_languages as $lang_code => $lang_name) {
-    foreach ($consent_types as $type_code => $type_name) {
-        $key = $lang_code . '_' . $type_code;
-        $all_texts[$key] = get_all_consent_texts($lang_code, $type_code);
-        $active_texts[$key] = get_active_consent_text($lang_code, $type_code);
-    }
+    $all_texts[$lang_code] = get_all_consent_texts($lang_code, 'privacy');
+    $active_texts[$lang_code] = get_active_consent_text($lang_code, 'privacy');
 }
 $log_entries = get_consent_log_entries(100);
 $active_tab = $_GET['tab'] ?? 'current';
 $default_lang = $_SESSION['prefsLanguage'] ?? 'en-US';
 $edit_lang = $_GET['lang'] ?? $default_lang;
-$edit_type = $_GET['type'] ?? 'privacy';
-$edit_active = get_active_consent_text($edit_lang, $edit_type);
+$edit_active = get_active_consent_text($edit_lang, 'privacy');
 ?>
 
 <div class="bcoem-admin-element">
@@ -74,32 +62,20 @@ $edit_active = get_active_consent_text($edit_lang, $edit_type);
 <div style="margin-top: 20px;">
     <h3><?php echo $consent_text_007; ?></h3>
 
-    <?php foreach ($consent_types as $type_code => $type_name): ?>
-    <h4><?php echo htmlspecialchars($type_name); ?></h4>
     <?php foreach ($consent_languages as $lang_code => $lang_name): ?>
-        <?php $key = $lang_code . '_' . $type_code; ?>
-        <h5><?php echo htmlspecialchars($lang_name); ?> (<?php echo htmlspecialchars($lang_code); ?>) <?php echo $consent_text_008; ?>: <?php echo $active_texts[$key] ? $active_texts[$key]['version'] : 'N/A'; ?></h5>
-        <div class="well">
-            <?php echo $active_texts[$key] ? $active_texts[$key]['consent_text'] : '<em>No consent text configured.</em>'; ?>
-        </div>
-        <p><a href="<?php echo $base_url; ?>index.php?section=admin&go=consent&tab=current&lang=<?php echo urlencode($lang_code); ?>&type=<?php echo urlencode($type_code); ?>" class="btn btn-xs btn-default"><span class="fa fa-edit"></span> Edit this text</a></p>
-    <?php endforeach; ?>
+    <h4><?php echo htmlspecialchars($lang_name); ?> (<?php echo htmlspecialchars($lang_code); ?>) <?php echo $consent_text_008; ?>: <?php echo $active_texts[$lang_code] ? $active_texts[$lang_code]['version'] : 'N/A'; ?></h4>
+    <div class="well">
+        <?php echo $active_texts[$lang_code] ? $active_texts[$lang_code]['consent_text'] : '<em>No consent text configured.</em>'; ?>
+    </div>
+    <p><a href="<?php echo $base_url; ?>index.php?section=admin&go=consent&tab=current&lang=<?php echo urlencode($lang_code); ?>" class="btn btn-xs btn-default"><span class="fa fa-edit"></span> Edit this text</a></p>
     <?php endforeach; ?>
 
     <hr>
 
-    <h3><?php echo $consent_text_011; ?> — <?php echo htmlspecialchars($consent_types[$edit_type] ?? $consent_text_001); ?></h3>
+    <h3><?php echo $consent_text_011; ?> — <?php echo htmlspecialchars($consent_languages[$edit_lang] ?? 'English (US)'); ?> (<?php echo htmlspecialchars($edit_lang); ?>)</h3>
     <form method="POST" action="<?php echo $base_url; ?>includes/process.inc.php?action=save_consent&amp;section=admin&amp;go=consent">
         <input type="hidden" name="consent_action" value="save_consent">
         <input type="hidden" name="user_session_token" value="<?php if (isset($_SESSION['user_session_token'])) echo htmlspecialchars($_SESSION['user_session_token'], ENT_QUOTES, 'UTF-8'); ?>">
-        <div class="form-group">
-            <label for="consent_type"><?php echo $consent_text_027; ?></label>
-            <select class="form-control" name="consent_type" id="consent_type" style="width: 300px;">
-                <?php foreach ($consent_types as $type_code => $type_name): ?>
-                <option value="<?php echo htmlspecialchars($type_code); ?>" <?php if ($type_code == $edit_type) echo 'selected'; ?>><?php echo htmlspecialchars($type_name); ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
         <div class="form-group">
             <label for="consent_language"><?php echo $consent_text_009; ?></label>
             <select class="form-control" name="consent_language" id="consent_language" style="width: 300px;">
@@ -123,11 +99,8 @@ $edit_active = get_active_consent_text($edit_lang, $edit_type);
 <div style="margin-top: 20px;">
     <h3><?php echo $consent_text_022; ?></h3>
 
-    <?php foreach ($consent_types as $type_code => $type_name): ?>
-    <h4><?php echo htmlspecialchars($type_name); ?></h4>
     <?php foreach ($consent_languages as $lang_code => $lang_name): ?>
-        <?php $key = $lang_code . '_' . $type_code; ?>
-    <h5><?php echo htmlspecialchars($lang_name); ?> (<?php echo htmlspecialchars($lang_code); ?>)</h5>
+    <h4><?php echo htmlspecialchars($lang_name); ?> (<?php echo htmlspecialchars($lang_code); ?>)</h4>
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -138,8 +111,8 @@ $edit_active = get_active_consent_text($edit_lang, $edit_type);
             </tr>
         </thead>
         <tbody>
-        <?php if (!empty($all_texts[$key])): ?>
-        <?php foreach ($all_texts[$key] as $text): ?>
+        <?php if (!empty($all_texts[$lang_code])): ?>
+        <?php foreach ($all_texts[$lang_code] as $text): ?>
             <tr>
                 <td><?php echo $text['version']; ?></td>
                 <td><?php echo $text['is_active'] ? '<span class="label label-success">' . $consent_text_010 . '</span>' : ''; ?></td>
@@ -152,7 +125,6 @@ $edit_active = get_active_consent_text($edit_lang, $edit_type);
         <?php endif; ?>
         </tbody>
     </table>
-    <?php endforeach; ?>
     <?php endforeach; ?>
 </div>
 

@@ -785,7 +785,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 					if ($ct_id) log_consent($_SESSION['user_id'], $ct_id, 1, 'privacy');
 				}
 				if (isset($_POST['publication_consent']) && $_POST['publication_consent'] == '1') {
-					$ct_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'publication');
+					$ct_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
 					if ($ct_id) log_consent($_SESSION['user_id'], $ct_id, 1, 'publication');
 				}
 			}

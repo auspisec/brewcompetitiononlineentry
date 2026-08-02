@@ -378,24 +378,23 @@ if (($go != "entrant") && ($section != "step2")) include (PUB.'brewer_form_2.pub
 if (($action == "edit") && ($go == "account") && ($_SESSION['userLevel'] > 1)) {
     include_once(DB.'consent.db.php');
     $reconsent_privacy = user_needs_reconsent($_SESSION['user_id'], $_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+    // Publication consent tracks the same text version as privacy
     $reconsent_publication = user_needs_reconsent($_SESSION['user_id'], $_SESSION['prefsLanguage'] ?? 'en-US', 'publication');
     if ($reconsent_privacy || $reconsent_publication) {
-        $reconsent_privacy_text = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
-        $reconsent_publication_text = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'publication');
+        $reconsent_text = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
     ?>
     <div class="alert alert-warning">
         <h5><i class="fa fa-shield-alt me-2"></i><?php echo $consent_text_017; ?></h5>
     </div>
-    <?php if ($reconsent_privacy && $reconsent_privacy_text): ?>
+    <?php if ($reconsent_text): ?>
     <div class="row mb-3">
         <div class="col-sm-12">
-            <h6 class="text-teal"><?php echo $consent_text_001; ?></h6>
             <div class="alert alert-info" style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
-                <?php echo $reconsent_privacy_text['consent_text']; ?>
+                <?php echo $reconsent_text['consent_text']; ?>
             </div>
-            <input type="hidden" name="consent_text_id_privacy" value="<?php echo (int)$reconsent_privacy_text['id']; ?>">
         </div>
     </div>
+    <?php if ($reconsent_privacy): ?>
     <div class="row mb-3">
         <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_002; ?></strong></label>
         <div class="col-sm-12 col-md-10">
@@ -410,16 +409,7 @@ if (($action == "edit") && ($go == "account") && ($_SESSION['userLevel'] > 1)) {
         </div>
     </div>
     <?php endif; ?>
-    <?php if ($reconsent_publication && $reconsent_publication_text): ?>
-    <div class="row mb-3">
-        <div class="col-sm-12">
-            <h6 class="text-teal"><i class="fa fa-trophy me-2"></i><?php echo $consent_text_026; ?></h6>
-            <div class="alert alert-info" style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
-                <?php echo $reconsent_publication_text['consent_text']; ?>
-            </div>
-            <input type="hidden" name="consent_text_id_publication" value="<?php echo (int)$reconsent_publication_text['id']; ?>">
-        </div>
-    </div>
+    <?php if ($reconsent_publication): ?>
     <div class="row mb-3">
         <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_028; ?></strong></label>
         <div class="col-sm-12 col-md-10">
@@ -434,6 +424,7 @@ if (($action == "edit") && ($go == "account") && ($_SESSION['userLevel'] > 1)) {
         </div>
     </div>
     <?php endif; ?>
+    <?php endif; // end if ($reconsent_text) ?>
     <?php
     }
 }

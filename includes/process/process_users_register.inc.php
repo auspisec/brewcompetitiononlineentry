@@ -409,8 +409,9 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 					}
 				}
 				// Log publication consent (award publication)
+				// Uses the same consent_text_id as privacy (single text, two consent decisions)
 				if ($filter != "admin" && isset($_POST['publication_consent']) && $_POST['publication_consent'] == '1') {
-					$pub_consent_text_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'publication');
+					$pub_consent_text_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
 					if ($pub_consent_text_id) {
 						log_consent($row_user['id'], $pub_consent_text_id, 1, 'publication');
 					}
