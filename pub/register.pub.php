@@ -1313,7 +1313,8 @@ if ($go == "default") {  ?>
 </form>
 <script type="text/javascript">
 	// Consent validation: both privacy and publication consent must be "Yes" to submit
-	$("#submit-form").on('submit', function(e) {
+	// Use capture phase so this runs BEFORE the app's jQuery submit handler that shows the loader
+	document.getElementById('submit-form').addEventListener('submit', function(e) {
 		var privacyConsent = $('input[name="privacy_consent"]:checked').val();
 		var publicationConsent = $('input[name="publication_consent"]:checked').val();
 		if (privacyConsent !== '1' || publicationConsent !== '1') {
@@ -1329,7 +1330,7 @@ if ($go == "default") {  ?>
 			}
 			return false;
 		}
-	});
+	}, true); // true = capture phase, runs before jQuery's bubble-phase handlers
 
 	$("#brewerStaffFields").hide();
 	$("#staff-help").hide();
