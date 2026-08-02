@@ -117,7 +117,7 @@ function get_consent_log_entries($limit = 100, $consent_type = null) {
         $consent_type = mysqli_real_escape_string($connection, $consent_type);
         $where = " WHERE cl.consent_type = '$consent_type'";
     }
-    $query = "SELECT cl.*, ct.language, ct.version, ct.consent_type, b.brewerFirstName, b.brewerLastName, b.brewerEmail
+    $query = "SELECT cl.*, cl.consent_type AS log_consent_type, ct.language, ct.version, b.brewerFirstName, b.brewerLastName, b.brewerEmail
               FROM $log_table cl
               LEFT JOIN $text_table ct ON cl.consent_text_id = ct.id
               LEFT JOIN $brewer_table b ON cl.uid = b.uid

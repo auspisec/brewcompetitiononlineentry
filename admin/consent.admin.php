@@ -161,7 +161,7 @@ $edit_active = get_active_consent_text($edit_lang, 'privacy');
             <tr>
                 <td><?php echo htmlspecialchars($entry['brewerFirstName'] . ' ' . $entry['brewerLastName']); ?></td>
                 <td><?php echo htmlspecialchars($entry['brewerEmail'] ?? ''); ?></td>
-                <td><?php echo htmlspecialchars($entry['consent_type'] ?? 'privacy'); ?></td>
+                <td><?php echo htmlspecialchars($entry['log_consent_type'] ?? $entry['consent_type'] ?? 'privacy'); ?></td>
                 <td><?php echo htmlspecialchars($entry['language']); ?></td>
                 <td><?php echo htmlspecialchars($entry['version']); ?></td>
                 <td><?php echo $entry['consent_given'] ? '<span class="label label-success">Yes</span>' : '<span class="label label-danger">No</span>'; ?></td>
