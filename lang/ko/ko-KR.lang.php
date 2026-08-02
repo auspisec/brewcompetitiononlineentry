@@ -2282,7 +2282,11 @@ $consent_text_021 = "Manage Privacy Consent";
 $consent_text_022 = "Version History";
 $consent_text_023 = "Created";
 $consent_text_024 = "Status";
-$consent_text_025 = "View Log";
+$consent_text_025 = "로그 보기";
+$consent_text_026 = "정보 공개 동의";
+$consent_text_027 = "동의 유형";
+$consent_text_028 = "수상하실 경우, 귀하가 선택한 이름, 출품작명, 클럽 소속(제공한 경우), 수상 부문 및 대회 연도가 위에 설명된 대로 공개 발표 및 보관되는 것에 동의하십니까?";
+$consent_text_029 = "등록하려면 정보 공개 동의가 필요합니다.";
 
 /**
  * ------------------------------------------
