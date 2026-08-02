@@ -18,8 +18,6 @@ var action = "<?php echo $action; ?>";
 $warning0 = "";
 $warning1 = "";
 $warning2 = "";
-include_once(INCLUDES.'db/consent.db.php');
-$consent_active = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US');
 $primary_page_info = "";
 $header1_1 = "";
 $page_info1 = "";
@@ -65,6 +63,8 @@ else { // THIS ELSE ENDS at the end of the script
 	include_once (DB.'stewarding.db.php');
 	include_once (DB.'styles.db.php');
 	include_once (DB.'brewer.db.php');
+	include_once (DB.'consent.db.php');
+	$consent_active = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
 	if (NHC) $totalRows_log = $totalRows_entry_count;
 	else $totalRows_log = $totalRows_log;
 	if ($go != "default") {
@@ -74,9 +74,15 @@ else { // THIS ELSE ENDS at the end of the script
 		foreach ($countries as $country) {
 			$country_select .= "<option value=\"".$country."\" ";
 			if (($msg != "default") && (isset($_COOKIE['brewerCountry'])) && ($_COOKIE['brewerCountry'] == $country)) $country_select .= "SELECTED";
+			// SAAZ customization: default to Korea, South for new registrations
+			elseif ($msg == "default") {
+				$default_country = "Korea, South";
+				if (isset($_COOKIE['brewerCountry']) && $_COOKIE['brewerCountry'] == $country) $country_select .= "SELECTED";
+				elseif (!isset($_COOKIE['brewerCountry']) && $country == $default_country) $country_select .= "SELECTED";
+			}
 			$country_select .= ">";
 			$country_select .= $country."</option>\n";
-     	}
+    	}
 
      	$us_state_select = "";
 		foreach ($us_state_abbrevs_names as $key => $value) {
@@ -250,6 +256,8 @@ if ((isset($row_judging3)) && (!empty($row_judging3))) {
 
         $location_yes = "";
         $location_no = "";
+        // SAAZ customization: default judging availability to "Yes" for new registrations
+        if ($msg == "default") $location_yes = "selected";
         $judge_avail_info = "";
         $judge_avail_option = "";
         $staff_avail_info = "";
@@ -257,6 +265,8 @@ if ((isset($row_judging3)) && (!empty($row_judging3))) {
 
         $location_steward_no = "";
         $location_steward_yes = "";
+        // SAAZ customization: default stewarding availability to "Yes" for new registrations
+        if ($msg == "default") $location_steward_yes = "selected";
         $steward_avail_info = "";
         $steward_avail_option = "";
 
@@ -530,7 +540,7 @@ if ($go == "default") {  ?>
 	<div class="row mb-3">
         <label for="user_name" class="col-xs-12 col-sm-3 col-lg-2 col-form-label text-teal"><i class="fa fa-star me-1"></i><strong><?php echo $label_email; ?></strong></label>
         <div class="col-xs-12 col-sm-9 col-lg-10">
-            <input class="form-control" id="user_name" name="user_name" type="email" onBlur="checkAvailability()" onchange="AjaxFunction(this.value);" placeholder="" value="<?php if (($msg != "default") && (isset($_COOKIE['user_name']))) echo htmlspecialchars($_COOKIE['user_name'], ENT_QUOTES, 'UTF-8'); ?>" <?php if ($_SESSION['prefsProEdition'] == 0) echo "autofocus"; ?> required>
+            <input class="form-control" id="user_name" name="user_name" type="email" onBlur="checkAvailability()" onchange="AjaxFunction(this.value);" placeholder="" value="<?php if (($msg != "default") && (isset($_COOKIE['user_name']))) echo htmlspecialchars($_COOKIE['user_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
             <div class="help-block invalid-feedback text-danger"><?php echo $register_text_019; ?></div>
             <div id="msg_email" class="mt-2"></div>
 			<div id="username-status" class="mt-2"></div>
@@ -620,6 +630,13 @@ if ($go == "default") {  ?>
 	    </div>
 	</div>
 
+	<!-- SAAZ customization: address fields removed — not collecting personal address data.
+	     Hidden inputs submit "." to satisfy DB NOT NULL constraints. Original code commented out below. -->
+	<input type="hidden" name="brewerAddress" value=".">
+	<input type="hidden" name="brewerCity" value=".">
+	<input type="hidden" name="brewerStateNon" value=".">
+	<input type="hidden" name="brewerZip" value=".">
+	<?php /* SAAZ: address fields commented out — not collecting personal address data
 	<!-- General Entry Fields: Address, Phone, Dropoff Locations, Club, AHA -->
 	<section id="address-fields">
 
@@ -668,7 +685,7 @@ if ($go == "default") {  ?>
 	                    <?php echo $ca_state_select; ?>
 	                </select>
 	                <div class="help-block mb-1 invalid-feedback text-danger"><?php echo $register_text_030; ?></div>
-	            </div> 
+	            </div>
 			</div>
 		</div>
 
@@ -682,7 +699,7 @@ if ($go == "default") {  ?>
 		</div>
 
 	</section>
-
+	*/ ?>
 	<!-- Phone Number -->
 	<div class="mb-3 row">
 	    <label for="brewerPhone1" class="col-xs-12 col-sm-3 col-lg-2 col-form-label text-teal"><i class="fa fa-star me-1"></i><strong><?php if (($_SESSION['prefsProEdition'] == 1) && ($go == "entrant")) echo $label_contact." "; echo $label_phone_primary; ?></strong></label>
@@ -782,6 +799,9 @@ if ($go == "default") {  ?>
 	    <?php } ?>
 	</section>
 
+	<!-- SAAZ customization: AHA Member Number field removed — not applicable outside the US. -->
+	<input type="hidden" name="brewerAHA" value="">
+	<?php /* SAAZ: AHA field commented out — not applicable outside the US
 	<section id="aha-number">
 	    <div class="mb-3 row">
 	        <label for="brewerAHA" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $label_aha_number; ?></strong></label>
@@ -791,6 +811,7 @@ if ($go == "default") {  ?>
 	        </div>
 	    </div>
 	</section>
+	*/ ?>
 	<?php if ($_SESSION['prefsMHPDisplay'] == 1) { ?>
 	<section id="mhp-number">
 	    <div class="mb-3 row">
@@ -806,6 +827,10 @@ if ($go == "default") {  ?>
     <?php } // END if ($view == "default") ?>
     <?php if (($_SESSION['prefsProEdition'] == 0) || (($_SESSION['prefsProEdition'] == 1) && (($go == "judge") || ($go == "steward")))) { ?>
 
+    <!-- SAAZ customization: Staff Yes/No field removed from public registration form.
+         Staff can be assigned via admin interface if needed. -->
+    <input type="hidden" name="brewerStaff" value="N">
+    <?php /* SAAZ: Staff field commented out — removed from public registration
     <!-- Staff preferences -->
 
     <div class="mb-3 row">
@@ -832,6 +857,7 @@ if ($go == "default") {  ?>
         </div>
     </div>
     <?php } // end if (!empty($staff_location_avail)) ?>
+    */ ?>
     <?php } // END if (($_SESSION['prefsProEdition'] == 0) || (($_SESSION['prefsProEdition'] == 1) && (($go == "judge") || ($go == "steward"))))?>
 
 
@@ -986,6 +1012,13 @@ if ($go == "default") {  ?>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="checkbox" name="brewerJudgeRank[]" value="Master Cicerone">
                 <label class="form-check-label">Master Cicerone</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="brewerJudgeRank[]" value="[other]" id="brewerJudgeRankOtherCheckbox">
+                <label class="form-check-label"><?php echo $label_other; ?></label>
+            </div>
+            <div class="form-check form-check-inline" id="brewerJudgeRankOtherWrap" style="display:none;">
+                <input class="form-control form-control-sm" type="text" name="brewerJudgeRankOther" id="brewerJudgeRankOther" maxlength="100" placeholder="<?php echo htmlspecialchars($label_other, ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="help-block mt-1"><?php echo $brewer_text_010; ?></div>
         </div>
@@ -1156,18 +1189,13 @@ if ($go == "default") {  ?>
     <?php } // END if (!$steward_hidden) ?>
 
     <?php if (((!$judge_hidden) || (!$steward_hidden)) && ($section != "admin")) {
-    include(DB.'organizations.db.php');
-    $org_array_lower = array();
-    foreach ($org_array as $value) {
-        $org_array_lower[] = strtolower($value);
-    }
-    $org_array = implode(",",$org_array_lower);
-
+    // SAAZ customization: brewing partners dropdown removed for privacy — exposes all entrant names.
+    // Keeping only the "Other" text field. Original dropdown code commented out below.
     if ($_SESSION['prefsProEdition'] == 1) $participant_orgs_label = $label_industry_affiliations;
     else $participant_orgs_label = $label_brewing_partners;
-
-    ?>    
+    ?>
     <section id="participant-orgs">
+        <?php /* SAAZ: brewing partners dropdown removed for privacy
         <div class="mb-3 row">
             <label for="brewerAssignment" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $participant_orgs_label; ?></strong></label>
             <div class="col-lg-9 col-md-6 col-sm-8 col-xs-12">  
@@ -1178,6 +1206,7 @@ if ($go == "default") {  ?>
             </div>
         </div>
         <input name="allOrgs" type="hidden" value="<?php echo $org_array; ?>">
+        */ ?>
         <div id="brewerAssignmentOther" class="mb-3 row">
             <label for="brewerAssignmentOther" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $participant_orgs_label." &ndash; ".$label_other; ?></strong></label>
             <div class="col-xs-12 col-sm-9 col-lg-10">
@@ -1204,6 +1233,63 @@ if ($go == "default") {  ?>
     </section>
     <?php } // END if (((!$judge_hidden) || (!$steward_hidden)) && ($section != "admin")) ?>
     
+    <?php
+    // --- Privacy Consent Section (PIPA) ---
+    // Two consent types: privacy (collection/use) and publication (award publication)
+    // Only for public (non-admin) registrations.
+    if ($filter != "admin" && $consent_active) {
+    ?>
+    <!-- Privacy Consent (Collection/Use) -->
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <h5 class="text-teal"><i class="fa fa-shield-alt me-2"></i><?php echo $consent_text_001; ?></h5>
+            <div class="alert alert-info" style="max-height: 250px; overflow-y: auto; font-size: 0.9em;">
+                <?php echo $consent_active['consent_text']; ?>
+            </div>
+            <input type="hidden" name="consent_text_id_privacy" value="<?php echo (int)$consent_active['id']; ?>">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_002; ?></strong></label>
+        <div class="col-sm-12 col-md-10">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="privacy_consent" value="1" id="privacy_consent_yes" required>
+                <label class="form-check-label" for="privacy_consent_yes"><?php echo $consent_text_003; ?></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="privacy_consent" value="0" id="privacy_consent_no">
+                <label class="form-check-label" for="privacy_consent_no"><?php echo $consent_text_004; ?></label>
+            </div>
+            <div class="help-block invalid-feedback text-danger"><?php echo $consent_text_005; ?></div>
+        </div>
+    </div>
+
+    <?php if ($consent_active): ?>
+    <!-- Publication Consent (Award Publication) -->
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <h5 class="text-teal"><i class="fa fa-trophy me-2"></i><?php echo $consent_text_026; ?></h5>
+            <input type="hidden" name="consent_text_id_publication" value="<?php echo (int)$consent_active['id']; ?>">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_028; ?></strong></label>
+        <div class="col-sm-12 col-md-10">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="publication_consent" value="1" id="publication_consent_yes" required>
+                <label class="form-check-label" for="publication_consent_yes"><?php echo $consent_text_003; ?></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="publication_consent" value="0" id="publication_consent_no">
+                <label class="form-check-label" for="publication_consent_no"><?php echo $consent_text_004; ?></label>
+            </div>
+            <div class="help-block invalid-feedback text-danger"><?php echo $consent_text_029; ?></div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <?php } // end if consent ?>
+
     <?php if ($_SESSION['prefsCAPTCHA'] == "1") { ?>
     <!-- CAPTCHA -->
 	<div class="row mb-3">
@@ -1214,28 +1300,6 @@ if ($go == "default") {  ?>
 	</div>
 	<script src="<?php echo $captcha_url; ?>"></script>
     <?php } ?>
-	
-    <?php if ($consent_active && $section != "admin"): ?>
-    <!-- Privacy Consent Section -->
-    <div class="alert alert-info">
-        <h4><?php echo $consent_text_001; ?></h4>
-        <?php echo $consent_active['consent_text']; ?>
-    </div>
-    <div class="mb-3 row">
-        <label for="consent_given" class="col-xs-12 col-sm-3 col-lg-2 col-form-label text-teal"><i class="fa fa-star me-1"></i><strong><?php echo $consent_text_002; ?></strong></label>
-        <div class="col-xs-12 col-sm-9 col-lg-10">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="consent_given" id="consent_given_yes" value="1" required>
-                <label class="form-check-label"><?php echo $consent_text_003; ?></label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="consent_given" id="consent_given_no" value="0" checked>
-                <label class="form-check-label"><?php echo $consent_text_004; ?></label>
-            </div>
-            <div class="help-block invalid-feedback text-danger"><?php echo $consent_text_005; ?></div>
-        </div>
-    </div>
-    <?php endif; ?>
 
     <!-- Register Button -->
 	<div class="row mb-3">
@@ -1248,23 +1312,53 @@ if ($go == "default") {  ?>
 	</div>
 </form>
 <script type="text/javascript">
+	// Consent validation: both privacy and publication consent must be "Yes" to submit
+	// Use capture phase so this runs BEFORE the app's jQuery submit handler that shows the loader
+	document.getElementById('submit-form').addEventListener('submit', function(e) {
+		var privacyConsent = $('input[name="privacy_consent"]:checked').val();
+		var publicationConsent = $('input[name="publication_consent"]:checked').val();
+		if (privacyConsent !== '1' || publicationConsent !== '1') {
+			e.preventDefault();
+			e.stopPropagation();
+			$('#loader-submit').hide();
+			$(this).addClass('was-validated');
+			if (privacyConsent !== '1') {
+				$('#privacy_consent_no').closest('.col-sm-12').find('.invalid-feedback').show();
+			}
+			if (publicationConsent !== '1') {
+				$('#publication_consent_no').closest('.col-sm-12').find('.invalid-feedback').show();
+			}
+			return false;
+		}
+	}, true); // true = capture phase, runs before jQuery's bubble-phase handlers
+
 	$("#brewerStaffFields").hide();
 	$("#staff-help").hide();
+	$("#brewerJudgeRankOtherWrap").hide();
 	
-  	$(function () {
-  		$('#user_screen_name').focus();
+ 	$(function () {
+ 		$('#user_screen_name').focus();
 	});
 
 	$('input[type="radio"]').click(function() {
 
 	    if($(this).attr('id') == 'brewerStaff_0') {
-	        $("#brewerStaffFields").show("slow");
-	        $("#staff-help").show("slow");
-	    }
+        $("#brewerStaffFields").show("slow");
+        $("#staff-help").show("slow");
+    }
 
-	    if($(this).attr('id') == 'brewerStaff_1') {
-	        $("#brewerStaffFields").hide("slow");
-	        $("#staff-help").hide("slow");
+    if($(this).attr('id') == 'brewerStaff_1') {
+        $("#brewerStaffFields").hide("slow");
+        $("#staff-help").hide("slow");
+    }
+	});
+
+	$('#brewerJudgeRankOtherCheckbox').on('change', function() {
+	    if ($(this).is(':checked')) {
+	        $("#brewerJudgeRankOtherWrap").show("slow");
+	        $("#brewerJudgeRankOther").focus();
+	    } else {
+	        $("#brewerJudgeRankOtherWrap").hide("slow");
 	    }
 	});
 </script>

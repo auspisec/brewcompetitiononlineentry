@@ -358,7 +358,7 @@ $label_awards_ceremony = "Awards Ceremony";
 $label_circuit = "Circuit Qualification";
 $label_hosted = "Hosted Edition";
 $label_entry_check_in = "Entry Check-In";
-$label_cash = "Cash";
+$label_cash = "Bank Account Transfer";
 $label_check = "Check";
 $label_pay_online = "Pay Online";
 $label_cancel = "Cancel";
@@ -745,12 +745,12 @@ $brewer_text_001 = "Choose one. This question will be used to verify your identi
 $brewer_text_003 = "To be considered for a GABF Pro-Am brewing opportunity you must be an AHA member.";
 $brewer_text_004 = "Provide any information that you believe the competition organizer, judge coordinator, or competition staff should know (e.g., allergies, special dietary restrictions, shirt size, etc.).";
 $brewer_text_005 = "Not Applicable";
-$brewer_text_006 = "Are you willing and qualified to serve as a judge in this competition?";
+$brewer_text_006 = "Are you willing and qualified to serve as a judge in this competition?  (Please note all judging will be electronic. Judges must bring a device for judging. Electronic devices will not be provided to judges.)";
 $brewer_text_007 = "Have you passed the BJCP Mead Judge exam?";
 $brewer_text_008 = "* The <em>Non-BJCP</em> rank is for those who haven't taken the BJCP Beer Judge Entrance Exam, and are <em>not</em> a professional brewer.";
 $brewer_text_009 = "** The <em>Provisional</em> rank is for those have taken and passed the BJCP Beer Judge Entrance Exam, but have not yet taken the BJCP Beer Judging Exam.";
 $brewer_text_010 = "Only the first two designations will appear on your printed scoresheet labels.";
-$brewer_text_011 = "How many competitions have you previously served as a <strong>".strtolower($label_judge)."</strong>?";
+$brewer_text_011 = "How many competitions have you previously served as a judge?";
 $brewer_text_012 = "For preferences ONLY. Leaving a style unchecked indicates that you are available to judge it – there's no need to check all styles that you're available to judge.";
 $brewer_text_013 = "Select or tap the button above to expand the non-preferred styles to judge list.";
 $brewer_text_014 = "There is no need to mark those styles for which you have entries; the system will not allow you to be assigned to any table where you have entries.";
@@ -1937,7 +1937,7 @@ $register_text_048 = "If you did not initiate this change, your account may be c
 $register_text_049 = "If you aren't able to log into your account, you should immediately contact a site administrator to update your password and other vital account information.";
 $register_text_050 = "Your security question's answer is encrypted and cannot be read by site administrators. It must be entered if you elect to change your security question and/or answer.";
 $register_text_051 = "Account Information Updated";
-$register_text_052 = "A \"Yes\" or \"No\" response is required for each location below.";
+$register_text_052 = "A \"Yes\" or \"No\" response is required for each location above.";
 
 $brewer_text_044 = "Do you wish to change your security question and/or answer?";
 $brewer_text_045 = "No results have been recorded.";
@@ -2054,7 +2054,7 @@ $brew_text_047 = "How should your entry be poured for the judges?";
 $brew_text_048 = "Should any yeast be roused before pouring?";
 $brew_text_049 = "Provide further information regarding how your entry should be poured or other related items (e.g., possible gushing, etc.).";
 $brewer_text_055 = "Select all brewing partners that your are affiliated with. This is to make sure there are not any conflicts of interest when assigning judges and stewards to evaluate entries."; 
-$brewer_text_054 = "<strong>If any person's name is <u>not</u> listed in the drop-down above, enter their FULL name here (e.g., John Doe, Wyatt Earp, Selina Kyle, etc.). Add any brewing team names here as well.</strong> Separate each team or person's name by comma (,) or semi-colon (;). Some symbols are not allowed, including double-quotation marks (&quot;) and percent (&#37;).";
+$brewer_text_054 = "<strong>List all brewing partners or co-brewers that you are affiliated with. This is to make sure there are not any conflicts of interest when assigning judges and stewards to evaluate entries. Enter their FULL name here (e.g., John Doe, Wyatt Earp, Selina Kyle, etc.). Add any brewing team names here as well.</strong> Separate each team or person's name by comma (,) or semi-colon (;). Some symbols are not allowed, including double-quotation marks (&quot;) and percent (&#37;).";
 
 $brew_text_050 = "Some styles are disabled since the limit for their corresponding style type (e.g., beer, mead, cider, etc.) has been reached.";
 $entry_info_text_053 = "Entry limits per style type:";
@@ -2241,33 +2241,11 @@ $contact_text_014 = "Display of competition contacts has been disabled by the si
 
 /**
  * ------------------------------------------
- * END TRANSLATIONS
- * ------------------------------------------
- *
- * ------------------------------------------
- * Various conditionals
- * No translations below this line
+ * Privacy Consent Text Variables (PIPA)
  * ------------------------------------------
  */
 
-if (strpos($section, "step") === FALSE) $alert_text_032 = $alert_text_032; else $alert_text_032 = "";
-if (strpos($section, "step") === FALSE) $alert_text_033 = $alert_text_033; else $alert_text_033 = "";
-if (strpos($section, "step") === FALSE) $alert_text_036 = $alert_text_036; else $alert_text_036 = "";
-if (strpos($section, "step") === FALSE) $alert_text_039 = $alert_text_039; else $alert_text_039 = "";
-if ((strpos($section, "step") === FALSE) && ((isset($_SESSION['prefsProEdition'])) && ($_SESSION['prefsProEdition'] == 0))) $alert_text_043 = $alert_text_043; else $alert_text_043 = "";
-if ((strpos($section, "step") === FALSE) && ((isset($_SESSION['prefsProEdition'])) && ($_SESSION['prefsProEdition'] == 0))) $alert_text_047 = $alert_text_047; else $alert_text_047 = "";
-if (strpos($section, "step") === FALSE) $alert_text_050 = $alert_text_050; else $alert_text_050 = "";
-if (strpos($section, "step") === FALSE) $alert_text_053 = $alert_text_053; else $alert_text_053 = "";
-if ((strpos($section, "step") === FALSE) && ((isset($_SESSION['prefsProEdition'])) && ($_SESSION['prefsProEdition'] == 0))) $alert_text_060 = $alert_text_060; else $alert_text_060 = "";
-if (strpos($section, "step") === FALSE) $alert_text_068 = $alert_text_068; else $alert_text_068 = "";
-if (strpos($section, "step") === FALSE) $alert_text_070 = $alert_text_070; else $alert_text_070 = "";
-if (strpos($section, "step") === FALSE) $label_character_limit = $label_character_limit; else $label_character_limit = "";
-if (strpos($section, "step") === FALSE) $header_text_031 = $header_text_031; else $header_text_031 = "";
-if (strpos($section, "step") === FALSE) $beerxml_text_007 = $beerxml_text_007; else $beerxml_text_007 = "";
-
-
-// Privacy Consent
-$consent_text_001 = "Privacy Consent";
+$consent_text_001 = "Consent to the Collection and Use of Personal Information";
 $consent_text_002 = "Do you consent to the collection and use of your personal information as described above?";
 $consent_text_003 = "Yes, I consent";
 $consent_text_004 = "No, I do not consent";
@@ -2292,5 +2270,36 @@ $consent_text_022 = "Version History";
 $consent_text_023 = "Created";
 $consent_text_024 = "Status";
 $consent_text_025 = "View Log";
+$consent_text_026 = "Publication Consent";
+$consent_text_027 = "Consent Type";
+$consent_text_028 = "Do you consent that, if you receive an award, your chosen name, entry name, club affiliation (if provided), award category, and competition year may be publicly announced and retained as described above?";
+$consent_text_029 = "You must consent to publication to register.";
+
+
+/**
+ * ------------------------------------------
+ * END TRANSLATIONS
+ * ------------------------------------------
+ *
+ * ------------------------------------------
+ * Various conditionals
+ * No translations below this line
+ * ------------------------------------------
+ */
+
+if (strpos($section, "step") === FALSE) $alert_text_032 = $alert_text_032; else $alert_text_032 = "";
+if (strpos($section, "step") === FALSE) $alert_text_033 = $alert_text_033; else $alert_text_033 = "";
+if (strpos($section, "step") === FALSE) $alert_text_036 = $alert_text_036; else $alert_text_036 = "";
+if (strpos($section, "step") === FALSE) $alert_text_039 = $alert_text_039; else $alert_text_039 = "";
+if ((strpos($section, "step") === FALSE) && ((isset($_SESSION['prefsProEdition'])) && ($_SESSION['prefsProEdition'] == 0))) $alert_text_043 = $alert_text_043; else $alert_text_043 = "";
+if ((strpos($section, "step") === FALSE) && ((isset($_SESSION['prefsProEdition'])) && ($_SESSION['prefsProEdition'] == 0))) $alert_text_047 = $alert_text_047; else $alert_text_047 = "";
+if (strpos($section, "step") === FALSE) $alert_text_050 = $alert_text_050; else $alert_text_050 = "";
+if (strpos($section, "step") === FALSE) $alert_text_053 = $alert_text_053; else $alert_text_053 = "";
+if ((strpos($section, "step") === FALSE) && ((isset($_SESSION['prefsProEdition'])) && ($_SESSION['prefsProEdition'] == 0))) $alert_text_060 = $alert_text_060; else $alert_text_060 = "";
+if (strpos($section, "step") === FALSE) $alert_text_068 = $alert_text_068; else $alert_text_068 = "";
+if (strpos($section, "step") === FALSE) $alert_text_070 = $alert_text_070; else $alert_text_070 = "";
+if (strpos($section, "step") === FALSE) $label_character_limit = $label_character_limit; else $label_character_limit = "";
+if (strpos($section, "step") === FALSE) $header_text_031 = $header_text_031; else $header_text_031 = "";
+if (strpos($section, "step") === FALSE) $beerxml_text_007 = $beerxml_text_007; else $beerxml_text_007 = "";
 
 ?>

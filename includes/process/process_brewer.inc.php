@@ -775,7 +775,21 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 		if ($go == "register") $updateGoTo = $base_url."index.php?section=brew&msg=2";
 		elseif (($go == "judge") && ($filter == "default")) $updateGoTo = $base_url."index.php?section=list&go=".$go."&filter=default&msg=7";
 		elseif (($go == "judge") && ($filter != "default")) $updateGoTo = $base_url."index.php?section=admin&go=participants&msg=2";
-		elseif (($go == "account") && ($filter != "default")) $updateGoTo = $base_url."index.php?section=list&msg=2";
+		elseif (($go == "account") && ($filter != "default")) {
+			$updateGoTo = $base_url."index.php?section=list&msg=2";
+			// Log re-consent on profile edit
+			if (($_SESSION['userLevel'] > 1) && ($action == "edit")) {
+				include_once(DB.'consent.db.php');
+				if (isset($_POST['privacy_consent']) && $_POST['privacy_consent'] == '1') {
+					$ct_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+					if ($ct_id) log_consent($_SESSION['user_id'], $ct_id, 1, 'privacy');
+				}
+				if (isset($_POST['publication_consent']) && $_POST['publication_consent'] == '1') {
+					$ct_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+					if ($ct_id) log_consent($_SESSION['user_id'], $ct_id, 1, 'publication');
+				}
+			}
+		}
 		elseif ($go == "default") $updateGoTo = $base_url."index.php?section=list&go=".$go."&filter=default&msg=2";
 		else $updateGoTo = $updateGoTo;
 

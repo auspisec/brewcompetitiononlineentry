@@ -112,9 +112,25 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 
 	*/
 
-	else {
+	// Server-side consent validation: both privacy and publication must be "Yes"
+	if ($filter != "admin") {
+		$consent_error = false;
+		if (!isset($_POST['privacy_consent']) || $_POST['privacy_consent'] != '1') {
+			$consent_error = true;
+		}
+		if (!isset($_POST['publication_consent']) || $_POST['publication_consent'] != '1') {
+			$consent_error = true;
+		}
+		if ($consent_error) {
+			$redirect = $base_url."index.php?section=".$section."&go=".$go."&msg=5";
+			$redirect = prep_redirect_link($redirect);
+			$redirect_go_to = sprintf("Location: %s", $redirect);
+			header($redirect_go_to);
+			exit();
+		}
+	}
 
-		// Failsafe. Check to see if email address is already in the system. If so, redirect.		
+	// Failsafe. Check to see if email address is already in the system. If so, redirect.		
 		if (strstr($username,'@'))  {
 
 			// Sanity check from AJAX widget
@@ -133,10 +149,8 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 
 			} else {
 
-				// Add the user's creds to the "users" table			
-				$entered_password = md5($_POST['password']);
-				$hasher = new PasswordHash(8, false);
-				$hash = $hasher->HashPassword($entered_password);
+				// Add the user's creds to the "users" table
+				$hash = password_hash($_POST['password'], PASSWORD_BCRYPT);
 				$hasher_question = new PasswordHash(8, false);
 				$hash_question = $hasher_question->HashPassword(sterilize($userQuestionAnswer));
 
@@ -402,12 +416,20 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 				} // end if ($_SESSION['prefsEmailRegConfirm'] == 1)
 
 				
-				// Log privacy consent
-				if ($filter != "admin" && isset($_POST['consent_given']) && $_POST['consent_given'] == '1') {
-					include_once(INCLUDES.'db/consent.db.php');
-					$consent_text_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US');
+				// Log privacy consent (collection/use)
+				if ($filter != "admin" && isset($_POST['privacy_consent']) && $_POST['privacy_consent'] == '1') {
+					include_once(DB.'consent.db.php');
+					$consent_text_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
 					if ($consent_text_id) {
-						log_consent($row_user['id'], $consent_text_id, 1);
+						log_consent($row_user['id'], $consent_text_id, 1, 'privacy');
+					}
+				}
+				// Log publication consent (award publication)
+				// Uses the same consent_text_id as privacy (single text, two consent decisions)
+				if ($filter != "admin" && isset($_POST['publication_consent']) && $_POST['publication_consent'] == '1') {
+					$pub_consent_text_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+					if ($pub_consent_text_id) {
+						log_consent($row_user['id'], $pub_consent_text_id, 1, 'publication');
 					}
 				}
 
@@ -474,8 +496,6 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 			$redirect_go_to = sprintf("Location: %s", $redirect);
 		
 		}
-
-	} // end else (CAPCHA check OK)
 
 	if ($no_register) {
 

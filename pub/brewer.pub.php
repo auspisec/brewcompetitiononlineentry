@@ -372,6 +372,64 @@ if (($go != "entrant") && ($section != "step2")) include (PUB.'brewer_form_2.pub
     <input type="hidden" name="relocate" value="<?php echo $base_url; ?>index.php?section=list">
 <?php } ?>
 
+<?php
+// --- Re-consent check on profile edit ---
+// If the consent version has changed since the user last consented, show the consent section again.
+if (($action == "edit") && ($go == "account") && ($_SESSION['userLevel'] > 1)) {
+    include_once(DB.'consent.db.php');
+    $reconsent_privacy = user_needs_reconsent($_SESSION['user_id'], $_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+    // Publication consent tracks the same text version as privacy
+    $reconsent_publication = user_needs_reconsent($_SESSION['user_id'], $_SESSION['prefsLanguage'] ?? 'en-US', 'publication');
+    if ($reconsent_privacy || $reconsent_publication) {
+        $reconsent_text = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+    ?>
+    <div class="alert alert-warning">
+        <h5><i class="fa fa-shield-alt me-2"></i><?php echo $consent_text_017; ?></h5>
+    </div>
+    <?php if ($reconsent_text): ?>
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <div class="alert alert-info" style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
+                <?php echo $reconsent_text['consent_text']; ?>
+            </div>
+        </div>
+    </div>
+    <?php if ($reconsent_privacy): ?>
+    <div class="row mb-3">
+        <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_002; ?></strong></label>
+        <div class="col-sm-12 col-md-10">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="privacy_consent" value="1" id="privacy_consent_yes" required>
+                <label class="form-check-label" for="privacy_consent_yes"><?php echo $consent_text_003; ?></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="privacy_consent" value="0" id="privacy_consent_no">
+                <label class="form-check-label" for="privacy_consent_no"><?php echo $consent_text_004; ?></label>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+    <?php if ($reconsent_publication): ?>
+    <div class="row mb-3">
+        <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_028; ?></strong></label>
+        <div class="col-sm-12 col-md-10">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="publication_consent" value="1" id="publication_consent_yes" required>
+                <label class="form-check-label" for="publication_consent_yes"><?php echo $consent_text_003; ?></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="publication_consent" value="0" id="publication_consent_no">
+                <label class="form-check-label" for="publication_consent_no"><?php echo $consent_text_004; ?></label>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+    <?php endif; // end if ($reconsent_text) ?>
+    <?php
+    }
+}
+?>
+
 <div class="bcoem-admin-element d-print-none">
     <div class="mb-3 mt-5 row">
         <div class="col-xs-12 col-sm-3 col-lg-2"></div>
