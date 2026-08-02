@@ -112,6 +112,24 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 
 	*/
 
+	// Server-side consent validation: both privacy and publication must be "Yes"
+	if ($filter != "admin") {
+		$consent_error = false;
+		if (!isset($_POST['privacy_consent']) || $_POST['privacy_consent'] != '1') {
+			$consent_error = true;
+		}
+		if (!isset($_POST['publication_consent']) || $_POST['publication_consent'] != '1') {
+			$consent_error = true;
+		}
+		if ($consent_error) {
+			$redirect = $base_url."index.php?section=".$section."&go=".$go."&msg=5";
+			$redirect = prep_redirect_link($redirect);
+			$redirect_go_to = sprintf("Location: %s", $redirect);
+			header($redirect_go_to);
+			exit();
+		}
+	}
+
 	else {
 
 		// Failsafe. Check to see if email address is already in the system. If so, redirect.		

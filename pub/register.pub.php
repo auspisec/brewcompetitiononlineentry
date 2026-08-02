@@ -1312,6 +1312,24 @@ if ($go == "default") {  ?>
 	</div>
 </form>
 <script type="text/javascript">
+	// Consent validation: both privacy and publication consent must be "Yes" to submit
+	$("#submit-form").on('submit', function(e) {
+		var privacyConsent = $('input[name="privacy_consent"]:checked').val();
+		var publicationConsent = $('input[name="publication_consent"]:checked').val();
+		var consentError = '';
+		if (privacyConsent !== '1') {
+			consentError += '<?php echo $consent_text_005; ?>\n';
+		}
+		if (publicationConsent !== '1') {
+			consentError += '<?php echo $consent_text_029; ?>\n';
+		}
+		if (consentError) {
+			e.preventDefault();
+			alert(consentError);
+			return false;
+		}
+	});
+
 	$("#brewerStaffFields").hide();
 	$("#staff-help").hide();
 	$("#brewerJudgeRankOtherWrap").hide();
