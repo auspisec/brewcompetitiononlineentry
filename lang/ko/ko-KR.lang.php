@@ -991,20 +991,7 @@ $register_text_001 = "Are you ";
 $register_text_002 = "Registration has closed.";
 $register_text_003 = "Thank you for your interest.";
 $register_text_004 = "제공하신 성명을 제외한 모든 개인정보는 대회 기록 관리 및 연락 목적에만 사용되며, 수상자의 성명은 대회 종료 후 공식 웹사이트에 게시됩니다..";
-$register_text_005 = "<p><b>개인정보 수집·이용 동의서</b></p>
-</p>SAAZ Seoul Cup 주최 측은 개인정보 보호법에 따라 귀하의 개인정보를 보호하고자 합니다. 아래 내용을 확인하시고 본 양식을 제출해 주시기 바랍니다.</p>
-<p>1. 수집 항목</p>
-<ul><li>성명</li><li>연락처(전화번호)</li><li>이메일 주소</li></ul>
-<p>2. 수집·이용 목적</p>
-<p>수집된 개인정보는 다음의 목적을 위해서만 이용됩니다.</p>
-<ul><li>대회 참가자 등록 및 관리</li><li>대회 관련 안내 및 공지 전달</li><li>수상자 통지 및 경품 전달</li><li>수상자 명단을 공식 웹사이트에 게시</li></ul>
-<p>3. 보유·이용 기간</p>
-<p>일반 참가자의 개인정보(성명, 주소, 연락처)는 대회 종료일로부터 3개월간 보관 후 안전하게 파기됩니다. 수상자의 성명은 대회 종료일로부터 공식 웹사이트에 게시 및 무기한 보관될 수 있습니다.</p>
-<p>4. 동의 거부 권리 및 불이익</p>
-<p>귀하는 개인정보 제공에 동의하지 않을 권리가 있습니다. 다만, 동의하지 않을 경우 대회 참가가 제한될 수 있습니다.</p>
-<p>5. 동의 확인</p>
-<p>본 양식을 제출함으로써 귀하는 상기 내용에 따라 개인정보 수집·이용에 동의하는 것으로 간주됩니다.</p>
-</br></br>";
+$register_text_005 = "본 대회 참가를 위하여 해당 정보 제공은 필수 조건입니다. 출품작이 입상할 경우 성함과 소속 클럽명이 공개될 수 있으나, 그 외의 정보는 일절 공개되지 않습니다.";
 $register_text_006 = "Reminder: You are only allowed to enter one region and once you have registered at a location, you will NOT be able to change it.";
 $register_text_007 = "Quick";
 $register_text_008 = "Register";

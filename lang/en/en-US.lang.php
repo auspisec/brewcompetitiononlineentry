@@ -991,20 +991,7 @@ $register_text_001 = "Are you ";
 $register_text_002 = "Registration has closed.";
 $register_text_003 = "Thank you for your interest.";
 $register_text_004 = "The information you provide beyond your first name, last name, and club is strictly for record-keeping and contact purposes.";
-$register_text_005 = "<p><b>Consent for collecting and using personal information</b></p>
-</p>SAAZ Seoul Cup Organizers want to protect your personal information in accordance with the Personal Information Protection Act. Please check the contents below and submit this form.</p>
-<p>1. Collection Items</p>
-<ul><li>Name</li><li>Contact contact (phone number)</li><li>E-mail address</li></ul>
-<p>2. Purpose of collection and use </p>
-<p>The collected personal information is used only for the following purposes:</p>
-<ul><li>Registration and management of participants</li><li>Delivering information and notices related to the contest</li><li>Notification of winners and delivery of prizes</li><li> Posting the list of winners on the official website</li></ul>
-<p>3. Period of retention and use </p>
-<p>General participants' personal information (name, address, contact information) will be safely destroyed after three months of storage from the end date of the competition. Winners' names may be posted on the official website and kept indefinitely from the end date of the competition.</p>
-<p>4. Right to refuse consent and disadvantages </p>
-<p>You have the right to disagree with the provision of your personal information, however, participation in the competition may be restricted if you do not agree.</p>
-<p>5. Confirmation of consent </p>
-<p>By submitting this form, you are deemed to consent to the collection and use of personal information in accordance with the above.</p>
-</br></br>";
+$register_text_005 = "A condition of entry into the competition is providing this information. Your name and club may be displayed should one of your entries place, but no other information will be made public.";
 $register_text_006 = "Reminder: You are only allowed to enter one region and once you have registered at a location, you will NOT be able to change it.";
 $register_text_007 = "Quick";
 $register_text_008 = "Register";
@@ -2283,7 +2270,6 @@ $consent_text_022 = "Version History";
 $consent_text_023 = "Created";
 $consent_text_024 = "Status";
 $consent_text_025 = "View Log";
-
 $consent_text_026 = "Publication Consent";
 $consent_text_027 = "Consent Type";
 $consent_text_028 = "Do you consent that, if you receive an award, your chosen name, entry name, club affiliation (if provided), award category, and competition year may be publicly announced and retained as described above?";
