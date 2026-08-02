@@ -64,7 +64,8 @@ else { // THIS ELSE ENDS at the end of the script
 	include_once (DB.'styles.db.php');
 	include_once (DB.'brewer.db.php');
 	include_once (DB.'consent.db.php');
-	$consent_active = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US');
+	$consent_active = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+	$consent_publication_active = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'publication');
 	if (NHC) $totalRows_log = $totalRows_entry_count;
 	else $totalRows_log = $totalRows_log;
 	if ($go != "default") {
@@ -1235,18 +1236,18 @@ if ($go == "default") {  ?>
     
     <?php
     // --- Privacy Consent Section (PIPA) ---
-    // Single consent section shown before the Register button.
+    // Two consent types: privacy (collection/use) and publication (award publication)
     // Only for public (non-admin) registrations.
     if ($filter != "admin" && $consent_active) {
     ?>
-    <!-- Privacy Consent Section -->
+    <!-- Privacy Consent (Collection/Use) -->
     <div class="row mb-3">
         <div class="col-sm-12">
             <h5 class="text-teal"><i class="fa fa-shield-alt me-2"></i><?php echo $consent_text_001; ?></h5>
             <div class="alert alert-info" style="max-height: 250px; overflow-y: auto; font-size: 0.9em;">
                 <?php echo $consent_active['consent_text']; ?>
             </div>
-            <input type="hidden" name="consent_text_id" value="<?php echo (int)$consent_active['id']; ?>">
+            <input type="hidden" name="consent_text_id_privacy" value="<?php echo (int)$consent_active['id']; ?>">
         </div>
     </div>
     <div class="row mb-3">
@@ -1263,6 +1264,34 @@ if ($go == "default") {  ?>
             <div class="help-block invalid-feedback text-danger"><?php echo $consent_text_005; ?></div>
         </div>
     </div>
+
+    <?php if ($consent_publication_active): ?>
+    <!-- Publication Consent (Award Publication) -->
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <h5 class="text-teal"><i class="fa fa-trophy me-2"></i><?php echo $consent_text_026; ?></h5>
+            <div class="alert alert-info" style="max-height: 250px; overflow-y: auto; font-size: 0.9em;">
+                <?php echo $consent_publication_active['consent_text']; ?>
+            </div>
+            <input type="hidden" name="consent_text_id_publication" value="<?php echo (int)$consent_publication_active['id']; ?>">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_028; ?></strong></label>
+        <div class="col-sm-12 col-md-10">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="publication_consent" value="1" id="publication_consent_yes" required>
+                <label class="form-check-label" for="publication_consent_yes"><?php echo $consent_text_003; ?></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="publication_consent" value="0" id="publication_consent_no">
+                <label class="form-check-label" for="publication_consent_no"><?php echo $consent_text_004; ?></label>
+            </div>
+            <div class="help-block invalid-feedback text-danger"><?php echo $consent_text_029; ?></div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <?php } // end if consent ?>
 
     <?php if ($_SESSION['prefsCAPTCHA'] == "1") { ?>

@@ -372,6 +372,73 @@ if (($go != "entrant") && ($section != "step2")) include (PUB.'brewer_form_2.pub
     <input type="hidden" name="relocate" value="<?php echo $base_url; ?>index.php?section=list">
 <?php } ?>
 
+<?php
+// --- Re-consent check on profile edit ---
+// If the consent version has changed since the user last consented, show the consent section again.
+if (($action == "edit") && ($go == "account") && ($_SESSION['userLevel'] > 1)) {
+    include_once(DB.'consent.db.php');
+    $reconsent_privacy = user_needs_reconsent($_SESSION['user_id'], $_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+    $reconsent_publication = user_needs_reconsent($_SESSION['user_id'], $_SESSION['prefsLanguage'] ?? 'en-US', 'publication');
+    if ($reconsent_privacy || $reconsent_publication) {
+        $reconsent_privacy_text = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+        $reconsent_publication_text = get_active_consent_text($_SESSION['prefsLanguage'] ?? 'en-US', 'publication');
+    ?>
+    <div class="alert alert-warning">
+        <h5><i class="fa fa-shield-alt me-2"></i><?php echo $consent_text_017; ?></h5>
+    </div>
+    <?php if ($reconsent_privacy && $reconsent_privacy_text): ?>
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <h6 class="text-teal"><?php echo $consent_text_001; ?></h6>
+            <div class="alert alert-info" style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
+                <?php echo $reconsent_privacy_text['consent_text']; ?>
+            </div>
+            <input type="hidden" name="consent_text_id_privacy" value="<?php echo (int)$reconsent_privacy_text['id']; ?>">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_002; ?></strong></label>
+        <div class="col-sm-12 col-md-10">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="privacy_consent" value="1" id="privacy_consent_yes" required>
+                <label class="form-check-label" for="privacy_consent_yes"><?php echo $consent_text_003; ?></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="privacy_consent" value="0" id="privacy_consent_no">
+                <label class="form-check-label" for="privacy_consent_no"><?php echo $consent_text_004; ?></label>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+    <?php if ($reconsent_publication && $reconsent_publication_text): ?>
+    <div class="row mb-3">
+        <div class="col-sm-12">
+            <h6 class="text-teal"><i class="fa fa-trophy me-2"></i><?php echo $consent_text_026; ?></h6>
+            <div class="alert alert-info" style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
+                <?php echo $reconsent_publication_text['consent_text']; ?>
+            </div>
+            <input type="hidden" name="consent_text_id_publication" value="<?php echo (int)$reconsent_publication_text['id']; ?>">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-12 col-md-2 col-form-label text-teal"><i class="fa fa-sm fa-star pe-1"></i><strong><?php echo $consent_text_028; ?></strong></label>
+        <div class="col-sm-12 col-md-10">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="publication_consent" value="1" id="publication_consent_yes" required>
+                <label class="form-check-label" for="publication_consent_yes"><?php echo $consent_text_003; ?></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="publication_consent" value="0" id="publication_consent_no">
+                <label class="form-check-label" for="publication_consent_no"><?php echo $consent_text_004; ?></label>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+    <?php
+    }
+}
+?>
+
 <div class="bcoem-admin-element d-print-none">
     <div class="mb-3 mt-5 row">
         <div class="col-xs-12 col-sm-3 col-lg-2"></div>

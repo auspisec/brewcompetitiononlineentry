@@ -2284,6 +2284,12 @@ $consent_text_023 = "Created";
 $consent_text_024 = "Status";
 $consent_text_025 = "View Log";
 
+$consent_text_026 = "Publication Consent";
+$consent_text_027 = "Consent Type";
+$consent_text_028 = "Do you consent that, if you receive an award, your chosen name, entry name, club affiliation (if provided), award category, and competition year may be publicly announced and retained as described above?";
+$consent_text_029 = "You must consent to publication to register.";
+
+
 /**
  * ------------------------------------------
  * END TRANSLATIONS
