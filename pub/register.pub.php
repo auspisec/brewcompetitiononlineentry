@@ -1316,16 +1316,17 @@ if ($go == "default") {  ?>
 	$("#submit-form").on('submit', function(e) {
 		var privacyConsent = $('input[name="privacy_consent"]:checked').val();
 		var publicationConsent = $('input[name="publication_consent"]:checked').val();
-		var consentError = '';
-		if (privacyConsent !== '1') {
-			consentError += '<?php echo $consent_text_005; ?>\n';
-		}
-		if (publicationConsent !== '1') {
-			consentError += '<?php echo $consent_text_029; ?>\n';
-		}
-		if (consentError) {
+		if (privacyConsent !== '1' || publicationConsent !== '1') {
 			e.preventDefault();
-			alert(consentError);
+			e.stopPropagation();
+			$('#loader-submit').hide();
+			$(this).addClass('was-validated');
+			if (privacyConsent !== '1') {
+				$('#privacy_consent_no').closest('.col-sm-12').find('.invalid-feedback').show();
+			}
+			if (publicationConsent !== '1') {
+				$('#publication_consent_no').closest('.col-sm-12').find('.invalid-feedback').show();
+			}
 			return false;
 		}
 	});
