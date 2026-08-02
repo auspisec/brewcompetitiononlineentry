@@ -130,9 +130,7 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 		}
 	}
 
-	else {
-
-		// Failsafe. Check to see if email address is already in the system. If so, redirect.		
+	// Failsafe. Check to see if email address is already in the system. If so, redirect.		
 		if (strstr($username,'@'))  {
 
 			// Sanity check from AJAX widget
@@ -498,8 +496,6 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 			$redirect_go_to = sprintf("Location: %s", $redirect);
 		
 		}
-
-	} // end else (CAPCHA check OK)
 
 	if ($no_register) {
 
