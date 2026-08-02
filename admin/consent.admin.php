@@ -67,7 +67,7 @@ $edit_active = get_active_consent_text($edit_lang, 'privacy');
     <div class="well">
         <?php echo $active_texts[$lang_code] ? $active_texts[$lang_code]['consent_text'] : '<em>No consent text configured.</em>'; ?>
     </div>
-    <p><a href="<?php echo $base_url; ?>index.php?section=admin&go=consent&tab=current&lang=<?php echo urlencode($lang_code); ?>" class="btn btn-xs btn-default"><span class="fa fa-edit"></span> Edit this text</a></p>
+    <p><a href="<?php echo $base_url; ?>index.php?section=admin&go=consent&tab=current&lang=<?php echo urlencode($lang_code); ?>#edit-form" class="btn btn-xs btn-default"><span class="fa fa-edit"></span> Edit this text</a></p>
     <?php endforeach; ?>
 
     <hr>
