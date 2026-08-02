@@ -72,13 +72,13 @@ $edit_active = get_active_consent_text($edit_lang, 'privacy');
 
     <hr>
 
-    <h3><?php echo $consent_text_011; ?> — <?php echo htmlspecialchars($consent_languages[$edit_lang] ?? 'English (US)'); ?> (<?php echo htmlspecialchars($edit_lang); ?>)</h3>
+    <h3 id="edit-form"><?php echo $consent_text_011; ?> — <?php echo htmlspecialchars($consent_languages[$edit_lang] ?? 'English (US)'); ?> (<?php echo htmlspecialchars($edit_lang); ?>)</h3>
     <form method="POST" action="<?php echo $base_url; ?>includes/process.inc.php?action=save_consent&amp;section=admin&amp;go=consent">
         <input type="hidden" name="consent_action" value="save_consent">
         <input type="hidden" name="user_session_token" value="<?php if (isset($_SESSION['user_session_token'])) echo htmlspecialchars($_SESSION['user_session_token'], ENT_QUOTES, 'UTF-8'); ?>">
         <div class="form-group">
             <label for="consent_language"><?php echo $consent_text_009; ?></label>
-            <select class="form-control" name="consent_language" id="consent_language" style="width: 300px;">
+            <select class="form-control" name="consent_language" id="consent_language" style="width: 300px;" onchange="window.location.href='<?php echo $base_url; ?>index.php?section=admin&go=consent&tab=current&lang=' + this.value + '#edit-form';">
                 <?php foreach ($consent_languages as $lang_code => $lang_name): ?>
                 <option value="<?php echo htmlspecialchars($lang_code); ?>" <?php if ($lang_code == $edit_lang) echo 'selected'; ?>><?php echo htmlspecialchars($lang_name); ?> (<?php echo htmlspecialchars($lang_code); ?>)</option>
                 <?php endforeach; ?>
@@ -86,7 +86,7 @@ $edit_active = get_active_consent_text($edit_lang, 'privacy');
         </div>
         <div class="form-group">
             <label for="consent_text"><?php echo $consent_text_007; ?></label>
-            <textarea class="form-control" name="consent_text" id="consent_text" rows="10" required><?php echo $edit_active ? htmlspecialchars($edit_active['consent_text']) : ''; ?></textarea>
+            <textarea class="form-control" name="consent_text" id="consent_text" rows="10" required autofocus><?php echo $edit_active ? htmlspecialchars($edit_active['consent_text']) : ''; ?></textarea>
             <p class="help-block">HTML allowed: &lt;p&gt;, &lt;br&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;, &lt;a&gt;</p>
             <p class="help-block"><em>The text above is pre-filled with the current active version. Edit and save to create a new version.</em></p>
         </div>
