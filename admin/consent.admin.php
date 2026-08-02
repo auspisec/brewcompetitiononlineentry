@@ -86,7 +86,17 @@ $edit_active = get_active_consent_text($edit_lang, 'privacy');
         </div>
         <div class="form-group">
             <label for="consent_text"><?php echo $consent_text_007; ?></label>
-            <textarea class="form-control" name="consent_text" id="consent_text" rows="10" required autofocus><?php echo $edit_active ? htmlspecialchars($edit_active['consent_text']) : ''; ?></textarea>
+            <textarea class="form-control" name="consent_text" id="consent_text" rows="10" required><?php echo $edit_active ? htmlspecialchars($edit_active['consent_text']) : ''; ?></textarea>
+            <script>
+            // Only focus the textarea when navigating via #edit-form (from "Edit this text" or language switch),
+            // not on initial page load from the admin dashboard link.
+            if (window.location.hash === '#edit-form') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    var ta = document.getElementById('consent_text');
+                    if (ta) ta.focus();
+                });
+            }
+            </script>
             <p class="help-block">HTML allowed: &lt;p&gt;, &lt;br&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;, &lt;a&gt;</p>
             <p class="help-block"><em>The text above is pre-filled with the current active version. Edit and save to create a new version.</em></p>
         </div>
