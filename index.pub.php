@@ -164,7 +164,7 @@
 
         if ($totalRows_archive > 0) {
 
-            foreach ($row_archive as $row_archive) {
+            do {
 
                 if (($row_archive['archiveDisplayWinners'] == "Y") && ($row_archive['archiveStyleSet'] != "")) {
                     $table_archive = $prefix."judging_scores_".$row_archive['archiveSuffix'];
@@ -178,7 +178,7 @@
                     }
                 }   
 
-            }
+            } while($row_archive = mysqli_fetch_assoc($archive));
 
         }
 
