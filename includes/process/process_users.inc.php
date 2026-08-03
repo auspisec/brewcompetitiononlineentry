@@ -296,8 +296,9 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 		if ($go == "password") {
 
 			// Check if old password is correct; if not redirect
-			$password_old = sterilize($_POST['passwordOld']);
-			$password_new = sterilize($_POST['password']);
+			// Do not sterilize() passwords — see logincheck.inc.php comment
+					$password_old = $_POST['passwordOld'];
+					$password_new = $_POST['password'];
 
 			$query_userPass = sprintf("SELECT password FROM $users_db_table WHERE id = '%s'",$id);
 			$userPass = mysqli_query($connection,$query_userPass) or die (mysqli_error($connection));
@@ -339,7 +340,7 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 		// --------------------------- If an admin is changing their password ------------------------------- //
 		if ($go == "change_user_password") {
 
-			$hash_new = password_hash(sterilize($_POST['password']), PASSWORD_BCRYPT);
+			$hash_new = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
 			$update_table = $prefix."users";
 			$data = array(

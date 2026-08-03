@@ -27,10 +27,10 @@ if ($action == "reset") {
 		
 		// Check and see if both entered passwords match
 		// If so, hash and insert hash into DB
-		if ((sterilize($_POST['newPassword1']) == sterilize($_POST['newPassword2']))) {
+		if (($_POST['newPassword1'] == $_POST['newPassword2'])) {
 			
 			// Hash
-			$hash = password_hash(sterilize($_POST['newPassword1']), PASSWORD_BCRYPT);
+			$hash = password_hash($_POST['newPassword1'], PASSWORD_BCRYPT);
 
 			// Insert the hash into the database
 			$update_table = $prefix."users";

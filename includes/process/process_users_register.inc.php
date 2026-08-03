@@ -419,7 +419,9 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 				// Log privacy consent (collection/use)
 				if ($filter != "admin" && isset($_POST['privacy_consent']) && $_POST['privacy_consent'] == '1') {
 					include_once(DB.'consent.db.php');
-					$consent_text_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+					// Use the consent_text_id from the form (the exact version the user saw)
+					// rather than re-fetching the active version (which could have changed)
+					$consent_text_id = isset($_POST['consent_text_id_privacy']) ? (int)$_POST['consent_text_id_privacy'] : get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
 					if ($consent_text_id) {
 						log_consent($row_user['id'], $consent_text_id, 1, 'privacy');
 					}
@@ -427,7 +429,7 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 				// Log publication consent (award publication)
 				// Uses the same consent_text_id as privacy (single text, two consent decisions)
 				if ($filter != "admin" && isset($_POST['publication_consent']) && $_POST['publication_consent'] == '1') {
-					$pub_consent_text_id = get_active_consent_text_id($_SESSION['prefsLanguage'] ?? 'en-US', 'privacy');
+					$pub_consent_text_id = isset($_POST['consent_text_id_publication']) ? (int)$_POST['consent_text_id_publication'] : $consent_text_id;
 					if ($pub_consent_text_id) {
 						log_consent($row_user['id'], $pub_consent_text_id, 1, 'publication');
 					}

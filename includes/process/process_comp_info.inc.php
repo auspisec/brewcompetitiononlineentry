@@ -89,7 +89,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 		if (isset($_POST['contestCircuit'])) $contestCircuit = $purifier->purify($_POST['contestCircuit']);
 		if (isset($_POST['contestVolunteers'])) $contestVolunteers = $purifier->purify($_POST['contestVolunteers']);
 		if (isset($_POST['contestLogo'])) $contestLogo = $purifier->purify($_POST['contestLogo']);
-		if (isset($_POST['contestCheckInPassword'])) $contestCheckInPassword = sterilize($_POST['contestCheckInPassword']);
+		if (isset($_POST['contestCheckInPassword'])) $contestCheckInPassword = $_POST['contestCheckInPassword'];
 		if (isset($_POST['contestID'])) $contestID = sterilize($_POST['contestID']);
 		if ((isset($_POST['contestClubs'])) && (!empty($_POST['contestClubs']))) {
 			$contestClubs = $purifier->purify($_POST['contestClubs']);
@@ -120,7 +120,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 		$hash = NULL;
 
 		if (isset($_POST['contestCheckInPassword'])) {
-			$hash = password_hash(sterilize($_POST['contestCheckInPassword']), PASSWORD_BCRYPT);
+			$hash = password_hash($_POST['contestCheckInPassword'], PASSWORD_BCRYPT);
 		}
 
 		$update_table = $prefix."contest_info";
@@ -225,7 +225,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 
 			if (isset($_POST['contestCheckInPassword'])) {
 
-				$hash = password_hash(sterilize($_POST['contestCheckInPassword']), PASSWORD_BCRYPT);
+				$hash = password_hash($_POST['contestCheckInPassword'], PASSWORD_BCRYPT);
 
 				$update_table = $prefix."contest_info";
 				$data = array('contestCheckInPassword' => $hash);

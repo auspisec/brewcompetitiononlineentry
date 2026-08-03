@@ -12,15 +12,8 @@ if ($_SESSION['userLevel'] > 1) {
     exit();
 }
 
-// Handle inline form submission
-if (isset($_POST['consent_action']) && $_POST['consent_action'] == 'save_consent') {
-    $language = sterilize($_POST['consent_language']);
-    $consent_text = $_POST['consent_text'];
-    $allowed_tags = '<p><br><strong><em><ul><ol><li><a><b><i>';
-    $consent_text = strip_tags($consent_text, $allowed_tags);
-    create_consent_version($language, $consent_text, 'privacy');
-    $success_msg = $consent_text_019;
-}
+// Note: Consent text saving is handled by process_consent.inc.php via process.inc.php
+// which enforces CSRF token validation. Do not process POST data here.
 
 // Get the languages array
 $consent_languages = $GLOBALS['languages'] ?? array('en-US' => 'English (US)');

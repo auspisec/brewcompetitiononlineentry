@@ -11,7 +11,9 @@ header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
 
 $loginUsername = sterilize($_POST['loginUsername']);
-$entered_password = sterilize($_POST['loginPassword']);
+// Do not sterilize() the password — it is only used for password_verify(),
+// never in SQL or HTML. sterilize() corrupts passwords containing <, >, or quotes.
+$entered_password = $_POST['loginPassword'];
 $location = $base_url."index.php?section=login";
 
 if (NHC) $base_url = "../";
