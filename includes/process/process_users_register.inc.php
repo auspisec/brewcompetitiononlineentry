@@ -134,8 +134,10 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 		if (strstr($username,'@'))  {
 
 			// Sanity check from AJAX widget
-			$query_userCheck = sprintf("SELECT user_name FROM %s WHERE user_name = '%s'",$prefix."users",$username);
-			$userCheck = mysqli_query($connection,$query_userCheck) or die (mysqli_error($connection));
+			$stmt_userCheck = mysqli_prepare($connection, sprintf("SELECT user_name FROM %s WHERE user_name = ?", $prefix."users")) or die (mysqli_error($connection));
+			mysqli_stmt_bind_param($stmt_userCheck, "s", $username);
+			mysqli_stmt_execute($stmt_userCheck);
+			$userCheck = mysqli_stmt_get_result($stmt_userCheck);
 			$row_userCheck = mysqli_fetch_assoc($userCheck);
 			$totalRows_userCheck = mysqli_num_rows($userCheck);
 
@@ -175,8 +177,10 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 				}
 
 				// Get the id from the "users" table to insert as the uid in the "brewer" table
-				$query_user= "SELECT * FROM $users_db_table WHERE user_name = '$username'";
-				$user = mysqli_query($connection,$query_user) or die (mysqli_error($connection));
+				$stmt_user = mysqli_prepare($connection, sprintf("SELECT * FROM %s WHERE user_name = ?", $users_db_table)) or die (mysqli_error($connection));
+				mysqli_stmt_bind_param($stmt_user, "s", $username);
+				mysqli_stmt_execute($stmt_user);
+				$user = mysqli_stmt_get_result($stmt_user);
 				$row_user = mysqli_fetch_assoc($user);
 
 				$update_table = $prefix."brewer";
