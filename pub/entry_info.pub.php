@@ -468,7 +468,37 @@ if ($row_styles) {
 
 				else {
 
-					$page_info8 .= $style_number." ".$row_styles['brewStyle'];
+					// Style name links to a modal with the style's Description and
+					// Entry Info (restores the v2.x home-page feature dropped in the
+					// v3 rewrite — $style_info_modals skeleton was left in place).
+					if ((!empty($row_styles['brewStyleInfo'])) || (!empty($row_styles['brewStyleEntry']))) {
+
+						$page_info8 .= "<a href=\"#\" data-bs-toggle=\"modal\" data-bs-target=\"#custom-modal-".$row_styles['id']."\" title=\"".$entry_info_text_045."\">".$style_number." ".$row_styles['brewStyle']."</a>";
+
+						$style_info_modal_body = "";
+
+						if (!empty($row_styles['brewStyleInfo'])) $style_info_modal_body .= "<p>".$row_styles['brewStyleInfo']."</p>";
+						if (!empty($row_styles['brewStyleEntry'])) $style_info_modal_body .= "<p><strong class=\"text-primary\">".$label_entry_info.":</strong> ".$row_styles['brewStyleEntry']."</p>";
+
+						$style_info_modals .= "<div class=\"modal fade\" id=\"custom-modal-".$row_styles['id']."\" tabindex=\"-1\" aria-labelledby=\"custom-modal-label-".$row_styles['id']."\" aria-hidden=\"true\">\n";
+						$style_info_modals .= "	<div class=\"modal-dialog modal-lg\">\n";
+						$style_info_modals .= "		<div class=\"modal-content\">\n";
+						$style_info_modals .= "			<div class=\"modal-header\">\n";
+						$style_info_modals .= "				<h4 class=\"modal-title\" id=\"custom-modal-label-".$row_styles['id']."\">".$style_number." ".$row_styles['brewStyle']."</h4>\n";
+						$style_info_modals .= "				<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n";
+						$style_info_modals .= "			</div>\n";
+						$style_info_modals .= "			<div class=\"modal-body\">".$style_info_modal_body."</div>\n";
+						$style_info_modals .= "			<div class=\"modal-footer\">\n";
+						$style_info_modals .= "				<button type=\"button\" class=\"btn btn-danger\" data-bs-dismiss=\"modal\">".$label_close."</button>\n";
+						$style_info_modals .= "			</div>\n";
+						$style_info_modals .= "		</div>\n";
+						$style_info_modals .= "	</div>\n";
+						$style_info_modals .= "</div>\n\n";
+
+					}
+
+					else $page_info8 .= $style_number." ".$row_styles['brewStyle'];
+
 					if ($row_styles['brewStyleOwn'] == "custom") $page_info8 .= " (Custom Style)";
 					if ($row_styles['brewStyleReqSpec'] == 1) $page_info8 .= "<span class=\"fa fa-check-circle text-orange ms-1 d-print-none\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"".$entry_info_text_048."\"></span>";
 					if ($row_styles['brewStyleStrength'] == 1) $page_info8 .= "<span class=\"fa fa-check-circle text-purple ms-1 d-print-none\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"".$entry_info_text_049."\"></span>";
@@ -825,5 +855,6 @@ echo $header1_15;
 echo $page_info15;
 echo "</div>";
 
-// echo $style_info_modals;
+// Display style info modals (Description + Entry Info links in the accepted-styles table)
+echo $style_info_modals;
 ?>
