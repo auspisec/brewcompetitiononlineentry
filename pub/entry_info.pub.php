@@ -477,7 +477,10 @@ if ($row_styles) {
 
 						$style_info_modal_body = "";
 
-						if (!empty($row_styles['brewStyleInfo'])) $style_info_modal_body .= "<p>".$row_styles['brewStyleInfo']."</p>";
+						// Use <div> wrapper (not <p>) so author-authored <p> tags in the
+						// description render as proper paragraphs — a <p> wrapper would
+						// nest/auto-close against inner <p> tags and garble the spacing.
+						if (!empty($row_styles['brewStyleInfo'])) $style_info_modal_body .= "<div>".$row_styles['brewStyleInfo']."</div>";
 						if (!empty($row_styles['brewStyleEntry'])) $style_info_modal_body .= "<p><strong class=\"text-primary\">".$label_entry_info.":</strong> ".$row_styles['brewStyleEntry']."</p>";
 
 						$style_info_modals .= "<div class=\"modal fade\" id=\"custom-modal-".$row_styles['id']."\" tabindex=\"-1\" aria-labelledby=\"custom-modal-label-".$row_styles['id']."\" aria-hidden=\"true\">\n";
@@ -855,6 +858,8 @@ echo $header1_15;
 echo $page_info15;
 echo "</div>";
 
-// Display style info modals (Description + Entry Info links in the accepted-styles table)
-echo $style_info_modals;
+// Modals are echoed from index.pub.php just before </body> — NOT here.
+// The entry-info section has class "reveal-element" whose CSS transform
+// (translateY, even at 0) makes it the containing block for position:fixed
+// descendants, so a modal rendered here would sit behind the backdrop.
 ?>

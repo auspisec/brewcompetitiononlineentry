@@ -1024,4 +1024,11 @@ if ($logged_in) {
 
 <?php if (($_SESSION['prefsEval'] == 1) && ($section == "evaluation")) include (PUB.'eval_warnings.pub.php'); ?>
 
+<?php
+// Style info modals (Description + Entry Info links in the accepted-styles
+// table) are echoed here, outside the reveal-element sections whose CSS
+// transform would trap position:fixed modals behind the backdrop.
+if (!empty($style_info_modals)) echo $style_info_modals;
+?>
+
 </body>

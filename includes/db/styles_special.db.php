@@ -300,7 +300,9 @@ do {
 
 			$info = "";
 
-			if ($_SESSION['prefsStyleSet'] != "BA") $info .= str_replace($replacement1,$replacement2,"<p>".$row_required_optional['brewStyleInfo']."</p>");
+			// <div> wrapper (not <p>) so author-authored <p> tags render as proper
+			// paragraphs — a <p> wrapper would nest/auto-close against inner <p> tags.
+			if ($_SESSION['prefsStyleSet'] != "BA") $info .= str_replace($replacement1,$replacement2,"<div>".$row_required_optional['brewStyleInfo']."</div>");
 			
 			if ($_SESSION['prefsStyleSet'] == "BA") $info .= "<p>".$entry_info_text_052."</p>";
 
