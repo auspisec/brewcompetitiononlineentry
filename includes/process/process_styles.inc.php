@@ -29,12 +29,17 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 	
 	if (isset($_POST['brewStyleEntry'])) {
 		$brewStyleEntry = trim($_POST['brewStyleEntry']);
-		$brewStyleEntry = $purifier->purify(sterilize($brewStyleEntry));
+		// Do not pre-sterilize() — HTML Purifier alone sanitizes (allows safe HTML
+		// formatting like <strong>/<em>/<a href>; strips javascript: and event handlers).
+		// sterilize() HTML-encodes <>& before purify sees them, so stored descriptions
+		// rendered as literal text instead of formatted HTML (v3 regression vs v2.x).
+		$brewStyleEntry = $purifier->purify($brewStyleEntry);
 	}
 	
 	if (isset($_POST['brewStyleInfo'])) {
 		$brewStyleInfo = trim($_POST['brewStyleInfo']);
-		$brewStyleInfo = $purifier->purify(sterilize($brewStyleInfo));
+		// Do not pre-sterilize() — see note above.
+		$brewStyleInfo = $purifier->purify($brewStyleInfo);
 	}
 	
 	if (isset($_POST['brewStyleLink'])) $brewStyleLink = sterilize($_POST['brewStyleLink']);
