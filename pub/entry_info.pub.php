@@ -469,9 +469,12 @@ if ($row_styles) {
 				else {
 
 					// Style name links to a modal with the style's Description and
-					// Entry Info (restores the v2.x home-page feature dropped in the
-					// v3 rewrite — $style_info_modals skeleton was left in place).
-					if ((!empty($row_styles['brewStyleInfo'])) || (!empty($row_styles['brewStyleEntry']))) {
+					// Entry Info — only for CUSTOM styles (brewStyleOwn='custom').
+					// Stock BJCP/AABC styles render as plain text (their descriptions
+					// are visible in the official style guidelines; custom styles
+					// need the in-page modal since no external reference exists).
+					// Restores the v2.x home-page feature dropped in the v3 rewrite.
+					if (($row_styles['brewStyleOwn'] == "custom") && ((!empty($row_styles['brewStyleInfo'])) || (!empty($row_styles['brewStyleEntry'])))) {
 
 						$page_info8 .= "<a href=\"#\" data-bs-toggle=\"modal\" data-bs-target=\"#custom-modal-".$row_styles['id']."\" title=\"".$entry_info_text_045."\">".$style_number." ".$row_styles['brewStyle']."</a>";
 
