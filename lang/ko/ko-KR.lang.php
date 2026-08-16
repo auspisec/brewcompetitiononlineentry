@@ -808,7 +808,7 @@ $reg_open_text_003 = "";
 $reg_open_text_004 = "이미 등록하셨다면, 로그인하시고 '내 계정' 메뉴에서 '계정 수정'을 ";
 $reg_open_text_005 = "선택해주세요.";
 $reg_open_text_006 = "";
-$reg_open_text_007 = "계정 정보 확인 Click here to view your Account Info.";
+$reg_open_text_007 = "계정 정보 확인";
 $reg_open_text_008 = "<br><br>출품작 검토 및 심사위원/스튜어드 자원봉사는 '내 계정 정보'에서 확인할 수 있습니다.";
 $reg_open_text_009 = "If you are willing to judge or steward, please return to register on or after";
 $reg_open_text_010 = "출품작 등록:";
@@ -912,7 +912,7 @@ $brewer_entries_text_015 = "You cannot delete your entry at this time.";
  * Past Winners
  * ------------------------------------------
  */
-$past_winners_text_000 = "View past winners:";
+$past_winners_text_000 = "역대 수상자 보기:";
 
 /**
  * ------------------------------------------
@@ -1215,7 +1215,7 @@ $maintenance_text_001 = "Please check back later.";
  * ------------------------------------------
  */
 $label_entry_numbers = "Entry Number"; // For PayPal IPN Email
-$label_status = "Status"; // For PayPal IPN Email
+$label_status = "현황"; // For PayPal IPN Email
 $label_transaction_id = "Transaction ID"; // For PayPal IPN Email
 $label_organization = "Organization";
 $label_ttb = "TTB Number";
@@ -2210,7 +2210,7 @@ $login_text_029 = "사용자 이름을 기억할 수 없다면 사이트 관리�
 $login_text_030 = "입력하신 이메일 주소가 유효하지 않습니다. 확인 후 다시 시도해 주세요.";
 
 $entry_info_text_056 = "한도에 도달했습니다. 더 이상 출품을 받지 않습니다.";
-$entry_info_text_057 = "<i class=\"fa fa-times-circle text-danger-emphasis me-1\"></i>해당 스타일의 출품 한도에 도달하여 더 이상 해당 스타일의 출품을 받지 않음을 나타냅니다.";
+$entry_info_text_057 = "<ul><li>맥주: <a href=\"https://www.bjcp.org/wp-content/uploads/2025/02/2021_Guidelines_Beer_1.25.pdf\" target=\"_blank\">BJCP 2021 Beer Style Guidelines</a></li><li>미드: <a href=\"https://legacy.bjcp.org/docs/2015_Guidelines_Mead.pdf\" target=\"_blank\">BJCP 2015 Mead Style Guidelines</a></li><li>사이더: <a href=\"https://www.bjcp.org/download/2015_guidelines_cider.pdf\" target=\"_blank\">BJCP 2015 Cider Style Guidelines</a></li><li>쌀 양조주: <a href=\"https://saaz.beer/rice_brew_style_guidelines.html\" target=\"_blank\">SAAZ Rice Brew Style Guidelines v1.0</a></li></ul><i class=\"fa fa-times-circle text-danger-emphasis me-1\"></i>해당 스타일의 출품 한도에 도달하여 더 이상 해당 스타일의 출품을 받지 않음을 나타냅니다.";
 
 $output_text_034 = "심사된 출품작 총 수가 BJCP가 정한 최소 기준인 30건에 미달하여 BOS 심사위원 포인트가 부여되지 않습니다.";
 
@@ -2268,7 +2268,7 @@ $consent_text_020 = "Consent logged successfully.";
 $consent_text_021 = "Manage Privacy Consent";
 $consent_text_022 = "Version History";
 $consent_text_023 = "Created";
-$consent_text_024 = "Status";
+$consent_text_024 = "현황";
 $consent_text_025 = "로그 보기";
 $consent_text_026 = "정보 공개 동의";
 $consent_text_027 = "동의 유형";

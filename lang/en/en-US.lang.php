@@ -2210,7 +2210,7 @@ $login_text_029 = "If you cannot remember your user name, contact an administrat
 $login_text_030 = "Email provided is not valid. Please check it and try again.";
 
 $entry_info_text_056 = "Limit reached. No more entries accepted.";
-$entry_info_text_057 = "<i class=\"fa fa-times-circle text-danger-emphasis me-1\"></i>Indicates that the style's entry limit has been reached and no more entries of that style will be accepted.";
+$entry_info_text_057 = "<ul><li>Beer: <a href=\"https://www.bjcp.org/wp-content/uploads/2025/02/2021_Guidelines_Beer_1.25.pdf\" target=\"_blank\">BJCP 2021 Beer Style Guidelines</a></li><li>Mead: <a href=\"https://legacy.bjcp.org/docs/2015_Guidelines_Mead.pdf\" target=\"_blank\">BJCP 2015 Mead Style Guidelines</a></li><li>Cider: <a href=\"https://www.bjcp.org/download/2015_guidelines_cider.pdf\" target=\"_blank\">BJCP 2015 Cider Style Guidelines</a></li><li>Rice Brew: <a href=\"https://saaz.beer/rice_brew_style_guidelines.html\" target=\"_blank\">SAAZ Rice Brew Style Guidelines v1.0</a></li></ul><i class=\"fa fa-times-circle text-danger-emphasis me-1\"></i>Indicates that the style's entry limit has been reached and no more entries of that style will be accepted.";
 
 $output_text_034 = "No BOS Judge points were be awarded since the total number of entries judged was less than the minimum threshold of 30 set by the BJCP.";
 
