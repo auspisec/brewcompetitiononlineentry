@@ -19,6 +19,9 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 	// Instantiate HTMLPurifier
 	require (CLASSES.'htmlpurifier/HTMLPurifier.standalone.php');
 	$config_html_purifier = HTMLPurifier_Config::createDefault();
+	// Preserve target="_blank" on links (auto-adds rel="noreferrer noopener").
+	// Links in style descriptions point at external style guidelines.
+	$config_html_purifier->set('HTML.TargetBlank', true);
 	$purifier = new HTMLPurifier($config_html_purifier);
 
 	$ba_styles_accepted = "";
