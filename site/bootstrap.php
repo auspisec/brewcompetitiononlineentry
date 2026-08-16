@@ -84,7 +84,12 @@ if ($setup_success) {
 				'expires' => time() + (86400 * 30),
 				'path' => '/',
 				'httponly' => true,
-				'secure' => true,
+				// Only mark Secure when served over HTTPS. On a plain-HTTP install,
+				// browsers silently refuse to store a Secure cookie, so a language
+				// selection set here would appear to work for one request (we patch
+				// $_COOKIE in memory) but never persist to the next page load.
+				// Match the app's general HTTPS/HTTP flexibility (see is_https()).
+				'secure' => is_https(),
 				'samesite' => 'Lax',
 			]);
 			// Also update $_COOKIE so language.lang.php sees the new value
