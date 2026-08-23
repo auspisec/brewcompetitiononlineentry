@@ -59,7 +59,21 @@ if ($setup_success) {
 	if (SINGLE) require_once(SSO.'sso.inc.php');
 	require (LIB.'common.lib.php');
 	require (INCLUDES.'db_tables.inc.php');
-	if ($force_update) include (UPDATE.'run_update.php');
+	if ($force_update) {
+
+		// Named lock scoped to this install's table prefix, so concurrent requests
+		// don't all re-run the full update chain against the same tables at once.
+		// Tied to the DB connection, so it releases on its own if this request
+		// dies mid-update rather than leaving the site stuck "updating" forever.
+		$update_lock_name = "bcoem_update_".$prefix;
+		$row_update_lock = $db_conn->rawQueryOne("SELECT GET_LOCK(?, 0) AS lock_acquired", array($update_lock_name));
+
+		if ($row_update_lock['lock_acquired'] == 1) {
+			include (UPDATE.'run_update.php');
+			$db_conn->rawQuery("SELECT RELEASE_LOCK(?)", array($update_lock_name));
+		}
+
+	}
 	require (LIB.'help.lib.php');
 	require (INCLUDES.'styles.inc.php'); // Establishing session vars depends upon arrays here
 	require (DB.'common.db.php');
@@ -70,15 +84,15 @@ if ($setup_success) {
 	// ---------------------------- Per-Session Language Override ----------------------------
 	// Handle ?lang=XX URL parameter to switch the user's display language.
 	// Sets a 30-day cookie and session variable, then continues rendering
-	// the current page (no redirect, so users don't lose form data).
-	// The cookie is checked on every subsequent page load in language.lang.php.
+	// the current page. The cookie is checked on every subsequent page
+	// load in language.lang.php.
 	//
-	// This feature is disabled by default. To enable, set:
-	//   $enable_language_toggle = TRUE;
-	// in config.php. When disabled, ?lang= is ignored entirely.
-	global $enable_language_toggle;
-	if (isset($enable_language_toggle) && $enable_language_toggle && isset($_GET['lang'])) {
-		$valid_langs = array_keys($languages);
+	// This feature is disabled by default. Enable it via Preferences ->
+	// General -> Localization -> Runtime Language Toggle. When disabled,
+	// ?lang= is ignored entirely.
+	if ((isset($_SESSION['prefsLanguageToggle'])) && ($_SESSION['prefsLanguageToggle'] == "Y") && (isset($_GET['lang']))) {
+		$valid_langs = json_decode($_SESSION['prefsLanguageOptions'] ?? '', true);
+		if (!is_array($valid_langs)) $valid_langs = get_available_language_codes();
 		if (in_array($_GET['lang'], $valid_langs)) {
 			setcookie('userLanguage', $_GET['lang'], [
 				'expires' => time() + (86400 * 30),
@@ -151,24 +165,18 @@ if ($setup_success) {
 
 	if (!isset($_SESSION['characterSet'])) {
 
-		$query_character_check = "SHOW VARIABLES LIKE 'character_set_database'";
-		$character_check = mysqli_query($connection,$query_character_check) or die (mysqli_error($connection));
-		$row_character_check = mysqli_fetch_assoc($character_check);
+		$row_character_check = $db_conn->rawQueryOne("SHOW VARIABLES LIKE 'character_set_database'");
 
 		// If not usf8mb4, convert DB and all tables
 		if ($row_character_check['Value'] != "utf8mb4") {
 
 			$sql = sprintf("ALTER DATABASE `%s` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;",$database);
-			mysqli_select_db($connection,$database);
-			mysqli_real_escape_string($connection,$sql);
-			$result = mysqli_query($connection,$sql) or die (mysqli_error($connection));
+			$db_conn->rawQuery($sql);
 
 			foreach ($db_table_array as $table) {
 
 				$sql = sprintf("ALTER TABLE `%s` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;",$table);
-				mysqli_select_db($connection,$database);
-				mysqli_real_escape_string($connection,$sql);
-				$result = mysqli_query($connection,$sql) or die (mysqli_error($connection));
+				$db_conn->rawQuery($sql);
 
 			}
 
@@ -188,10 +196,9 @@ if ($setup_success) {
 
 	if (!isset($_SESSION['preferencesSet'])) {
 
-		$query_prefs_check = sprintf("SELECT id FROM %s ORDER BY id ASC LIMIT 1",$preferences_db_table);
-		$prefs_check = mysqli_query($connection,$query_prefs_check) or die (mysqli_error($connection));
-		$row_prefs_check = mysqli_fetch_assoc($prefs_check);
-		$totalRows_prefs_check = mysqli_num_rows($prefs_check);
+		$db_conn->orderBy('id', 'ASC');
+		$row_prefs_check = $db_conn->getOne($preferences_db_table, 'id');
+		$totalRows_prefs_check = $db_conn->count;
 
 		if ($totalRows_prefs_check == 0) {
 
@@ -304,10 +311,9 @@ if ($setup_success) {
 	// Check if contest_info DB table is empty or does not have a row with id of 1. If so, add row with id of 1 with dummy content. Set alert flag.
 	if (!isset($_SESSION['compInfoSet'])) {
 
-		$query_contest_info_check = sprintf("SELECT id FROM %s ORDER BY id ASC LIMIT 1",$contest_info_db_table);
-		$contest_info_check = mysqli_query($connection,$query_contest_info_check) or die (mysqli_error($connection));
-		$row_contest_info_check = mysqli_fetch_assoc($contest_info_check);
-		$totalRows_contest_info_check = mysqli_num_rows($contest_info_check);
+		$db_conn->orderBy('id', 'ASC');
+		$row_contest_info_check = $db_conn->getOne($contest_info_db_table, 'id');
+		$totalRows_contest_info_check = $db_conn->count;
 
 		if ($totalRows_contest_info_check == 0) {
 

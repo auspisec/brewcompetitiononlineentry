@@ -15,6 +15,9 @@
 // sure it's able to be used by any translation file
 $mail_use_smtp = FALSE;
 
+$carat_url_var = FALSE;
+if ((isset($view)) && ($view != "default") && ((strpos($view, "^") !== FALSE) || (strpos($view, "%5E") !== FALSE))) $carat_url_var = TRUE;
+
 if (HOSTED) {
   
   $mail_use_smtp = TRUE;
@@ -40,25 +43,26 @@ $prefsLanguage = "en-US";
 $prefsLanguageFolder = "en";
 
 /**
- * Per-session language override. 
+ * Per-session language override.
  *
  * Allows users to switch languages independently of the site-wide default
  * set in Site Preferences. The cookie is set by the language toggle in
  * the navigation bar (pub/nav.pub.php) via the ?lang=XX URL parameter
  * handled in bootstrap.php.
  *
- * To enable this feature, set $enable_language_toggle = TRUE in config.php.
- * By default, this feature is disabled and the site-wide preference is
- * used exclusively (backwards-compatible with existing installations).
+ * Enabled via Preferences -> General -> Localization -> Runtime Language
+ * Toggle. By default, this feature is disabled and the site-wide
+ * preference is used exclusively (backwards-compatible with existing
+ * installations).
  *
  * The site-wide preference (from the DB) remains the default when
  * no cookie is set. This runs on every page load, so the override
  * takes effect immediately and persists across sessions (30-day cookie).
  */
-global $enable_language_toggle;
-if (isset($enable_language_toggle) && $enable_language_toggle
+if ((isset($_SESSION['prefsLanguageToggle'])) && ($_SESSION['prefsLanguageToggle'] == "Y")
     && isset($_COOKIE['userLanguage']) && isset($languages) && is_array($languages)) {
-  $valid_langs = array_keys($languages);
+  $valid_langs = json_decode($_SESSION['prefsLanguageOptions'] ?? '', true);
+  if (!is_array($valid_langs)) $valid_langs = get_available_language_codes();
   if (in_array($_COOKIE['userLanguage'], $valid_langs)) {
     $_SESSION['prefsLanguage'] = $_COOKIE['userLanguage'];
     $lang_folder_parts = explode("-", $_COOKIE['userLanguage']);
@@ -78,7 +82,9 @@ if ((isset($_SESSION['prefsLanguage'])) && (!empty($_SESSION['prefsLanguage'])))
 } 
 
 if ((isset($_SESSION['prefsLanguageFolder'])) && (!empty($_SESSION['prefsLanguageFolder']))) {
-  if ($prefsLanguage == "English") $prefsLanguageFolder = "en";
+  // A legacy "English"/"english" prefsLanguage value derives to a "english" folder
+  // upstream, which doesn't exist on disk (the actual folder is "en") - catch it here too.
+  if (strtolower($_SESSION['prefsLanguageFolder']) == "english") $prefsLanguageFolder = "en";
   else $prefsLanguageFolder = $_SESSION['prefsLanguageFolder'];
 }
 

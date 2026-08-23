@@ -29,3 +29,7 @@ templates/simple-us-entry.html
 brewingcompetitions.com
 site/config.php
 security_tests/
+lint-all.ps1
+cleanup_double_encoding.php
+*.code-workspace
+vendor/

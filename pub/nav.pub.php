@@ -20,7 +20,7 @@ if ($entry_window_open == 1) {
 }
 
 if ($_SESSION['prefsProEdition'] == 1) {
-	if (((isset($_SESSION['brewerJudge'])) && ($_SESSION['brewerJudge'] == "Y")) || ((isset($_SESSION['brewerSteward'])) && ($_SESSION['brewerSteward'] == "Y"))) {
+	if ((((isset($_SESSION['brewerJudge'])) && ($_SESSION['brewerJudge'] == "Y")) || ((isset($_SESSION['brewerSteward'])) && ($_SESSION['brewerSteward'] == "Y"))) && ($_SESSION['userLevel'] == 2)) {
 		$show_entries = FALSE;
 		$disable_pay = TRUE;
 		$add_entry_link_show = FALSE;
@@ -122,19 +122,18 @@ if ($logged_in) {
 	                <?php
 	                // --- Per-Session Language Toggle ---
 	                // Shows a globe icon dropdown with available languages.
-	                // Only displayed when multi-language support is explicitly
-	                // enabled via $enable_language_toggle = TRUE in config.php
-	                // AND more than one language is available.
-	                // Users' selection is stored in a 30-day cookie (see bootstrap.php).
-	                // Links to the current page URL with ?lang= appended so users
-	                // don't lose their place when switching languages.
-	                global $enable_language_toggle;
-	                if (isset($enable_language_toggle) && $enable_language_toggle && count($languages) > 1) {
-	                    // Build the current page URL (without existing ?lang= param).
-	                    // Strip lang= from the RAW URI BEFORE escaping: if we escaped
-	                    // first, '&' would become '&amp;' and the regex (which needs a
-	                    // literal '&' or '?') would never match on multi-param URLs,
-	                    // letting stale lang= entries accumulate on each switch.
+                // Only displayed when enabled via Preferences -> General ->
+                // Localization -> Runtime Language Toggle, AND more than one
+                // language is available for selection.
+                // Users' selection is stored in a 30-day cookie (see bootstrap.php).
+                // Links to the current page URL with ?lang= appended so users
+                // don't lose their place when switching languages.
+                $nav_language_options = json_decode($_SESSION['prefsLanguageOptions'] ?? '', true);
+                if (!is_array($nav_language_options)) $nav_language_options = get_available_language_codes();
+                $nav_languages = array_intersect_key($languages, array_flip($nav_language_options));
+
+                if ((isset($_SESSION['prefsLanguageToggle'])) && ($_SESSION['prefsLanguageToggle'] == "Y") && (count($nav_languages) > 1)) {
+                    // Build the current page URL (without existing ?lang= param)
 	                    $current_url = preg_replace('/[?&]lang=[^&]+/', '', $_SERVER['REQUEST_URI']);
 	                    // Determine separator (? or &)
 	                    $lang_sep = (strpos($current_url, '?') !== false) ? '&' : '?';
@@ -144,7 +143,7 @@ if ($logged_in) {
 	                        <i class="fa fa-lg fa-fw fa-globe"></i>
 	                    </a>
 	                    <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
-	                        <?php foreach ($languages as $lang_code => $lang_name) {
+                        <?php foreach ($nav_languages as $lang_code => $lang_name) {
 	                            $lang_active = (isset($_SESSION['prefsLanguage']) && $_SESSION['prefsLanguage'] == $lang_code);
 	                        ?>
 	                        <li class="small">

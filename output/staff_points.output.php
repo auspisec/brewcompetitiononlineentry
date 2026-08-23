@@ -54,14 +54,13 @@ include (DB.'output_staff_points.db.php');
  * least 30 entries in at least five beer and/or three 
  * mead/cider categories."
  * 
- * Need to get the total number of entries judged. Presumably,
- * that number is the same as the total number of entries
- * marked as received.
- * 
- * $total_entries_received is defined in constants.
- * 
+ * $total_entries_received holds BJCP's "number of entries" figure: judged
+ * entries take precedence whenever any judging has happened, falling back
+ * through received, then paid, then every entry on record.
+ * @see get_bjcp_entry_count() in lib/common.lib.php.
+ *
  * @see export.output.php for XML output.
- * 
+ *
  */
 
 $bos_alert = "";
@@ -70,20 +69,22 @@ $beer_styles_total = 0;
 $mead_styles_total = 0;
 $cider_styles_total = 0;
 
-do {
+foreach ($rows_styles2 as $row_styles2) {
     if (($row_styles2['brewStyleType'] == "Cider") || ($row_styles2['brewStyleType'] == "2")) $cider_styles_total++;
     elseif (($row_styles2['brewStyleType'] == "Mead") || ($row_styles2['brewStyleType'] == "3")) $mead_styles_total++;
     else $beer_styles_total++;
-} while ($row_styles2 = mysqli_fetch_assoc($styles2));
+}
 
 $mead_cider_total = $mead_styles_total + $cider_styles_total;
 $all_styles_total = $beer_styles_total + $mead_styles_total + $cider_styles_total;
 
-$total_entries_scored = get_entry_count("scored");
-
-// Possiblity of more scored entries than marked as received. Slim, but could happen.
-// Best to go with what has presumably been judged.
-if ($total_entries_scored > $total_entries_received) $total_entries_received = $total_entries_scored;
+// Get number of entries for BJCP compliance reporting: judged
+// entries take precedence whenever any judging has happened, falling back
+// through received, then paid, then every entry on record. $total_entries_received
+// keeps its name for the BOS 30-entry eligibility check below, but now holds
+// this cascaded value.
+$bjcp_entry_count = get_bjcp_entry_count();
+$total_entries_received = $bjcp_entry_count['count'];
 
 if ($total_entries_received >= 30) {
 	if (($beer_styles_total >= 5) || ($mead_cider_total >= 3)) $bos_judge_points = 0.5;
@@ -129,11 +130,11 @@ if ($view == "default") {
 
 	if ($totalRows_judges > 0) {
 
-		do { 
-			
-			$j[] = $row_judges['uid']; 
-		
-		} while ($row_judges = mysqli_fetch_assoc($judges));
+		foreach ($rows_judges as $row_judges) {
+
+			$j[] = $row_judges['uid'];
+
+		}
 
 		$j = array_unique($j);
 
@@ -183,7 +184,7 @@ if ($view == "default") {
 
 	foreach (array_unique($bos_judge_no_assignment) as $uid) {
 
-		if (($total_entries >= 30) && (($beer_styles >= 5) || ($mead_cider >= 3))) {
+		if (($total_entries_received >= 30) && (($beer_styles_total >= 5) || ($mead_cider_total >= 3))) {
 			
 			// Best of Show judges criteria
 			// "BOS Judges are eligible to receive 0.5 Best-of-Show (BOS) Judge Points if they judge in any BOS panel in a competition."
@@ -221,12 +222,12 @@ if ($view == "default") {
 	}
 
 	if ($totalRows_stewards > 0) {
-        
-		do { 
-			
-			$s[] = $row_stewards['uid']; 
-		
-		} while ($row_stewards = mysqli_fetch_assoc($stewards));
+
+		foreach ($rows_stewards as $row_stewards) {
+
+			$s[] = $row_stewards['uid'];
+
+		}
 
 		foreach (array_unique($s) as $uid) {
 			
@@ -255,13 +256,13 @@ if ($view == "default") {
 	}
 
 	if ($totalRows_staff > 0) {
-        
-		do {
 
-			$st[] = $row_staff['uid']; 
-		
-		} while ($row_staff = mysqli_fetch_assoc($staff));
-		
+		foreach ($rows_staff as $row_staff) {
+
+			$st[] = $row_staff['uid'];
+
+		}
+
 		$st_running_total = 0;
 		
 		foreach (array_unique($st) as $uid) {

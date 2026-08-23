@@ -81,10 +81,8 @@ if ($setup_free_access == TRUE) {
 		 */
 
 		$sql = sprintf("ALTER DATABASE `%s` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;",$database);
-		mysqli_select_db($connection,$database);
-		mysqli_real_escape_string($connection,$sql);
-		$result = mysqli_query($connection,$sql) or die (mysqli_error($connection));
-		if (!$result) {
+		$db_conn->rawQuery($sql);
+		if ($db_conn->getLastErrno()) {
 			$error_output[] = $db_conn->getLastError();
 			$errors = TRUE;
 			$output .= "<li class=\"list-group-item\"><span class=\"fa fa-lg fa-times text-danger\"></span> DB character set NOT changed to UTF8-mb4.</li>";
@@ -270,8 +268,8 @@ if ($setup_free_access == TRUE) {
 			`contestAwardsLocTime` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 			`contestShippingOpen` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 			`contestShippingDeadline` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-			`contestEntryFee` float(6,2) DEFAULT NULL,
-			`contestEntryFee2` float(6,2) DEFAULT NULL,
+			`contestEntryFee` decimal(9,2) DEFAULT NULL,
+			`contestEntryFee2` decimal(9,2) DEFAULT NULL,
 			`contestEntryFeeDiscount` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 			`contestEntryFeeDiscountNum` char(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 			`contestDropoffOpen` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -284,7 +282,7 @@ if ($setup_free_access == TRUE) {
 			`contestDropoffDeadline` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 			`contestEntryCap` int(8) DEFAULT NULL,
 			`contestEntryFeePassword` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-			`contestEntryFeePasswordNum` int(11) DEFAULT NULL,
+			`contestEntryFeePasswordNum` decimal(9,2) DEFAULT NULL,
 			`contestID` varchar(11) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 			`contestCircuit` mediumtext COLLATE utf8mb4_unicode_ci,
 			`contestVolunteers` mediumtext COLLATE utf8mb4_unicode_ci,
@@ -685,9 +683,12 @@ if ($setup_free_access == TRUE) {
 			`prefsEntryLimitPaid` int(4) DEFAULT NULL,
 			`prefsEmailRegConfirm` tinyint(1) DEFAULT NULL,
 			`prefsLanguage` varchar(25) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+			`prefsLanguageToggle` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Allow visitors to switch their own display language at runtime',
+			`prefsLanguageOptions` mediumtext COLLATE utf8mb4_unicode_ci COMMENT 'JSON array of language codes selectable via the runtime language toggle',
 			`prefsSpecific` tinyint(1) DEFAULT NULL,
 			`prefsDropOff` tinyint(1) DEFAULT NULL,
 			`prefsShipping` tinyint(1) DEFAULT NULL,
+			`prefsHeroImages` mediumtext COLLATE utf8mb4_unicode_ci COMMENT 'JSON map of hero banner image filename to active flag',
 			PRIMARY KEY (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 		", $preferences_db_table);
@@ -752,6 +753,8 @@ if ($setup_free_access == TRUE) {
 			'prefsShipping' => '1',
 			'prefsDropOff' => '1',
 			'prefsLanguage' => 'en-US',
+			'prefsLanguageToggle' => 'N',
+			'prefsLanguageOptions' => '["pt-BR","cs-CZ","en-GB","en-US","fr-FR","hu-HU","es-419"]',
 			'prefsSpecific' => '1',
 			'prefsShowBestBrewer' => '0',
 			'prefsBestBrewerTitle' => NULL,
@@ -768,7 +771,8 @@ if ($setup_free_access == TRUE) {
 			'prefsTieBreakRule6' => NULL,
 			'prefsShowBestClub' => '0',
 			'prefsBestClubTitle' => NULL,
-			'prefsCAPTCHA' => '0'
+			'prefsCAPTCHA' => '0',
+			'prefsHeroImages' => NULL
 		);
 		$result = $db_conn->insert ($update_table, $data);
 		if (!$result) {
@@ -879,9 +883,7 @@ if ($setup_free_access == TRUE) {
 		// -------------------
 
 		$sql = sprintf("DROP TABLE IF EXISTS %s;",$prefix."styles");
-		mysqli_select_db($connection,$database);
-		mysqli_real_escape_string($connection,$sql);
-		$result = mysqli_query($connection,$sql) or die (mysqli_error($connection));
+		$db_conn->rawQuery($sql);
 
 		$sql = sprintf("
 			CREATE TABLE `%s` (

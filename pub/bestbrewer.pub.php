@@ -38,7 +38,7 @@ if ($bb_totalRows_scores > 0) {
 	$bb_show = TRUE;
 
 	// Loop through brewing table for preliminary round scores
-	do {
+	foreach ($rows_bb_scores as $bb_row_scores) {
 
 		$place = floor($bb_row_scores['scorePlace']);
 		$club_name = normalizeClubs($bb_row_scores['brewerClubs']);
@@ -237,7 +237,7 @@ if ($bb_totalRows_scores > 0) {
 			
 		}
 
-	} while ($bb_row_scores = mysqli_fetch_assoc($bb_scores));
+	}
 
 }
 
@@ -246,7 +246,7 @@ if ($row_bb_prefs['prefsBestUseBOS'] == 1) {
 
 	if ($bb_totalRows_bos_scores > 0) {
 
-		do {
+		foreach ($rows_bb_bos_scores as $bb_row_bos_scores) {
 
 			$club_name = normalizeClubs($bb_row_bos_scores['brewerClubs']);
 
@@ -254,7 +254,7 @@ if ($row_bb_prefs['prefsBestUseBOS'] == 1) {
 				$place = floor($bb_row_bos_scores['scorePlace']);
 				if (($place == $bb_row_bos_scores['scorePlace']) && ($place >= 1) && ($place <= 5)) $bestbrewer[$bb_row_bos_scores['uid']]['Places'][$place-1] += 1;
 				$bestbrewer[$bb_row_bos_scores['uid']]['Scores'][] = $bb_row_bos_scores['scoreEntry'];
-				$bestbrewer[$bb_row_bos_scores['uid']]['TypeBOS'][] += 1;
+				$bestbrewer[$bb_row_bos_scores['uid']]['TypeBOS'][] = 1;
 
 				// Compile separate vars for clubs
 				if (!empty($bb_row_bos_scores['brewerClubs'])) {
@@ -306,7 +306,7 @@ if ($row_bb_prefs['prefsBestUseBOS'] == 1) {
 
 			}
 
-		} while ($bb_row_bos_scores = mysqli_fetch_assoc($bb_bos_scores));
+		}
 
 	}
 

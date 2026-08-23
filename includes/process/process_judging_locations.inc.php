@@ -4,7 +4,7 @@
  * Description: This module does all the heavy lifting for adding/editing info in the "judging_locations" table
  */
 
-if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) && ((isset($_SESSION['userLevel'])) && ($_SESSION['userLevel'] == 0))) || ($section == "setup"))) {
+if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) && ((isset($_SESSION['userLevel'])) && ($_SESSION['userLevel'] == 0))) || ($setup_free_access))) {
 
 	$errors = FALSE;
 	$error_output = array();
@@ -15,7 +15,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 	$config_html_purifier = HTMLPurifier_Config::createDefault();
 	$purifier = new HTMLPurifier($config_html_purifier);
 
-	$judgingDate = strtotime(sterilize($_POST['judgingDate']));
+	$judgingDate = to_utc_epoch(sterilize($_POST['judgingDate']), $timezone_raw);
 	$judgingLocName = sterilize($_POST['judgingLocName']);
 	$judgingLocName = $purifier->purify($judgingLocName);
 	$judgingLocation = sterilize($_POST['judgingLocation']);
@@ -31,7 +31,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 	}
 	
 	if (isset($_POST['judgingRounds'])) $judgingRounds = sterilize($_POST['judgingRounds']);
-	if (!empty($_POST['judgingDateEnd'])) $judgingDateEnd = strtotime(sterilize($_POST['judgingDateEnd']));
+	if (!empty($_POST['judgingDateEnd'])) $judgingDateEnd = to_utc_epoch(sterilize($_POST['judgingDateEnd']), $timezone_raw);
 	if (empty($judgingLocType)) $judgingLocType = 0;
 
 	$update_table = $prefix."judging_locations";

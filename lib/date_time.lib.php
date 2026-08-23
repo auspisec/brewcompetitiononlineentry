@@ -31,8 +31,12 @@ function get_timezone($offset) {
 				'-6.001' => 'America/Hermosillo', // No DST in this area of Mexico
 				'-6.002' => 'America/Regina', // No DST in this area of Canada
         '-5.000' => 'America/New_York',
-        '-4.000' => 'America/Virgin',
+        '-5.001' => 'America/Bogota', // No DST for Colombia, Peru
+        '-4.000' => 'America/Virgin', // No DST; matches Caracas, La Paz
         '-4.001' => 'America/Asuncion', // DST observed in Paraguay
+        '-4.002' => 'America/Halifax', // DST observed in Atlantic Canada
+        '-4.003' => 'America/Santiago', // DST observed in Chile (Southern Hemisphere pattern)
+        '-4.004' => 'America/Thule', // DST observed in Greenland (Thule/Pituffik)
         '-3.500' => 'America/St_Johns',
         '-3.000' => 'America/Argentina/Buenos_Aires',
 				'-3.001' => 'America/Sao_Paulo', // No DST for region of Brazil
@@ -53,6 +57,7 @@ function get_timezone($offset) {
         '8.000' => 'Asia/Singapore',
 				'8.001' => 'Australia/Perth', // No DST for this part of Australia
         '9.000' => 'Asia/Tokyo',
+        '9.001' => 'Asia/Seoul', // South Korea (same offset as Tokyo, no DST, but a distinct region/abbreviation)
         '9.500' => 'Australia/Darwin',
         '10.000' => 'Pacific/Guam',
 				'10.001' => 'Australia/Brisbane', // No DST for this part of Australia
@@ -75,26 +80,29 @@ function convert_timestamp($time_string, $timezone, $offset, $method) {
 	// Method 1: convert to GMT for storage in DB
 	if ($method == 1) {
 
-		// 1. convert the time string specified in the current timezone to UTC (GMT) using built in PHP functions
-		date_default_timezone_set($timezone);
-		$timestamp = strtotime($time_string);
+		// Parse the time string as wall time in the given timezone, then read
+		// off the UTC Unix epoch. Uses an explicit DateTimeZone rather than
+		// date_default_timezone_set() so this never mutates PHP's global
+		// default timezone for whatever else runs later in the request.
+		try {
+			$dt = new DateTime($time_string, new DateTimeZone($timezone));
+		}
+		catch (Exception $e) {
+			return false;
+		}
 
-		// 2. return the value
-		return $timestamp;
+		return $dt->getTimestamp();
 
 	}
 
 	// Method 2: convert from GMT to selected timezone
 	if ($method == 2) {
-		
-		// GMT date/time is always stored in DB
-		// 1. make sure the timezone is UTC (GMT)
-		date_default_timezone_set('UTC');
 
-		// 2. convert the GMT timestamp to the desired timezone using the provided offset
+		// GMT date/time is always stored in DB. Apply the provided offset
+		// (in hours) to get the "local" epoch representation. Pure integer
+		// arithmetic - no timezone state involved.
 		$timestamp = $time_string += ($offset * 3600);
 
-		// 3. return the value
 		return $timestamp;
 
 	}
@@ -136,11 +144,51 @@ function format_locale_date($timestamp, $locale, $tz, $pattern) {
 	return $fmt->format($timestamp);
 }
 
+/**
+ * Convert a datetime string displayed by getTimeZoneDateTime() back to a
+ * UTC Unix epoch integer for consistent storage.
+ *
+ * The form displays a datetime in the admin's current prefsTimeZone.
+ * This helper parses it in that timezone, then converts to UTC epoch so
+ * the stored value is timezone-independent.
+ *
+ * @param string  $datetime_string   Raw POST value, e.g. "2025-06-15 14:00"
+ * @param float   $timezone_offset  prefsTimeZone float from preferences table, e.g. -5.000
+ * @return int|false                UTC Unix epoch, or false on failure
+ */
+function to_utc_epoch($datetime_string, $timezone_offset) {
+
+	if (empty($datetime_string)) return false;
+
+	// Parse the datetime as wall time in the admin's timezone, then read off
+	// the UTC Unix epoch. Uses an explicit DateTimeZone rather than
+	// date_default_timezone_set() so this never mutates PHP's global default
+	// timezone for whatever else runs later in the request - PHP resolves
+	// DST internally either way, so no manual offset arithmetic is needed.
+	$tz = get_timezone($timezone_offset);
+
+	try {
+		$dt = new DateTime($datetime_string, new DateTimeZone($tz));
+	}
+	catch (Exception $e) {
+		return false;
+	}
+
+	return $dt->getTimestamp();
+
+}
+
 function getTimeZoneDateTime($timezone_offset, $timestamp, $date_format, $time_format, $display_format, $return_format) {
 
 	$tz = get_timezone($timezone_offset); // convert offset number to PHP timezone
-  
-  date_default_timezone_set($tz);
+
+	// Render via an explicit DateTime/DateTimeZone rather than
+	// date_default_timezone_set() + date(), so this never mutates PHP's
+	// global default timezone for whatever else runs later in the request.
+	// The "@timestamp" form always constructs in UTC regardless of the
+	// timezone passed to the constructor, so it's set explicitly after.
+	$dt = new DateTime('@'.$timestamp);
+	$dt->setTimezone(new DateTimeZone($tz));
 
 	// Determine the user's locale for locale-aware formatting.
 	// When the user's language is non-English and the intl extension
@@ -157,56 +205,56 @@ function getTimeZoneDateTime($timezone_offset, $timestamp, $date_format, $time_f
 
 		// Long Format
 		case "long":
-			if ($locale !== null) {
-				// Locale-aware formatting via IntlDateFormatter
-				// Map the existing date_format preferences:
-				//   1 => "Weekday, Month D, YYYY" (US style)
-				//   else => "Weekday D Month, YYYY" (intl style)
-				if ($date_format == "1")
-					$pattern = 'EEEE, MMMM d, y';
-				else
-					$pattern = 'EEEE d MMMM, y';
+				if ($locale !== null) {
+					// Locale-aware formatting via IntlDateFormatter
+					// Map the existing date_format preferences:
+					//   1 => "Weekday, Month D, YYYY" (US style)
+					//   else => "Weekday D Month, YYYY" (intl style)
+					if ($date_format == "1")
+						$pattern = 'EEEE, MMMM d, y';
+					else
+						$pattern = 'EEEE d MMMM, y';
 
-				$formatted = format_locale_date($timestamp, $locale, $tz, $pattern);
-				if ($formatted !== null) {
-					$date = $formatted;
+					$formatted = format_locale_date($timestamp, $locale, $tz, $pattern);
+					if ($formatted !== null) {
+						$date = $formatted;
+					} else {
+						// Fallback: intl extension not available
+						if ($date_format == "1") $date = $dt->format('l, F j, Y');
+						else $date = $dt->format('l j F, Y');
+					}
 				} else {
-					// Fallback: intl extension not available
-					if ($date_format == "1") $date = date('l, F j, Y', $timestamp);
-					else $date = date('l j F, Y', $timestamp);
+					// English: keep original behaviour for backwards compat
+					if ($date_format == "1") $date = $dt->format('l, F j, Y');
+					else $date = $dt->format('l j F, Y');
 				}
-			} else {
-				// English: keep original date() behaviour for backwards compat
-				if ($date_format == "1") $date = date('l, F j, Y', $timestamp);
-				else $date = date('l j F, Y', $timestamp);
-			}
 		break;
 
 		// Short Format
 		case "short":
-			if ($date_format == 1) $date = date('m/d/Y', $timestamp);
-			elseif ($date_format == 2) $date = date('d/m/Y',$timestamp);
-			elseif ($date_format == 999) $date = date('Y-m-d H:i:s',$timestamp);
-			else $date = date('Y/m/d', $timestamp);
+			if ($date_format == 1) $date = $dt->format('m/d/Y');
+			elseif ($date_format == 2) $date = $dt->format('d/m/Y');
+			elseif ($date_format == 999) $date = $dt->format('Y-m-d H:i:s');
+			else $date = $dt->format('Y/m/d');
 		break;
 
 		// MySQL Format
 		case "system":
-			$date = date('Y-m-d', $timestamp);
+			$date = $dt->format('Y-m-d');
 		break;
 
 		// XML Report Format
 		case "xml":
-			if ($locale !== null) {
-				$formatted = format_locale_date($timestamp, $locale, $tz, 'EEEE d MMMM y');
-				if ($formatted !== null) {
-					$date = $formatted;
+				if ($locale !== null) {
+					$formatted = format_locale_date($timestamp, $locale, $tz, 'EEEE d MMMM y');
+					if ($formatted !== null) {
+						$date = $formatted;
+					} else {
+						$date = $dt->format('l j F Y');
+					}
 				} else {
-					$date = date('l j F Y', $timestamp);
+					$date = $dt->format('l j F Y');
 				}
-			} else {
-				$date = date('l j F Y', $timestamp);
-			}
 		break;
 
 	}
@@ -214,7 +262,7 @@ function getTimeZoneDateTime($timezone_offset, $timestamp, $date_format, $time_f
 	// Time formatting
 	if ($time_format == "1") {
 		// 24-hour format is locale-neutral (numeric only)
-		$time = date('H:i',$timestamp);
+		$time = $dt->format('H:i');
 	} else {
 		// 12-hour format with AM/PM
 		if ($locale !== null) {
@@ -222,45 +270,45 @@ function getTimeZoneDateTime($timezone_offset, $timestamp, $date_format, $time_f
 			if ($formatted_time !== null) {
 				$time = $formatted_time;
 			} else {
-				$time = date('g:i A',$timestamp);
+				$time = $dt->format('g:i A');
 			}
 		} else {
-			$time = date('g:i A',$timestamp);
+			$time = $dt->format('g:i A');
 		}
 	}
 
 	switch($return_format) {
-		
+
 		case "date-time":
-			$return = $date." ".$time.", ".date('T',$timestamp);
+			$return = $date." ".$time.", ".$dt->format('T');
 		break;
-		
+
 		case "date-time-no-gmt":
 			$return = $date." ".$time;
 		break;
-		
+
 		case "date-time-system":
 			$return = $date." ".$time;
 		break;
-		
+
 		case "date-no-gmt":
 			$return = $date;
 		break;
-		
+
 		case "time-gmt":
-			$return = $time.", ".date('T',$timestamp);
+			$return = $time.", ".$dt->format('T');
 		break;
-		
+
 		case "time":
 			$return = $time;
 		break;
 
 		case "year":
-			$return = date('Y', $timestamp);
+			$return = $dt->format('Y');
 		break;
-		
+
 		default: $return = $date;
-	
+
 	}
 
 	return $return;
@@ -280,28 +328,26 @@ function greaterDate($start_date, $end_date) {
 function judging_date_return() {
 	
 	require(CONFIG.'config.php');
-	mysqli_select_db($connection,$database);
+	$db_conn = new MysqliDb($connection);
 
 	$r = 0;
 	$today = time();
 
-	$query_check = sprintf("SELECT judgingDate FROM %s", $prefix."judging_locations");
-	$check = mysqli_query($connection,$query_check) or die (mysqli_error($connection));
-	$row_check = mysqli_fetch_assoc($check);
-	$totalRows_check = mysqli_num_rows($check);
+	$rows_check = $db_conn->get($prefix."judging_locations", null, "judgingDate");
+	$totalRows_check = $db_conn->count;
 
 	// Check if the start date/time has passed
 	// If so, increase output by 1
 	if ($totalRows_check > 0) {
-		
-		do {
-			
+
+		foreach ($rows_check as $row_check) {
+
 			if (isset($row_check['judgingDate'])) {
 				if ($row_check['judgingDate'] >= time()) $r += 1;
 			}
 
-		} while ($row_check = mysqli_fetch_assoc($check));
-		
+		}
+
 	}
 	
 	return $r;
