@@ -167,7 +167,7 @@
 
         if ($totalRows_archive > 0) {
 
-            do {
+            foreach ($row_archive as $row_archive) {
 
                 if (($row_archive['archiveDisplayWinners'] == "Y") && ($row_archive['archiveStyleSet'] != "")) {
                     $table_archive = $prefix."judging_scores_".$row_archive['archiveSuffix'];
@@ -179,9 +179,9 @@
                             else $archive_alert_content .= "<li class=\"nav-item\"><a class=\"nav-link\" href=\"".$archive_link."\"><i class=\"fa fa-fw fa-trophy text-silver me-2\"></i>".$row_archive['archiveSuffix']."</a></li>";
                         }
                     }
-                }   
+                }
 
-            } while($row_archive = mysqli_fetch_assoc($archive));
+            }
 
         }
 
