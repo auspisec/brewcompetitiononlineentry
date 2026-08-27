@@ -285,7 +285,7 @@ if (((strpos($section, "step") === FALSE) && ($section != "setup")) && ($section
             $registration_open = 2;
         }
 
-        if (strpos($_SESSION['prefsLanguage'],"en-") !== false) $sidebar_date_format = "long";
+        $sidebar_date_format = "long";
 
         $reg_open = getTimeZoneDateTime($_SESSION['prefsTimeZone'], $row_contest_dates['contestRegistrationOpen'], $_SESSION['prefsDateFormat'], $_SESSION['prefsTimeFormat'], $sidebar_date_format, "date-time");
         $reg_closed = getTimeZoneDateTime($_SESSION['prefsTimeZone'], $reg_closed_date, $_SESSION['prefsDateFormat'], $_SESSION['prefsTimeFormat'], $sidebar_date_format, "date-time");
