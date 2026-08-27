@@ -76,47 +76,53 @@ if ($setup_success) {
 	}
 	require (LIB.'help.lib.php');
 	require (INCLUDES.'styles.inc.php'); // Establishing session vars depends upon arrays here
-	require (DB.'common.db.php');
-	require (DB.'brewer.db.php');
-	require (DB.'entries.db.php');
-	require (INCLUDES.'constants.inc.php');
 
-	// ---------------------------- Per-Session Language Override ----------------------------
+	// ---------------------------- Per-Session Language Override (pre-DB) ----------------------------
 	// Handle ?lang=XX URL parameter to switch the user's display language.
-	// Sets a 30-day cookie and session variable, then continues rendering
-	// the current page. The cookie is checked on every subsequent page
-	// load in language.lang.php.
-	//
-	// This feature is disabled by default. Enable it via Preferences ->
-	// General -> Localization -> Runtime Language Toggle. When disabled,
-	// ?lang= is ignored entirely.
-	if ((isset($_SESSION['prefsLanguageToggle'])) && ($_SESSION['prefsLanguageToggle'] == "Y") && (isset($_GET['lang']))) {
-		$valid_langs = json_decode($_SESSION['prefsLanguageOptions'] ?? '', true);
-		if (!is_array($valid_langs)) $valid_langs = get_available_language_codes();
-		if (in_array($_GET['lang'], $valid_langs)) {
-			setcookie('userLanguage', $_GET['lang'], [
-				'expires' => time() + (86400 * 30),
-				'path' => '/',
-				'httponly' => true,
-				// Only mark Secure when served over HTTPS. On a plain-HTTP install,
-				// browsers silently refuse to store a Secure cookie, so a language
-				// selection set here would appear to work for one request (we patch
-				// $_COOKIE in memory) but never persist to the next page load.
-				// Match the app's general HTTPS/HTTP flexibility (see is_https()).
-				'secure' => is_https(),
-				'samesite' => 'Lax',
-			]);
-			// Also update $_COOKIE so language.lang.php sees the new value
-			// immediately on this same page load (setcookie only affects
-			// the response header; $_COOKIE still holds the old request value).
-			$_COOKIE['userLanguage'] = $_GET['lang'];
-			$_SESSION['prefsLanguage'] = $_GET['lang'];
-			$lang_folder_parts = explode("-", $_GET['lang']);
-			$_SESSION['prefsLanguageFolder'] = strtolower($lang_folder_parts[0]);
+	// This runs BEFORE common.db.php so that $_SESSION['prefsLanguage'] is
+	// already set to the user's choice when constants.inc.php formats dates.
+	// The cookie is also checked here so returning visitors get their language
+	// immediately, without a flash of the DB-default language on first load.
+	if (isset($_COOKIE['userLanguage'])) {
+		$_SESSION['prefsLanguage'] = $_COOKIE['userLanguage'];
+		$lang_folder_parts = explode("-", $_COOKIE['userLanguage']);
+		$_SESSION['prefsLanguageFolder'] = strtolower($lang_folder_parts[0]);
+	}
+	if ((isset($_GET['lang'])) && (isset($_COOKIE['userLanguage']) || isset($_SESSION['prefsLanguageToggle'])) ) {
+		// Validate against available languages if the toggle is enabled
+		if ((isset($_SESSION['prefsLanguageToggle'])) && ($_SESSION['prefsLanguageToggle'] == "Y")) {
+			$valid_langs = json_decode($_SESSION['prefsLanguageOptions'] ?? '', true);
+			if (!is_array($valid_langs)) $valid_langs = get_available_language_codes();
+			if (in_array($_GET['lang'], $valid_langs)) {
+				setcookie('userLanguage', $_GET['lang'], [
+					'expires' => time() + (86400 * 30),
+					'path' => '/',
+					'httponly' => true,
+					// Only mark Secure when served over HTTPS. On a plain-HTTP install,
+					// browsers silently refuse to store a Secure cookie, so a language
+					// selection set here would appear to work for one request (we patch
+					// $_COOKIE in memory) but never persist to the next page load.
+					// Match the app's general HTTPS/HTTP flexibility (see is_https()).
+					'secure' => is_https(),
+					'samesite' => 'Lax',
+				]);
+				// Also update $_COOKIE so language.lang.php sees the new value
+				// immediately on this same page load (setcookie only affects
+				// the response header; $_COOKIE still holds the old request value).
+				$_COOKIE['userLanguage'] = $_GET['lang'];
+				$_SESSION['prefsLanguage'] = $_GET['lang'];
+				$lang_folder_parts = explode("-", $_GET['lang']);
+				$_SESSION['prefsLanguageFolder'] = strtolower($lang_folder_parts[0]);
+			}
 		}
 		// No redirect — continue rendering the current page with the new language.
 		// The ?lang= parameter is simply ignored on this page load.
 	}
+
+	require (DB.'common.db.php');
+	require (DB.'brewer.db.php');
+	require (DB.'entries.db.php');
+	require (INCLUDES.'constants.inc.php');
 
 	require (LANG.'language.lang.php');
 	require (INCLUDES.'headers.inc.php');
