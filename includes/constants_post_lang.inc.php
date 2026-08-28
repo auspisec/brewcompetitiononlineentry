@@ -34,7 +34,8 @@ if (!function_exists("translate_mead_req_value")) {
     function translate_mead_req_value($value) {
 
         global $label_still, $label_petillant, $label_sparkling,
-               $label_dry, $label_med_dry, $label_med, $label_med_sweet, $label_sweet;
+               $label_dry, $label_med_dry, $label_med, $label_med_sweet, $label_sweet,
+               $label_semi_dry, $label_semi_sweet;
 
         $mead_req_labels = array(
             // Carbonation (brewMead1)
@@ -47,6 +48,9 @@ if (!function_exists("translate_mead_req_value")) {
             "Medium"       => $label_med,
             "Medium Sweet" => $label_med_sweet,
             "Sweet"        => $label_sweet,
+            // Cider sweetness values (brewMead2-cider radios)
+            "Semi-Dry"     => $label_semi_dry,
+            "Semi-Sweet"   => $label_semi_sweet,
         );
 
         if (isset($mead_req_labels[$value])) return $mead_req_labels[$value];
