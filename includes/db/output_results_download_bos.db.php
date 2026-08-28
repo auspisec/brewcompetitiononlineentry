@@ -22,10 +22,31 @@ if ((!empty($type)) && (is_numeric($type)) && (table_exists($style_types_db_tabl
 
 	if ((isset($row_style_type_1['styleTypeBOS'])) && ($row_style_type_1['styleTypeBOS'] == "Y") && (table_exists($judging_scores_bos_db_table)) && (table_exists($brewing_db_table)) && (table_exists($brewer_db_table))) {
 
+		// SAAZ: generic combined-BOS support - pull BOS results for this
+		// type plus any types it includes (styleTypeIncludes). Falls back
+		// to the legacy hardcoded Mead/Cider (type 4) behavior.
+		$combined_types = array();
+		if (function_exists("bos_combine_get_includes")) {
+			$includes = bos_combine_get_includes($type);
+			if ($includes !== "") {
+				foreach (explode(",", $includes) as $inc) {
+					$inc = intval(trim($inc));
+					if ($inc > 0) $combined_types[] = $inc;
+				}
+			}
+		}
+
 	    if ($type == "4") {
 	    	$sql_bos = sprintf("SELECT a.scorePlace, b.brewName, b.brewCategory, b.brewCategorySort, b.brewSubCategory, b.brewStyle, b.brewCoBrewer, c.brewerLastName, c.brewerFirstName, c.brewerCity, c.brewerState, c.brewerCountry, c.brewerBreweryName, c.brewerClubs FROM %s a, %s b, %s c WHERE a.eid = b.id AND a.scorePlace IS NOT NULL AND c.uid = b.brewBrewerID AND (a.scoreType='2' OR a.scoreType='3' OR a.scoreType='4') ORDER BY a.scorePlace", $judging_scores_bos_db_table, $brewing_db_table, $brewer_db_table);
 	    	$rows_bos = $db_conn->rawQuery($sql_bos);
 	    }
+
+		elseif (!empty($combined_types)) {
+			$scoretype_parts = array("a.scoreType='".intval($type)."'");
+			foreach ($combined_types as $ct) $scoretype_parts[] = "a.scoreType='".intval($ct)."'";
+			$sql_bos = sprintf("SELECT a.scorePlace, b.brewName, b.brewCategory, b.brewCategorySort, b.brewSubCategory, b.brewStyle, b.brewCoBrewer, c.brewerLastName, c.brewerFirstName, c.brewerCity, c.brewerState, c.brewerCountry, c.brewerBreweryName, c.brewerClubs FROM %s a, %s b, %s c WHERE a.eid = b.id AND a.scorePlace IS NOT NULL AND c.uid = b.brewBrewerID AND (".implode(" OR ", $scoretype_parts).") ORDER BY a.scorePlace", $judging_scores_bos_db_table, $brewing_db_table, $brewer_db_table);
+			$rows_bos = $db_conn->rawQuery($sql_bos);
+		}
 
 		else {
 			$sql_bos = sprintf("SELECT a.scorePlace, b.brewName, b.brewCategory, b.brewCategorySort, b.brewSubCategory, b.brewStyle, b.brewCoBrewer, c.brewerLastName, c.brewerFirstName, c.brewerCity, c.brewerState, c.brewerCountry, c.brewerBreweryName, c.brewerClubs FROM %s a, %s b, %s c WHERE a.eid = b.id AND a.scorePlace IS NOT NULL AND c.uid = b.brewBrewerID AND a.scoreType=? ORDER BY a.scorePlace", $judging_scores_bos_db_table, $brewing_db_table, $brewer_db_table);

@@ -160,6 +160,19 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 		else {
 
 			$update_table = $prefix."style_types";
+
+			// SAAZ: generic combined-BOS support - persist the checked
+			// "Combine BOS With" style types as a comma-separated id list.
+			$styleTypeIncludes = "";
+			if (isset($_POST['styleTypeIncludes']) && (is_array($_POST['styleTypeIncludes']))) {
+				$includes_clean = array();
+				foreach ($_POST['styleTypeIncludes'] as $inc_id) {
+					$inc_id = intval(sterilize($inc_id));
+					if ($inc_id > 0) $includes_clean[] = $inc_id;
+				}
+				$styleTypeIncludes = implode(",", $includes_clean);
+			}
+
 			$data = array(
 				'styleTypeName' => blank_to_null($styleTypeName),
 				'styleTypeOwn' => blank_to_null(sterilize($_POST['styleTypeOwn'])),
@@ -167,6 +180,8 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 				'styleTypeBOSMethod' => blank_to_null(sterilize($_POST['styleTypeBOSMethod'])),
 				'styleTypeEntryLimit' => blank_to_null(sterilize($_POST['styleTypeEntryLimit']))
 			);
+			if (check_update("styleTypeIncludes", $prefix."style_types")) $data['styleTypeIncludes'] = ($styleTypeIncludes !== "") ? $styleTypeIncludes : NULL;
+
 			$db_conn->where ('id', $id);
 			$result = $db_conn->update ($update_table, $data);
 			if (!$result) {

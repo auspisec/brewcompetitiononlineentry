@@ -14,17 +14,28 @@ $totalRows_style_type = $db_conn->count;
 if ($action == "enter") {
 
 	$db_conn->where('id', $filter);
-	$row_style_types = $db_conn->getOne($style_types_db_table, "styleTypeName");
+	$row_style_types = $db_conn->getOne($style_types_db_table, "styleTypeName,styleTypeIncludes");
 
 	// echo $row_style_types['styleTypeName'];
 
-	if ($row_style_types['styleTypeName'] == "Mead/Cider") $mead_cider_combined = TRUE;
-	else $mead_cider_combined = FALSE;
+	// SAAZ: generic combined-BOS support (styleTypeIncludes); keeps the
+	// legacy hardcoded "Mead/Cider" behavior working as a fallback.
+	if (function_exists("bos_combine_scoretype_sql")) {
+		$mead_cider_combined = FALSE;
+		$scoretype_fragment = bos_combine_scoretype_sql($filter);
+	} else {
+		if ($row_style_types['styleTypeName'] == "Mead/Cider") $mead_cider_combined = TRUE;
+		else $mead_cider_combined = FALSE;
+		$scoretype_fragment = "";
+	}
 
 	$query_enter_bos = "SELECT * FROM $judging_scores_db_table";
 	$params_enter_bos = array();
-	if ($mead_cider_combined) $query_enter_bos .= " WHERE (scoreType='2' OR scoreType='3')";
-	else {
+	if (!empty($scoretype_fragment)) {
+		$query_enter_bos .= " WHERE ".$scoretype_fragment;
+	} elseif ($mead_cider_combined) {
+		$query_enter_bos .= " WHERE (scoreType='2' OR scoreType='3')";
+	} else {
 		$query_enter_bos .= " WHERE scoreType=?";
 		$params_enter_bos[] = $filter;
 	}
@@ -44,17 +55,28 @@ if ($action == "enter") {
 else {
 
 	$db_conn->where('id', $type);
-	$row_style_types = $db_conn->getOne($style_types_db_table, "styleTypeName");
+	$row_style_types = $db_conn->getOne($style_types_db_table, "styleTypeName,styleTypeIncludes");
 
-	if ($row_style_types['styleTypeName'] == "Mead/Cider") $mead_cider_combined = TRUE;
-	else $mead_cider_combined = FALSE;
+	// SAAZ: generic combined-BOS support (styleTypeIncludes); keeps the
+	// legacy hardcoded "Mead/Cider" behavior working as a fallback.
+	if (function_exists("bos_combine_scoretype_sql")) {
+		$mead_cider_combined = FALSE;
+		$scoretype_fragment = bos_combine_scoretype_sql($type);
+	} else {
+		if ($row_style_types['styleTypeName'] == "Mead/Cider") $mead_cider_combined = TRUE;
+		else $mead_cider_combined = FALSE;
+		$scoretype_fragment = "";
+	}
 
 	if (SINGLE) {
 
 		$query_bos = "SELECT * FROM $judging_scores_db_table WHERE comp_id=?";
 		$params_bos = array($_SESSION['comp_id']);
-		if ($mead_cider_combined) $query_bos .= " AND (scoreType='2' OR scoreType='3')";
-		else {
+		if (!empty($scoretype_fragment)) {
+			$query_bos .= " AND ".$scoretype_fragment;
+		} elseif ($mead_cider_combined) {
+			$query_bos .= " AND (scoreType='2' OR scoreType='3')";
+		} else {
 			$query_bos .= " AND scoreType=?";
 			$params_bos[] = $type;
 		}
@@ -83,8 +105,11 @@ else {
 
 		$query_bos = "SELECT * FROM $judging_scores_db_table";
 		$params_bos = array();
-		if ($mead_cider_combined) $query_bos .= " WHERE (scoreType='2' OR scoreType='3')";
-		else {
+		if (!empty($scoretype_fragment)) {
+			$query_bos .= " WHERE ".$scoretype_fragment;
+		} elseif ($mead_cider_combined) {
+			$query_bos .= " WHERE (scoreType='2' OR scoreType='3')";
+		} else {
 			$query_bos .= " WHERE scoreType=?";
 			$params_bos[] = $type;
 		}
