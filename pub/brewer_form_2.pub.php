@@ -117,22 +117,24 @@ if (((!$table_assignment) || ($go == "admin")) && (!$entrant_type_brewery)) {
         <?php } ?>
 
         <div class="mb-3 row">
-            <label for="brewerJudgeMead" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong>BJCP <?php echo $label_bjcp_mead; ?></strong></label>
+            <label for="brewerJudgeMead" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $label_judge_nonbeer; ?></strong></label>
             <div class="col-xs-12 col-sm-9 col-lg-10">
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="brewerJudgeMead" value="Y" id="brewerJudgeMead_0" <?php if (($action == "edit") && ($row_brewer['brewerJudgeMead'] == "Y")) echo "CHECKED"; ?>> 
+                    <input class="form-check-input" type="radio" name="brewerJudgeMead" value="Y" id="brewerJudgeMead_0" <?php if (($action == "edit") && ($row_brewer['brewerJudgeMead'] == "Y")) echo "CHECKED"; ?>>
                     <label class="form-check-label"><?php echo $label_yes; ?></label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="brewerJudgeMead" value="N" id="brewerJudgeMead_1" <?php if (($action == "edit") && (($row_brewer['brewerJudgeMead'] == "N") || ($row_brewer['brewerJudgeMead'] == ""))) echo "CHECKED"; ?>> 
+                    <input class="form-check-input" type="radio" name="brewerJudgeMead" value="N" id="brewerJudgeMead_1" <?php if (($action == "edit") && (($row_brewer['brewerJudgeMead'] == "N") || ($row_brewer['brewerJudgeMead'] == ""))) echo "CHECKED"; ?>>
                     <label class="form-check-label">
                         <?php echo $label_no; ?>
                     </label>
                 </div>
-                <div class="help-block mt-1"><?php echo $brewer_text_007; ?></div> 
+                <div class="help-block mt-1"><?php echo $brewer_text_007b; ?></div>
             </div>
         </div>
 
+        <?php /* Seoul Cup: "Certified Cider Judge" question removed - no BJCP cider judges in South Korea. */ ?>
+        <?php /* ?>
         <div class="mb-3 row">
             <label for="brewerJudgeCider" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong>BJCP <?php echo $label_bjcp_cider; ?></strong></label>
             <div class="col-xs-12 col-sm-9 col-lg-10">
@@ -149,6 +151,7 @@ if (((!$table_assignment) || ($go == "admin")) && (!$entrant_type_brewery)) {
                 <div class="help-block mt-1"><?php echo $brewer_text_035; ?></div>
             </div>
         </div>
+        <?php */ ?>
 
         <?php $judge_array = explode(",",$row_brewer['brewerJudgeRank']);
         // Extract "Other" custom designation from <other>...</other> tags

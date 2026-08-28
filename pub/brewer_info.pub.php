@@ -506,17 +506,19 @@ if ($show_judge_steward_fields) {
 		$display_rank = bjcp_rank($bjcp_rank[0],2);
 		if (!empty($bjcp_rank[1])) $display_rank .= designations($row_brewer['brewerJudgeRank'],$bjcp_rank[0]);
 		$account_display .= "<div class=\"row bcoem-account-info\">";
-		$account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>BJCP %s</strong></div>",$label_bjcp_mead);
+		$account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$label_judge_nonbeer);
 		$account_display .= "<div class=\"".$display_right_cols."\">";
 		if ($action == "print") $account_display .= yes_no($_SESSION['brewerJudgeMead'],$base_url,3); else $account_display .= yes_no($_SESSION['brewerJudgeMead'],$base_url);
 		$account_display .= "</div>";
 		$account_display .= "</div>";
+		/* Seoul Cup: "Certified Cider Judge" question removed - no BJCP cider judges in South Korea.
 		$account_display .= "<div class=\"row bcoem-account-info\">";
 		$account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>BJCP %s</strong></div>",$label_bjcp_cider);
 		$account_display .= "<div class=\"".$display_right_cols."\">";
 		if ($action == "print") $account_display .= yes_no($_SESSION['brewerJudgeCider'],$base_url,3); else $account_display .= yes_no($_SESSION['brewerJudgeCider'],$base_url);
 		$account_display .= "</div>";
 		$account_display .= "</div>";
+		*/
 		$account_display .= "<div class=\"row bcoem-account-info\">";
 		$account_display .= sprintf("<div class=\"".$display_left_cols."\"><strong>%s</strong></div>",$label_designations);
 		$account_display .= "<div class=\"".$display_right_cols."\">";

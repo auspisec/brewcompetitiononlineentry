@@ -651,8 +651,11 @@ if ($totalRows_brewer > 0) {
 					$output_datatables_body .= "<td class=\"".$output_hide_print."\">".$row_brewer['brewerJudgeID']."</td>";
 					$output_datatables_body .= "<td>".$display_rank;
 					$output_datatables_body .= "<small>";
-					if ($row_brewer['brewerJudgeMead'] == "Y") $output_datatables_body .= "<br />Certified Mead Judge";
+					// Seoul Cup: brewerJudgeMead now means "willing to judge non-beer entries" (Mead/Cider/Rice Brew)
+					if ($row_brewer['brewerJudgeMead'] == "Y") $output_datatables_body .= "<br />Willing to judge non-beer entries";
+					/* Seoul Cup: "Certified Cider Judge" question removed - no BJCP cider judges in South Korea.
 					if ($row_brewer['brewerJudgeCider'] == "Y") $output_datatables_body .= "<br />Certified Cider Judge";
+					*/
 					if (!empty($bjcp_rank[1])) {
 						$output_datatables_body .= designations($row_brewer['brewerJudgeRank'],$bjcp_rank[0]);
 					}

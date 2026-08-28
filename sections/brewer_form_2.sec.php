@@ -117,7 +117,7 @@ if (!$entrant_type_brewery) {
         </div>
         <?php } // end if (($totalRows_judging > 1) || (($go == "admin") && ($filter != "default"))) } ?>
         <div class="form-group">
-            <label for="brewerJudgeMead" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label"><?php echo $label_bjcp_mead; ?></label>
+            <label for="brewerJudgeMead" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label"><?php echo $label_judge_nonbeer; ?></label>
             <div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">
                 <div class="input-group">
                     <label class="radio-inline">
@@ -127,9 +127,11 @@ if (!$entrant_type_brewery) {
                         <input type="radio" name="brewerJudgeMead" value="N" id="brewerJudgeMead_1" <?php if (($action == "edit") && (($row_brewer['brewerJudgeMead'] == "N") || ($row_brewer['brewerJudgeMead'] == ""))) echo "CHECKED"; ?>> <?php echo $label_no; ?>
                     </label>
                 </div>
-                <span class="help-block"><?php echo $brewer_text_007; ?></span>
+                <span class="help-block"><?php echo $brewer_text_007b; ?></span>
             </div>
         </div>
+        <?php /* Seoul Cup: "Certified Cider Judge" question removed - no BJCP cider judges in South Korea. */ ?>
+        <?php /* Seoul Cup: "Certified Cider Judge" question removed - no BJCP cider judges in South Korea.
         <div class="form-group">
             <label for="brewerJudgeMead" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label"><?php echo $label_bjcp_cider; ?></label>
             <div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">
@@ -144,6 +146,7 @@ if (!$entrant_type_brewery) {
                 <span class="help-block"><?php echo $brewer_text_035; ?></span>
             </div>
         </div>
+        */ ?>
         <?php $judge_array = explode(",",$row_brewer['brewerJudgeRank']);
         // Extract "Other" custom designation from <other>...</other> tags
         $other_designation = "";
