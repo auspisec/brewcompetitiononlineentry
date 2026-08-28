@@ -121,6 +121,8 @@ if (($action == "default") && ($totalRows_style_type > 0)) {
     	$style_type_info = style_type_info($type,$suffix);
     	$style_type_info = explode("^",$style_type_info);
         if ($style_type_info[0] == "Y") {
+            // SAAZ: generic combined-BOS support
+            include_once (DB.'bos_combine.db.php');
             include (DB.'admin_judging_scores_bos.db.php');
 ?>
 <a name="<?php echo $type; ?>"></a><h3>BOS Entries and Places for <?php echo $style_type_info[2]; ?></h3>
@@ -205,8 +207,10 @@ $(document).ready(function() {
     } // end foreach
 } // end if ($action == "default")
 ?>
-<?php 
+<?php
 if ($action == "enter") {
+// SAAZ: generic combined-BOS support
+include_once (DB.'bos_combine.db.php');
 include (DB.'admin_judging_scores_bos.db.php');
 ?>
 <?php if ($totalRows_enter_bos > 0) { ?>

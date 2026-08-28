@@ -192,6 +192,33 @@ if ($action == "default") {
 		<div class="help-block with-errors"><p>Determine how many placing entries from each medal category should be pulled for this style type in the Best of Show round.</p></div>
 	</div>
 </div>
+
+<?php /* SAAZ: generic combined-BOS support - declare which other style types
+   this type's BOS round also pulls from. Replaces the hardcoded
+   "Mead/Cider" combine while keeping it working. Not upstream. */ ?>
+<div class="form-group">
+	<label for="styleTypeIncludes" class="col-lg-2 col-md-3 col-sm-4 col-xs-12 control-label">Combine BOS With</label>
+	<div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">
+		<div class="input-group">
+			<?php
+			// Checkbox per other style type; stored as a comma-separated id list.
+			$include_array = array();
+			if (($action == "edit") && (!empty($row_style_type['styleTypeIncludes']))) $include_array = explode(",", $row_style_type['styleTypeIncludes']);
+			$all_style_types = $db_conn->get($style_types_db_table, null, "id,styleTypeName");
+			if ($all_style_types) {
+				foreach ($all_style_types as $st) {
+					if (($action == "edit") && ($st['id'] == $id)) continue; // don't offer self
+			?>
+			<div class="radio">
+				<label>
+					<input type="checkbox" name="styleTypeIncludes[]" value="<?php echo $st['id']; ?>" <?php if (in_array($st['id'], $include_array)) echo "checked"; ?> /><?php echo h($st['styleTypeName']); ?>
+				</label>
+			</div>
+			<?php } } ?>
+		</div>
+		<div class="help-block with-errors"><p>Optionally combine this style type's Best of Show round with other style types. When any are selected, the BOS round for this type pulls first (and/or second, third) place entries from every selected type, and results display as a single combined Best of Show under this type's name. Leave all unchecked for a standalone BOS round.</p></div>
+	</div>
+</div>
 <div class="bcoem-admin-element hidden-print">
 	<div class="form-group">
 		<div class="col-lg-offset-2 col-md-offset-3 col-sm-offset-4">

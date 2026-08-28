@@ -27,6 +27,8 @@ require(DB.'winners.db.php');
 
 		foreach ($a as $type) {
 
+			// SAAZ: generic combined-BOS support
+			include_once (DB.'bos_combine.db.php');
 			include (DB.'output_results_download_bos.db.php');
 
 			if ($totalRows_bos > 0) {
