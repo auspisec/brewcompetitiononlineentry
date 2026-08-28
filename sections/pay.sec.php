@@ -28,6 +28,8 @@ else {
 
 $bid = $_SESSION['user_id'];
 include (DB.'entries.db.php');
+// SAAZ: bank transfer details from the payment_bank_info DB table
+include_once (DB.'bank_info.db.php');
 
 $total_entry_fees = total_fees($_SESSION['contestEntryFee'], $_SESSION['contestEntryFee2'], $_SESSION['contestEntryFeeDiscount'], $_SESSION['contestEntryFeeDiscountNum'], $_SESSION['contestEntryCap'], $_SESSION['contestEntryFeePasswordNum'], $bid, $filter, $_SESSION['comp_id']);
 
@@ -121,7 +123,8 @@ else {
 		// Cash Payment
 		if ($_SESSION['prefsCash'] == "Y") {
 			$header1_1 .= sprintf("<h2>%s</h2>",$label_cash);
-			$page_info1 .= sprintf("<p>%s</p>",$pay_text_015);
+			// SAAZ: bank details come from the payment_bank_info DB table (not the language file)
+			$page_info1 .= sprintf("<p>%s</p>",payment_bank_transfer_text());
 			$page_info1 .= sprintf("<p>%s</p>",$pay_text_016);
 		}
 
