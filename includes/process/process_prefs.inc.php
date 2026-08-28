@@ -640,7 +640,14 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 
 		if ($go == "entries") {
 
-			
+			/**
+			 * Empty the contest_info_general session variable.
+			 * Will trigger the session to reset the variables in
+			 * common.db.php upon reload after redirect.
+			 */
+
+			unset($_SESSION['contest_info_general'.$prefix_session]);
+
 			$db_conn->where ('id', $id);
 			$result = $db_conn->update ($prefix."contest_info", $data_entry_fees);
 			if (!$result) {
@@ -734,7 +741,12 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 			if (($style_set_change) || (empty($prefsSelectedStyles))) {
 
 				$update_selected_styles = array();
-				$db_conn->where("brewStyleVersion", $prefsStyleSet);
+				if ($prefsStyleSet == "AABC2025") {
+					$db_conn->where("((brewStyleVersion='AABC2025' AND brewStyleType='2') OR (brewStyleVersion='AABC2022' AND brewStyleType !='2') OR brewStyleOwn='custom')");
+				}
+				else {
+					$db_conn->where("brewStyleVersion", $prefsStyleSet);
+				}
 				$rows_styles_default = $db_conn->get($styles_db_table, null, "id, brewStyle, brewStyleGroup, brewStyleNum, brewStyleVersion");
 
 				if ($rows_styles_default) {

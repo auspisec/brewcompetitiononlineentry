@@ -525,7 +525,7 @@ class MysqliDb
      * @return bool|mysqli_result
      * @throws Exception
      */
-	private function queryUnprepared($query)
+	public function queryUnprepared($query)
 	{
         // Execute query
         $stmt = $this->mysqli()->query($query);
@@ -588,13 +588,16 @@ class MysqliDb
             call_user_func_array(array($stmt, 'bind_param'), $this->refValues($params));
         }
 
-        $stmt->execute();
-        $this->count = $stmt->affected_rows;
-        $this->_stmtError = $stmt->error;
-        $this->_stmtErrno = $stmt->errno;
-        $this->_lastQuery = $this->replacePlaceHolders($this->_query, $params);
-        $res = $this->_dynamicBindResults($stmt);
-        $this->reset();
+        try {
+            $stmt->execute();
+            $this->count = $stmt->affected_rows;
+            $this->_stmtError = $stmt->error;
+            $this->_stmtErrno = $stmt->errno;
+            $this->_lastQuery = $this->replacePlaceHolders($this->_query, $params);
+            $res = $this->_dynamicBindResults($stmt);
+        } finally {
+            $this->reset();
+        }
 
         return $res;
     }
@@ -664,11 +667,14 @@ class MysqliDb
     {
         $this->_query = $query;
         $stmt = $this->_buildQuery($numRows);
-        $stmt->execute();
-        $this->_stmtError = $stmt->error;
-        $this->_stmtErrno = $stmt->errno;
-        $res = $this->_dynamicBindResults($stmt);
-        $this->reset();
+        try {
+            $stmt->execute();
+            $this->_stmtError = $stmt->error;
+            $this->_stmtErrno = $stmt->errno;
+            $res = $this->_dynamicBindResults($stmt);
+        } finally {
+            $this->reset();
+        }
 
         return $res;
     }
@@ -758,11 +764,16 @@ class MysqliDb
             return $this;
         }
 
-        $stmt->execute();
-        $this->_stmtError = $stmt->error;
-        $this->_stmtErrno = $stmt->errno;
-        $res = $this->_dynamicBindResults($stmt);
-        $this->reset();
+        try {
+            $stmt->execute();
+            $this->_stmtError = $stmt->error;
+            $this->_stmtErrno = $stmt->errno;
+            $res = $this->_dynamicBindResults($stmt);
+        } finally {
+            // Always clear bind/where state, even when execute() or result
+            // binding throws, so a failed query cannot poison the next one.
+            $this->reset();
+        }
 
         return $res;
     }
@@ -928,8 +939,11 @@ class MysqliDb
         $this->_query = "UPDATE " . self::$prefix . $tableName;
 
         $stmt = $this->_buildQuery($numRows, $tableData);
-        $status = $stmt->execute();
-        $this->reset();
+        try {
+            $status = $stmt->execute();
+        } finally {
+            $this->reset();
+        }
         $this->_stmtError = $stmt->error;
         $this->_stmtErrno = $stmt->errno;
         $this->count = $stmt->affected_rows;
@@ -962,11 +976,14 @@ class MysqliDb
         }
 
         $stmt = $this->_buildQuery($numRows);
-        $stmt->execute();
-        $this->_stmtError = $stmt->error;
-        $this->_stmtErrno = $stmt->errno;
-        $this->count = $stmt->affected_rows;
-        $this->reset();
+        try {
+            $stmt->execute();
+            $this->_stmtError = $stmt->error;
+            $this->_stmtErrno = $stmt->errno;
+            $this->count = $stmt->affected_rows;
+        } finally {
+            $this->reset();
+        }
 
         return ($stmt->affected_rows > -1);	//	-1 indicates that the query returned an error
     }
@@ -1542,11 +1559,14 @@ class MysqliDb
 
         $this->_query = $operation . " " . implode(' ', $this->_queryOptions) . " INTO " . self::$prefix . $tableName;
         $stmt = $this->_buildQuery(null, $insertData);
-        $status = $stmt->execute();
-        $this->_stmtError = $stmt->error;
-        $this->_stmtErrno = $stmt->errno;
-        $haveOnDuplicate = !empty ($this->_updateColumns);
-        $this->reset();
+        try {
+            $status = $stmt->execute();
+            $this->_stmtError = $stmt->error;
+            $this->_stmtErrno = $stmt->errno;
+            $haveOnDuplicate = !empty ($this->_updateColumns);
+        } finally {
+            $this->reset();
+        }
         $this->count = $stmt->affected_rows;
 
         if ($stmt->affected_rows < 1) {
@@ -2001,7 +2021,14 @@ class MysqliDb
      */
     protected function _prepareQuery()
     {
-        $stmt = $this->mysqli()->prepare($this->_query);
+        try {
+            $stmt = $this->mysqli()->prepare($this->_query);
+        } catch (mysqli_sql_exception $e) {
+            // Strict mysqli mode throws before the $stmt === false path below
+            // can run; leave the instance clean for the next query.
+            $this->reset();
+            throw $e;
+        }
 
         if ($stmt !== false) {
             if ($this->traceEnabled)

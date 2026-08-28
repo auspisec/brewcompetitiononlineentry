@@ -451,6 +451,7 @@ function purge_entries($type, $interval) {
 
 		$params_check = array();
 		if ($_SESSION['prefsStyleSet'] == "BJCP2025") $query_check = "SELECT a.id, a.brewUpdated, a.brewInfo, a.brewCategorySort, a.brewSubCategory FROM ".$prefix."brewing"." as a, ".$styles_db_table." as b WHERE a.brewCategorySort=b.brewStyleGroup AND a.brewSubCategory=b.brewStyleNum AND b.brewStyleReqSpec=1 AND (a.brewInfo IS NULL OR a.brewInfo='') AND (b.brewStyleVersion = 'BJCP2021' OR b.brewStyleVersion = 'BJCP2025')";
+		elseif ($_SESSION['prefsStyleSet'] == "AABC2025") $query_check = "SELECT a.id, a.brewUpdated, a.brewInfo, a.brewCategorySort, a.brewSubCategory FROM ".$prefix."brewing"." as a, ".$styles_db_table." as b WHERE a.brewCategorySort=b.brewStyleGroup AND a.brewSubCategory=b.brewStyleNum AND b.brewStyleReqSpec=1 AND (a.brewInfo IS NULL OR a.brewInfo='') AND (b.brewStyleVersion = 'AABC2022' OR b.brewStyleVersion = 'AABC2025')";
 		else { $query_check = "SELECT a.id, a.brewUpdated, a.brewInfo, a.brewCategorySort, a.brewSubCategory FROM ".$prefix."brewing"." as a, ".$styles_db_table." as b WHERE a.brewCategorySort=b.brewStyleGroup AND a.brewSubCategory=b.brewStyleNum AND b.brewStyleReqSpec=1 AND (a.brewInfo IS NULL OR a.brewInfo='') AND b.brewStyleVersion = ?"; $params_check[] = $_SESSION['prefsStyleSet']; }
 		if ($interval > 0) $query_check .=" AND a.brewUpdated < DATE_SUB( NOW(), INTERVAL 1 DAY)";
 		$rows_check = (!empty($params_check)) ? $db_conn->rawQuery($query_check, $params_check) : $db_conn->rawQuery($query_check);
@@ -935,14 +936,33 @@ function total_fees($entry_fee, $entry_fee_discount, $entry_discount, $entry_dis
 		foreach ($rows_users as $row_users) { $user_id_1[] = $row_users['id']; }
 		sort($user_id_1);
 
-		foreach ($user_id_1 as $id_1) {
-			// Get each entrant's number of entries
-			$db_conn->where('brewBrewerID', $id_1);
-			$row_entries = $db_conn->getOne($prefix."brewing", "COUNT(*) as 'count'");
-			$totalRows_entries = $row_entries['count'];
+		// Batch what used to be 2 queries per user (entry count + brewer
+		// discount flag) into 2 queries total, run once up front - this
+		// function is called on every admin page load via admin_common.db.php.
+		$entry_counts_by_user_1 = array();
+		$discount_by_user_1 = array();
+		if (!empty($user_id_1)) {
+			$db_conn->where('brewBrewerID', $user_id_1, 'in');
+			$db_conn->groupBy('brewBrewerID');
+			$rows_entry_counts_1 = $db_conn->get($prefix."brewing", null, "brewBrewerID, COUNT(*) as count");
+			foreach ($rows_entry_counts_1 as $row_ec_1) {
+				$entry_counts_by_user_1[$row_ec_1['brewBrewerID']] = $row_ec_1['count'];
+			}
 
-			$db_conn->where('uid', $id_1);
-			$row_brewer = $db_conn->getOne($prefix."brewer", "brewerDiscount");
+			$db_conn->where('uid', $user_id_1, 'in');
+			$rows_discounts_1 = $db_conn->get($prefix."brewer", null, "uid, brewerDiscount");
+			foreach ($rows_discounts_1 as $row_d_1) {
+				$discount_by_user_1[$row_d_1['uid']] = $row_d_1['brewerDiscount'];
+			}
+		}
+
+		foreach ($user_id_1 as $id_1) {
+			// Pulled from the batched fetch above instead of 2 fresh queries per user.
+			// array_key_exists (not isset) - brewerDiscount is often NULL in the DB, and
+			// isset() treats a NULL value as "not set", which would wrongly drop users
+			// with no discount flag out of the fee calculation entirely.
+			$totalRows_entries = $entry_counts_by_user_1[$id_1] ?? 0;
+			$row_brewer = array_key_exists($id_1, $discount_by_user_1) ? array('brewerDiscount' => $discount_by_user_1[$id_1]) : null;
 
 			if (($totalRows_entries > 0) && ($row_brewer)) {
 				if (($row_brewer['brewerDiscount'] == "Y") && ($special_discount_number != "")) {
@@ -1039,19 +1059,39 @@ function total_fees($entry_fee, $entry_fee_discount, $entry_discount, $entry_dis
 		$rows_users = $db_conn->get($prefix."users", null, "id,user_name");
 		$totalRows_users = $db_conn->count;
 
-		$user_id_1 = array();
-		foreach ($rows_users as $row_users) { $user_id_1[] = $row_users['id']; }
-		sort($user_id_1);
+		$user_id_3 = array();
+		foreach ($rows_users as $row_users) { $user_id_3[] = $row_users['id']; }
+		sort($user_id_3);
 
-		foreach ($user_id_1 as $id_1) {
-			// Get each entrant's number of entries
-			$db_conn->where('brewBrewerID', $id_1);
+		// Batch what used to be 2 queries per user (entry count filtered by
+		// style + brewer discount flag) into 2 queries total, run once up
+		// front - this function is called on every admin page load via
+		// admin_common.db.php.
+		$entry_counts_by_user_3 = array();
+		$discount_by_user_3 = array();
+		if (!empty($user_id_3)) {
+			$db_conn->where('brewBrewerID', $user_id_3, 'in');
 			$db_conn->where('brewCategorySort', $filter);
-			$row_entries = $db_conn->getOne($prefix."brewing", "COUNT(*) as 'count'");
-			$totalRows_entries = $row_entries['count'];
+			$db_conn->groupBy('brewBrewerID');
+			$rows_entry_counts_3 = $db_conn->get($prefix."brewing", null, "brewBrewerID, COUNT(*) as count");
+			foreach ($rows_entry_counts_3 as $row_ec_3) {
+				$entry_counts_by_user_3[$row_ec_3['brewBrewerID']] = $row_ec_3['count'];
+			}
 
-			$db_conn->where('uid', $id_1);
-			$row_brewer = $db_conn->getOne($prefix."brewer", "brewerDiscount");
+			$db_conn->where('uid', $user_id_3, 'in');
+			$rows_discounts_3 = $db_conn->get($prefix."brewer", null, "uid, brewerDiscount");
+			foreach ($rows_discounts_3 as $row_d_3) {
+				$discount_by_user_3[$row_d_3['uid']] = $row_d_3['brewerDiscount'];
+			}
+		}
+
+		foreach ($user_id_3 as $id_3) {
+			// Pulled from the batched fetch above instead of 2 fresh queries per user.
+			// array_key_exists (not isset) - brewerDiscount is often NULL in the DB, and
+			// isset() treats a NULL value as "not set", which would wrongly drop users
+			// with no discount flag out of the fee calculation entirely.
+			$totalRows_entries = $entry_counts_by_user_3[$id_3] ?? 0;
+			$row_brewer = array_key_exists($id_3, $discount_by_user_3) ? array('brewerDiscount' => $discount_by_user_3[$id_3]) : null;
 
 			if ($totalRows_entries > 0) {
 				if (($row_brewer['brewerDiscount'] == "Y") && ($special_discount_number != "")) {
@@ -1106,21 +1146,45 @@ function total_fees_paid($entry_fee, $entry_fee_discount, $entry_discount, $entr
 		foreach ($rows_users as $row_users) { $user_id_2[] = $row_users['id']; }
 		sort($user_id_2);
 
-		foreach ($user_id_2 as $id_2) {
-			// Get each entrant's number of entries
-			$db_conn->where('brewBrewerID', $id_2);
-			$row_entries = $db_conn->getOne($prefix."brewing", "COUNT(*) as 'count'");
-			$totalRows_entries = $row_entries['count'];
+		// Batch what used to be 3 queries per user (entry count, paid-entry
+		// count, brewer discount flag) into 3 queries total, run once up
+		// front - this function is called on every admin page load via
+		// admin_common.db.php.
+		$entry_counts_by_user_2 = array();
+		$paid_counts_by_user_2 = array();
+		$discount_by_user_2 = array();
+		if (!empty($user_id_2)) {
+			$db_conn->where('brewBrewerID', $user_id_2, 'in');
+			$db_conn->groupBy('brewBrewerID');
+			$rows_entry_counts_2 = $db_conn->get($prefix."brewing", null, "brewBrewerID, COUNT(*) as count");
+			foreach ($rows_entry_counts_2 as $row_ec_2) {
+				$entry_counts_by_user_2[$row_ec_2['brewBrewerID']] = $row_ec_2['count'];
+			}
 
-			$db_conn->where('brewBrewerID', $id_2);
+			$db_conn->where('brewBrewerID', $user_id_2, 'in');
 			$db_conn->where('brewPaid', '1');
-			$row_paid = $db_conn->getOne($prefix."brewing", "COUNT(*) as 'count'");
-			$totalRows_paid = $row_paid['count'];
+			$db_conn->groupBy('brewBrewerID');
+			$rows_paid_counts_2 = $db_conn->get($prefix."brewing", null, "brewBrewerID, COUNT(*) as count");
+			foreach ($rows_paid_counts_2 as $row_pc_2) {
+				$paid_counts_by_user_2[$row_pc_2['brewBrewerID']] = $row_pc_2['count'];
+			}
 
-			$totalRows_not_paid = ($row_entries['count'] - $row_paid['count']);
+			$db_conn->where('uid', $user_id_2, 'in');
+			$rows_discounts_2 = $db_conn->get($prefix."brewer", null, "uid, brewerDiscount");
+			foreach ($rows_discounts_2 as $row_d_2) {
+				$discount_by_user_2[$row_d_2['uid']] = $row_d_2['brewerDiscount'];
+			}
+		}
 
-			$db_conn->where('uid', $id_2);
-			$row_brewer = $db_conn->getOne($prefix."brewer", "brewerDiscount");
+		foreach ($user_id_2 as $id_2) {
+			// Pulled from the batched fetch above instead of 3 fresh queries per user.
+			// array_key_exists (not isset) - brewerDiscount is often NULL in the DB, and
+			// isset() treats a NULL value as "not set", which would wrongly drop users
+			// with no discount flag out of the fee calculation entirely.
+			$totalRows_entries = $entry_counts_by_user_2[$id_2] ?? 0;
+			$totalRows_paid = $paid_counts_by_user_2[$id_2] ?? 0;
+			$totalRows_not_paid = ($totalRows_entries - $totalRows_paid);
+			$row_brewer = array_key_exists($id_2, $discount_by_user_2) ? array('brewerDiscount' => $discount_by_user_2[$id_2]) : null;
 
 			if (($totalRows_entries > 0) && ($row_brewer)) {
 
@@ -1290,27 +1354,51 @@ function total_fees_paid($entry_fee, $entry_fee_discount, $entry_discount, $entr
 		$rows_users = $db_conn->get($prefix."users", null, "id,user_name");
 		$totalRows_users = $db_conn->count;
 
-		$user_id_2 = array();
-		foreach ($rows_users as $row_users) { $user_id_2[] = $row_users['id']; }
-		sort($user_id_2);
+		$user_id_3 = array();
+		foreach ($rows_users as $row_users) { $user_id_3[] = $row_users['id']; }
+		sort($user_id_3);
 
-		foreach ($user_id_2 as $id_2) {
-			// Get each entrant's number of entries
-			$db_conn->where('brewBrewerID', $id_2);
+		// Batch what used to be 3 queries per user (entry count filtered by
+		// style, paid-entry count filtered by style, brewer discount flag)
+		// into 3 queries total, run once up front - this function is called
+		// on every admin page load via admin_common.db.php.
+		$entry_counts_by_user_3 = array();
+		$paid_counts_by_user_3 = array();
+		$discount_by_user_3 = array();
+		if (!empty($user_id_3)) {
+			$db_conn->where('brewBrewerID', $user_id_3, 'in');
 			$db_conn->where('brewCategorySort', $filter);
-			$row_entries = $db_conn->getOne($prefix."brewing", "COUNT(*) as 'count'");
-			$totalRows_entries = $row_entries['count'];
+			$db_conn->groupBy('brewBrewerID');
+			$rows_entry_counts_3 = $db_conn->get($prefix."brewing", null, "brewBrewerID, COUNT(*) as count");
+			foreach ($rows_entry_counts_3 as $row_ec_3) {
+				$entry_counts_by_user_3[$row_ec_3['brewBrewerID']] = $row_ec_3['count'];
+			}
 
-			$db_conn->where('brewBrewerID', $id_2);
+			$db_conn->where('brewBrewerID', $user_id_3, 'in');
 			$db_conn->where('brewPaid', '1');
 			$db_conn->where('brewCategorySort', $filter);
-			$row_paid = $db_conn->getOne($prefix."brewing", "COUNT(*) as 'count'");
-			$totalRows_paid = $row_paid['count'];
+			$db_conn->groupBy('brewBrewerID');
+			$rows_paid_counts_3 = $db_conn->get($prefix."brewing", null, "brewBrewerID, COUNT(*) as count");
+			foreach ($rows_paid_counts_3 as $row_pc_3) {
+				$paid_counts_by_user_3[$row_pc_3['brewBrewerID']] = $row_pc_3['count'];
+			}
 
-			$totalRows_not_paid = ($row_entries['count'] - $row_paid['count']);
+			$db_conn->where('uid', $user_id_3, 'in');
+			$rows_discounts_3 = $db_conn->get($prefix."brewer", null, "uid, brewerDiscount");
+			foreach ($rows_discounts_3 as $row_d_3) {
+				$discount_by_user_3[$row_d_3['uid']] = $row_d_3['brewerDiscount'];
+			}
+		}
 
-			$db_conn->where('uid', $id_2);
-			$row_brewer = $db_conn->getOne($prefix."brewer", "brewerDiscount");
+		foreach ($user_id_3 as $id_3) {
+			// Pulled from the batched fetch above instead of 3 fresh queries per user.
+			// array_key_exists (not isset) - brewerDiscount is often NULL in the DB, and
+			// isset() treats a NULL value as "not set", which would wrongly drop users
+			// with no discount flag out of the fee calculation entirely.
+			$totalRows_entries = $entry_counts_by_user_3[$id_3] ?? 0;
+			$totalRows_paid = $paid_counts_by_user_3[$id_3] ?? 0;
+			$totalRows_not_paid = ($totalRows_entries - $totalRows_paid);
+			$row_brewer = array_key_exists($id_3, $discount_by_user_3) ? array('brewerDiscount' => $discount_by_user_3[$id_3]) : null;
 
 			if ($totalRows_entries > 0) {
 				if (($row_brewer['brewerDiscount'] == "Y") && ($special_discount_number != "")) {
@@ -1471,6 +1559,10 @@ function style_convert($number,$type,$base_url="",$archive="") {
 		if ($first_character == "C") $db_conn->where('brewStyleVersion', 'BJCP2025');
 		else $db_conn->where('brewStyleVersion', 'BJCP2021');
 		$row_style = $db_conn->getOne($styles_db_table, "brewStyleNum,brewStyleGroup,brewStyle,brewStyleVersion,brewStyleReqSpec,brewStyleOwn");
+	}
+	elseif ($style_set == "AABC2025") {
+		$query_style = "SELECT brewStyleNum,brewStyleGroup,brewStyle,brewStyleVersion,brewStyleReqSpec,brewStyleOwn FROM ".$styles_db_table." WHERE brewStyleGroup=? AND ((brewStyleVersion='AABC2025' AND brewStyleType='2') OR (brewStyleVersion='AABC2022' AND brewStyleType !='2') OR brewStyleOwn='custom')";
+		$row_style = $db_conn->rawQueryOne($query_style, array($number));
 	}
 	else {
 		$query_style = "SELECT brewStyleNum,brewStyleGroup,brewStyle,brewStyleVersion,brewStyleReqSpec,brewStyleOwn FROM ".$styles_db_table." WHERE brewStyleGroup=? AND (brewStyleVersion=? OR brewStyleOwn='custom')";
@@ -1878,6 +1970,10 @@ function style_convert($number,$type,$base_url="",$archive="") {
 			$first_character = mb_substr($number[0], 0, 1);
 			if ($first_character == "C") $query_style = "SELECT brewStyleNum,brewStyleGroup,brewStyle,brewStyleVersion,brewStyleReqSpec,brewStyleStrength,brewStyleCarb,brewStyleSweet FROM ".$styles_db_table." WHERE brewStyleGroup=? AND brewStyleNum=? AND (brewStyleVersion='BJCP2025' OR brewStyleOwn='custom')";
 			else $query_style = "SELECT brewStyleNum,brewStyleGroup,brewStyle,brewStyleVersion,brewStyleReqSpec,brewStyleStrength,brewStyleCarb,brewStyleSweet FROM ".$styles_db_table." WHERE brewStyleGroup=? AND brewStyleNum=? AND (brewStyleVersion='BJCP2021' OR brewStyleOwn='custom')";
+			$row_style = $db_conn->rawQueryOne($query_style, array($number[0], $number[1]));
+		}
+		elseif ($number[2] == "AABC2025") {
+			$query_style = "SELECT brewStyleNum,brewStyleGroup,brewStyle,brewStyleVersion,brewStyleReqSpec,brewStyleStrength,brewStyleCarb,brewStyleSweet FROM ".$styles_db_table." WHERE brewStyleGroup=? AND brewStyleNum=? AND ((brewStyleVersion='AABC2025' AND brewStyleType='2') OR (brewStyleVersion='AABC2022' AND brewStyleType !='2') OR brewStyleOwn='custom')";
 			$row_style = $db_conn->rawQueryOne($query_style, array($number[0], $number[1]));
 		}
 		else {
@@ -3272,15 +3368,27 @@ function winner_method($type,$output_type) {
 
 
 function table_exists($table_name) {
+	// Cached per request/table name - this function is called very heavily (once per
+	// style per judging table on the results/winners pages, among others) and table
+	// existence never changes within a request except immediately before a DROP TABLE,
+	// which always checks-then-drops rather than re-checking afterward.
+	static $cache = array();
+
 	require(CONFIG.'config.php');
+
+	$cache_key = $database.'|'.$table_name;
+	if (isset($cache[$cache_key])) return $cache[$cache_key];
+
 	$db_conn = new MysqliDb($connection);
-	// taken from http://snippets.dzone.com/posts/show/3369
-	// SHOW statements don't support bound placeholders in MySQL/MariaDB's prepared-statement
-	// protocol, so the table name is allow-listed to word characters and spliced directly.
-	$table_name_clean = preg_replace("/[^a-zA-Z0-9_]+/", "", $table_name);
-	$rows_exists = $db_conn->rawQuery("SHOW TABLES LIKE '".$table_name_clean."'");
-	if (count($rows_exists) > 0) return TRUE;
-	else return FALSE;
+	// Queries information_schema rather than SHOW TABLES - some MySQL/MariaDB
+	// versions don't support preparing SHOW statements at all (bound params or
+	// not), and MysqliDb always prepares queries, so a SHOW-based check can fail
+	// outright on those servers.
+	$db_conn->where('table_schema', $database);
+	$db_conn->where('table_name', $table_name);
+	$row_log = $db_conn->getOne('information_schema.tables', 'COUNT(*) AS count');
+	$cache[$cache_key] = ($row_log['count'] > 0);
+	return $cache[$cache_key];
 }
 
 function judge_assignment($uid, $loc_id) {
@@ -3956,6 +4064,10 @@ function styles_active($method,$archive="") {
 			$query_styles = "SELECT DISTINCT brewStyleGroup FROM ".$styles_db_table." WHERE ((brewStyleVersion='BJCP2025' AND brewStyleType='2') OR (brewStyleVersion='BJCP2021' AND brewStyleType !='2') OR brewStyleOwn='custom')";
 			$bind_params = array();
 		}
+		elseif ($style_set == "AABC2025") {
+			$query_styles = "SELECT DISTINCT brewStyleGroup FROM ".$styles_db_table." WHERE ((brewStyleVersion='AABC2025' AND brewStyleType='2') OR (brewStyleVersion='AABC2022' AND brewStyleType !='2') OR brewStyleOwn='custom')";
+			$bind_params = array();
+		}
 		else {
 			$query_styles = "SELECT DISTINCT brewStyleGroup FROM ".$styles_db_table." WHERE (brewStyleVersion=? OR brewStyleOwn='custom')";
 			$bind_params = array($style_set);
@@ -3993,11 +4105,22 @@ function styles_active($method,$archive="") {
 		if (HOSTED) $query_styles = sprintf("SELECT brewStyleGroup,brewStyleNum,brewStyle FROM %s WHERE (brewStyleVersion='%s' OR brewStyleOwn='custom') UNION ALL SELECT brewStyleGroup,brewStyleNum,brewStyle FROM %s WHERE (brewStyleVersion='%s' OR brewStyleOwn='custom')", $styles_db_table, $style_set, $prefix."styles", $style_set);
 		else 
 		*/
-		$query_styles = "SELECT brewStyleGroup,brewStyleNum,brewStyle FROM ".$styles_db_table." WHERE (brewStyleVersion=? OR brewStyleOwn='custom')";
+		if ($style_set == "BJCP2025") {
+			$query_styles = "SELECT brewStyleGroup,brewStyleNum,brewStyle FROM ".$styles_db_table." WHERE ((brewStyleVersion='BJCP2025' AND brewStyleType='2') OR (brewStyleVersion='BJCP2021' AND brewStyleType !='2') OR brewStyleOwn='custom')";
+			$bind_params = array();
+		}
+		elseif ($style_set == "AABC2025") {
+			$query_styles = "SELECT brewStyleGroup,brewStyleNum,brewStyle FROM ".$styles_db_table." WHERE ((brewStyleVersion='AABC2025' AND brewStyleType='2') OR (brewStyleVersion='AABC2022' AND brewStyleType !='2') OR brewStyleOwn='custom')";
+			$bind_params = array();
+		}
+		else {
+			$query_styles = "SELECT brewStyleGroup,brewStyleNum,brewStyle FROM ".$styles_db_table." WHERE (brewStyleVersion=? OR brewStyleOwn='custom')";
+			$bind_params = array($style_set);
+		}
 		if ((empty($archive)) || ($archive == "default")) $query_styles .= " AND brewStyleActive='Y'";
 		$query_styles .= " ORDER BY brewStyleGroup,brewStyleNum ASC";
 
-		$rows_styles = $db_conn->rawQuery($query_styles, array($style_set));
+		$rows_styles = $db_conn->rawQuery($query_styles, $bind_params);
 		$totalRows_styles = $db_conn->count;
 
 		$a = array();

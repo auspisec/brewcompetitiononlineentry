@@ -316,8 +316,13 @@ if (!check_update("setup_last_step", $prefix."bcoem_sys")) {
 
 }
 
-$query_primary_sys = sprintf("SHOW INDEX FROM `%s` WHERE Key_name = 'PRIMARY';",$styles_db_table);
-$row_primary_sys = $db_conn->rawQueryOne($query_primary_sys);
+// Queries information_schema rather than SHOW INDEX - some MySQL/MariaDB
+// versions don't support preparing SHOW statements at all, and MysqliDb
+// always prepares queries, so a SHOW-based check can fail outright on those servers.
+$db_conn->where('table_schema', $database);
+$db_conn->where('table_name', $styles_db_table);
+$db_conn->where('index_name', 'PRIMARY');
+$row_primary_sys = $db_conn->getOne('information_schema.statistics');
 
 $style_primary_key = FALSE;
 if ($row_primary_sys) $style_primary_key = TRUE;
@@ -331,8 +336,14 @@ if (!$style_primary_key) {
 }
 
 // Make sure styles table is auto increment
-$row_id_column = $db_conn->rawQueryOne(sprintf("SHOW FULL COLUMNS FROM `%s` LIKE 'id';",$styles_db_table));
-$style_id_auto_increment = ((isset($row_id_column['Extra'])) && (stripos($row_id_column['Extra'], 'auto_increment') !== FALSE));
+// Queries information_schema rather than SHOW FULL COLUMNS - some MySQL/MariaDB
+// versions don't support preparing SHOW statements at all, and MysqliDb
+// always prepares queries, so a SHOW-based check can fail outright on those servers.
+$db_conn->where('table_schema', $database);
+$db_conn->where('table_name', $styles_db_table);
+$db_conn->where('column_name', 'id');
+$row_id_column = $db_conn->getOne('information_schema.columns', 'extra');
+$style_id_auto_increment = ((isset($row_id_column['extra'])) && (stripos($row_id_column['extra'], 'auto_increment') !== FALSE));
 
 if (!$style_id_auto_increment) {
 
@@ -4803,6 +4814,7 @@ $v3100_update .= "<li>Corrected an operator precedence bug that could affect BJC
 $v3100_update .= "<li>Corrected several notices affecting archived judging tables and scores views.</li>";
 $v3100_update .= "<li>Corrected an issue where opting out of the judge or steward registration cap could lock an account out of registration.</li>";
 $v3100_update .= "<li>Corrected legacy \"English\" language preference values to normalize to the current language folder.</li>";
+$v3100_update .= "<li>Added the brewCoBrewer and brewMead1-3 columns to archived brewing tables that predate their introduction, fixing a fatal error when viewing older archived entry lists.</li>";
 $v3100_update .= "<li>Minor bug fixes and security hardening.</li>";
 
 if ((check_mysql_data_type("contestEntryFee",$prefix."contest_info")) != 246) {
@@ -4949,6 +4961,66 @@ if (!check_update("prefsLanguageToggle", $prefix."preferences")) {
 	}
 
 }
+
+/**
+ * The brewCoBrewer column (added 1.1.6.0) and brewMead1/brewMead2/brewMead3
+ * columns were never backfilled onto archived brewing_<suffix> tables the way
+ * later columns (brewABV, brewStyleType, etc.) were. Archives created before
+ * those columns existed on the live table are missing them entirely, which
+ * throws a fatal "Unknown column" error when the admin entries list query
+ * selects them by name against an old archive.
+ */
+$v310_missing_archive_cols = array(
+	'brewCoBrewer' => "VARCHAR(255) NULL DEFAULT NULL",
+	'brewMead1' => "VARCHAR(25) NULL DEFAULT NULL",
+	'brewMead2' => "VARCHAR(25) NULL DEFAULT NULL",
+	'brewMead3' => "VARCHAR(25) NULL DEFAULT NULL",
+);
+
+foreach ($archive_suffixes as $suffix) {
+
+	$archive_brewing_table = $prefix."brewing_".$suffix;
+
+	foreach ($v310_missing_archive_cols as $v310_col => $v310_col_def) {
+
+		if (!check_update($v310_col, $archive_brewing_table)) {
+
+			$sql = sprintf("ALTER TABLE `%s` ADD `%s` %s;", $archive_brewing_table, $v310_col, $v310_col_def);
+			$result = $db_conn->rawQuery($sql);
+			if ($db_conn->getLastErrno() === 0) $v3100_update .= sprintf("<li>The %s column added to the %s archive table.</li>", $v310_col, $archive_brewing_table);
+			else {
+				$v3100_update .= sprintf("<li class=\"text-danger\">The %s column NOT added to the %s archive table.</li>", $v310_col, $archive_brewing_table);
+				$error_count++;
+			}
+
+		}
+
+	}
+
+}
+
+/**
+ * Data hygiene: userAdminObfuscate allows NULL (rows inserted before this
+ * column existed, or via any write path that didn't explicitly set it), and
+ * NULL was being treated inconsistently rather than defaulting to the safe
+ * "obfuscated" value. Separately, a bug in the make_admin form handler could
+ * leave a Top-Level Admin (userLevel 0) obfuscated if the "Obfuscate Judging
+ * Numbers?" checkbox was left checked, hiding judging numbers - and
+ * therefore Pullsheets - from their own dashboard (GitHub issue #1744).
+ */
+$v310_obfuscate_fixed = 0;
+
+$sql = sprintf("UPDATE `%s` SET `userAdminObfuscate` = 1 WHERE `userAdminObfuscate` IS NULL;", $prefix."users");
+$db_conn->rawQuery($sql);
+if ($db_conn->getLastErrno() === 0) $v310_obfuscate_fixed += $db_conn->mysqli()->affected_rows;
+else $error_count++;
+
+$sql = sprintf("UPDATE `%s` SET `userAdminObfuscate` = 0 WHERE `userLevel` = 0 AND `userAdminObfuscate` <> 0;", $prefix."users");
+$db_conn->rawQuery($sql);
+if ($db_conn->getLastErrno() === 0) $v310_obfuscate_fixed += $db_conn->mysqli()->affected_rows;
+else $error_count++;
+
+if ($v310_obfuscate_fixed > 0) $v3100_update .= "<li>Corrected ".$v310_obfuscate_fixed." user account(s) with a missing or incorrect judging-number obfuscation setting (Top-Level Admins are no longer obfuscated; NULL values now default to obfuscated).</li>";
 
 if (!$setup_running) $v3100_update .= "</ul>";
 

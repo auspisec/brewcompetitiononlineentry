@@ -939,6 +939,10 @@ function received_entries() {
 		$query_styles = "SELECT brewStyle FROM ".$prefix."styles"." WHERE (brewStyleVersion='BJCP2025' AND brewStyleType='2') OR (brewStyleVersion='BJCP2021' AND brewStyleType !='2') OR brewStyleOwn='custom'";
 		$rows_styles = $db_conn->rawQuery($query_styles);
 	}
+	elseif ($_SESSION['prefsStyleSet'] == "AABC2025") {
+		$query_styles = "SELECT brewStyle FROM ".$prefix."styles"." WHERE (brewStyleVersion='AABC2025' AND brewStyleType='2') OR (brewStyleVersion='AABC2022' AND brewStyleType !='2') OR brewStyleOwn='custom'";
+		$rows_styles = $db_conn->rawQuery($query_styles);
+	}
 	else {
 		$query_styles = "SELECT brewStyle FROM ".$prefix."styles"." WHERE (brewStyleVersion=? OR brewStyleOwn='custom')";
 		$rows_styles = $db_conn->rawQuery($query_styles, array($_SESSION['prefsStyleSet']));
@@ -954,9 +958,7 @@ function received_entries() {
 		if ($row['count'] > 0) $a[] = $style;
 	}
 	
-	if (!empty($b))	$b = implode(",",$a);
-	else $b="";
-	return $b;
+	return implode(",",$a);
 
 }
 
@@ -1023,11 +1025,14 @@ function date_created($uid,$date_format,$time_format,$timezone,$dbTable) {
 	$db_conn = new MysqliDb($connection);
 
 	if ($dbTable != "default") $dbTable = $dbTable; else $dbTable = $prefix."users";
-	// $dbTable is allow-listed to word characters at the source (includes/url_variables.inc.php)
-	// since it's spliced directly into SQL as a table name rather than passed as a bound parameter.
-	$query1 = sprintf("SHOW COLUMNS FROM `%s` LIKE 'userCreated'",$dbTable);
-	$rows1 = $db_conn->rawQuery($query1);
-	$exists = (!empty($rows1))?TRUE:FALSE;
+	// Queries information_schema rather than SHOW COLUMNS - some MySQL/MariaDB
+	// versions don't support preparing SHOW statements at all, and MysqliDb
+	// always prepares queries, so a SHOW-based check can fail outright on those servers.
+	$db_conn->where('table_schema', $database);
+	$db_conn->where('table_name', $dbTable);
+	$db_conn->where('column_name', 'userCreated');
+	$row1 = $db_conn->getOne('information_schema.columns', 'COUNT(*) AS count');
+	$exists = ($row1['count'] > 0) ? TRUE : FALSE;
 
 	if ($exists) {
 

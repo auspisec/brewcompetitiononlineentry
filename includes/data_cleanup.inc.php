@@ -52,6 +52,7 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 		// Purge entry and associated data
 		if (($go == "entries") || ($go == "purge-all")) {
 
+			$count_results = 0;
 			$count_results_actual = 0;
 
 			// Purge all data from brewing table
@@ -77,19 +78,15 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 						$update_table = $prefix."brewing";
 						$db_conn->where ('id', $row_purge_entries['id']);
 						$result = $db_conn->delete ($update_table);
-						if ($result) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 
 						foreach ($purge_array as $db_table) {
 
 							$db_conn->where ('eid', $row_purge_entries['id']);
 							$result = $db_conn->delete ($db_table);
-							if ($result) {
-								$count_results += 1;
-								$count_results_actual += 1;
-							}
+							$count_results_actual += 1;
+							if ($result) $count_results += 1;
 
 						}
 
@@ -128,10 +125,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 							
 						$db_conn->where ('comp_id', $_SESSION['comp_id']);
 						$result = $db_conn->delete ($db_table);
-						if ($result) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 					
 					}
 
@@ -139,10 +134,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 
 						$sql_purge = sprintf("TRUNCATE %s",$db_table);
 						$db_conn->rawQuery($sql_purge);
-						if ($db_conn->getLastErrno() === 0) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($db_conn->getLastErrno() === 0) $count_results += 1;
 					
 					}
 
@@ -158,6 +151,7 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 				);
 				if (SINGLE)	$db_conn->where ('comp_id', $_SESSION['comp_id']);
 				$result = $db_conn->update ($update_table, $data);
+				$count_results_actual += 1;
 				if ($result) $count_results += 1;
 
 			}
@@ -175,6 +169,7 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 		// Purge participant and associated data
 		if (($go == "participants") || ($go == "purge-all")) {
 
+			$count_results = 0;
 			$count_results_actual = 0;
 
 			// Purge all data from brewer and users tables (except admins)
@@ -213,42 +208,32 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 						$update_table = $prefix."users";
 						$db_conn->where ('id', $row_non_admin['id']);
 						$result = $db_conn->delete ($update_table);
-						if ($result) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						};
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 
 						$update_table = $prefix."brewer";
 						$db_conn->where ('uid', $row_non_admin['id']);
 						$result = $db_conn->delete ($update_table);
-						if ($result) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 
 						$update_table = $prefix."brewing";
 						$db_conn->where ('brewBrewerID', $row_non_admin['id']);
 						$result = $db_conn->delete ($update_table);
-						if ($result) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 
 						$update_table = $prefix."staff";
 						$db_conn->where ('uid', $row_non_admin['id']);
 						$result = $db_conn->delete ($update_table);
-						if ($result) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 
 						$update_table = $prefix."judging_assignments";
 						$db_conn->where ('bid', $row_non_admin['id']);
 						$result = $db_conn->delete ($update_table);
-						if ($result) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 
 					}
 
@@ -269,18 +254,14 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 						$update_table = $prefix."users";
 						$db_conn->where ('id', $row_stray_users['id']);
 						$result = $db_conn->delete ($update_table);
-						if ($result){
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 
 						$update_table = $prefix."brewer";
 						$db_conn->where ('uid', $row_stray_users['id']);
 						$result = $db_conn->delete ($update_table);
-						if ($result) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 
 					}
 
@@ -301,6 +282,7 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 		// Purge scores and associated data
 		if (($go == "scores") || ($go == "purge-all")) {
 
+			$count_results = 0;
 			$count_results_actual = 0;
 
 			$purge_array = array($judging_scores_db_table,$judging_scores_bos_db_table,$special_best_data_db_table);
@@ -313,10 +295,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 					$db_conn->rawQuery($sql_purge, array($_SESSION['comp_id']));
 				}
 				else $db_conn->rawQuery($sql_purge);
-				if ($db_conn->getLastErrno() === 0) {
-					$count_results += 1;
-					$count_results_actual += 1;
-				}
+				$count_results_actual += 1;
+				if ($db_conn->getLastErrno() === 0) $count_results += 1;
 			
 			}
 
@@ -331,6 +311,7 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 		// Purge judging tables and associated data
 		if (($go == "tables") || ($go == "purge-all")) {
 
+			$count_results = 0;
 			$count_results_actual = 0;
 
 			$purge_array = array($judging_tables_db_table,$judging_assignments_db_table,$judging_flights_db_table,$judging_scores_db_table,$special_best_data_db_table);
@@ -343,10 +324,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 					$db_conn->rawQuery($sql_purge, array($_SESSION['comp_id']));
 				}
 				else $db_conn->rawQuery($sql_purge);
-				if ($db_conn->getLastErrno() === 0) {
-					$count_results += 1;
-					$count_results_actual += 1;
-				}
+				$count_results_actual += 1;
+				if ($db_conn->getLastErrno() === 0) $count_results += 1;
 
 			}
 
@@ -416,6 +395,7 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 
 		if (($go == "custom") || ($go == "purge-all")) {
 
+			$count_results = 0;
 			$count_results_actual = 0;
 
 			$purge_array = array($special_best_info_db_table,$special_best_data_db_table);
@@ -428,10 +408,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 					$db_conn->rawQuery($sql_purge, array($_SESSION['comp_id']));
 				}
 				else $db_conn->rawQuery($sql_purge);
-				if ($db_conn->getLastErrno() === 0) {
-					$count_results += 1;
-					$count_results_actual += 1;
-				}
+				$count_results_actual += 1;
+				if ($db_conn->getLastErrno() === 0) $count_results += 1;
 
 			}
 
@@ -445,6 +423,7 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 
 		if (($go == "availability") || ($go == "purge-all")) {
 
+			$count_results = 0;
 			$count_results_actual = 0;
 
 			$update_table = $prefix."brewer";
@@ -456,10 +435,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 			);
 			if (SINGLE) $db_conn->where ('comp_id', $_SESSION['comp_id']);
 			$result = $db_conn->update ($update_table, $data);
-			if ($result) {
-				$count_results += 1;
-				$count_results_actual += 1;
-			}
+			$count_results_actual += 1;
+			if ($result) $count_results += 1;
 
 			if (SINGLE) {
 
@@ -472,10 +449,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 				);
 				$db_conn->where ('comp_id', $_SESSION['comp_id']);
 				$result = $db_conn->update ($update_table, $data);
-				if ($result) {
-					$count_results += 1;
-					$count_results_actual += 1;
-				}
+				$count_results_actual += 1;
+				if ($result) $count_results += 1;
 
 			}
 
@@ -483,10 +458,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 				
 				$sql_purge = sprintf("TRUNCATE %s",$prefix."staff");
 				$db_conn->rawQuery($sql_purge);
-				if ($db_conn->getLastErrno() === 0) {
-					$count_results += 1;
-					$count_results_actual += 1;
-				}
+				$count_results_actual += 1;
+				if ($db_conn->getLastErrno() === 0) $count_results += 1;
 
 			}
 
@@ -515,10 +488,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 					);
 					if (SINGLE) $db_conn->where ('comp_id', $_SESSION['comp_id']);
 					$result = $db_conn->update ($update_table, $data);
-					if ($result) {
-						$count_results += 1;
-						$count_results_actual += 1;
-					}
+					$count_results_actual += 1;
+					if ($result) $count_results += 1;
 
 				}
 
@@ -536,10 +507,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 
 						$db_conn->where ('id', $row_availability['id']);
 						$result = $db_conn->delete ($judging_assignments_db_table);
-						if ($result) {
-							$count_results += 1;
-							$count_results_actual += 1;
-						}
+						$count_results_actual += 1;
+						if ($result) $count_results += 1;
 
 					}
 
@@ -551,10 +520,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 
 				$sql_purge = sprintf("TRUNCATE %s",$prefix."judging_assignments");
 				$db_conn->rawQuery($sql_purge);
-				if ($db_conn->getLastErrno() === 0) {
-					$count_results += 1;
-					$count_results_actual += 1;
-				}
+				$count_results_actual += 1;
+				if ($db_conn->getLastErrno() === 0) $count_results += 1;
 
 			}
 
@@ -578,6 +545,7 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 
 		if ((($go == "payments") || ($go == "purge-all")) && (table_exists($prefix."payments"))) {
 
+			$count_results = 0;
 			$count_results_actual = 0;
 
 			$update_table = $prefix."payments";
@@ -595,10 +563,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 					$db_conn->orWhere ('payment_time', NULL, 'IS');
 				}
 				$result = $db_conn->delete ($update_table);
-				if ($result) {
-					$count_results += 1;
-					$count_results_actual += 1;
-				}
+				$count_results_actual += 1;
+				if ($result) $count_results += 1;
 
 			}
 
@@ -609,10 +575,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 
 					$db_conn->where ('comp_id', $_SESSION['comp_id']);
 					$result = $db_conn->delete ($update_table);
-					if ($result) {
-						$count_results += 1;
-						$count_results_actual += 1;
-					}
+					$count_results_actual += 1;
+					if ($result) $count_results += 1;
 
 				}
 
@@ -620,10 +584,8 @@ if ((isset($_SESSION['loginUsername'])) && ($_SESSION['userLevel'] == 0)) {
 
 					$sql_purge = sprintf("TRUNCATE %s",$prefix."payments");
 					$db_conn->rawQuery($sql_purge);
-					if ($db_conn->getLastErrno() === 0) {
-						$count_results += 1;
-						$count_results_actual += 1;
-					}
+					$count_results_actual += 1;
+					if ($db_conn->getLastErrno() === 0) $count_results += 1;
 
 				}
 
