@@ -20,44 +20,28 @@ if (DEBUG) include (DEBUGGING.'query_count_begin.debug.php');
 csrf_token_generate(false);
 
 /**
- * Translate stored mead requirement values for display.
- *
+ * Stored-value → display-label maps for mead/cider required-info fields.
  * brewMead1 (carbonation) and brewMead2 (sweetness/strength) store the
- * English literal chosen at entry time (e.g. "Petillant", "Medium Dry"),
- * but the entry form renders these choices via $label_* decodes. Display
- * pages (Account entries, admin entries, eval dashboard) echoed the raw
- * DB value, so non-English locales showed untranslated values.
- * Map each stored value to its matching $label_* decode; unknown values
- * pass through unchanged.
+ * English literal chosen at entry time; display pages need the matching
+ * $label_* decode. Follows the $style_types_translations pattern.
  */
-if (!function_exists("translate_mead_req_value")) {
-    function translate_mead_req_value($value) {
 
-        global $label_still, $label_petillant, $label_sparkling,
-               $label_dry, $label_med_dry, $label_med, $label_med_sweet, $label_sweet,
-               $label_semi_dry, $label_semi_sweet;
+$mead_carb_translations = array(
+    "Still"     => $label_still,
+    "Petillant" => $label_petillant,
+    "Sparkling" => $label_sparkling,
+);
 
-        $mead_req_labels = array(
-            // Carbonation (brewMead1)
-            "Still"     => $label_still,
-            "Petillant" => $label_petillant,
-            "Sparkling" => $label_sparkling,
-            // Sweetness / strength (brewMead2)
-            "Dry"          => $label_dry,
-            "Medium Dry"   => $label_med_dry,
-            "Medium"       => $label_med,
-            "Medium Sweet" => $label_med_sweet,
-            "Sweet"        => $label_sweet,
-            // Cider sweetness values (brewMead2-cider radios)
-            "Semi-Dry"     => $label_semi_dry,
-            "Semi-Sweet"   => $label_semi_sweet,
-        );
-
-        if (isset($mead_req_labels[$value])) return $mead_req_labels[$value];
-        return $value;
-
-    }
-}
+$mead_sweetness_translations = array(
+    "Dry"          => $label_dry,
+    "Medium Dry"   => $label_med_dry,
+    "Medium"       => $label_med,
+    "Medium Sweet" => $label_med_sweet,
+    "Sweet"        => $label_sweet,
+    // Cider sweetness values (brewMead2-cider radios)
+    "Semi-Dry"     => $label_semi_dry,
+    "Semi-Sweet"   => $label_semi_sweet,
+);
 
 // Bootstrap layout containers
 if (($section == "admin") || ($view == "admin")) {
