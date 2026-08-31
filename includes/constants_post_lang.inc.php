@@ -43,6 +43,38 @@ $mead_sweetness_translations = array(
     "Semi-Sweet"   => $label_semi_sweet,
 );
 
+/**
+ * Pouring instruction maps (brewPouring JSON). Historic entries stored the
+ * translated literal (locale-dependent); new entries store locale-neutral
+ * keys. Both shapes are mapped so any entry displays in the current language.
+ */
+$pouring_translations = array(
+    // locale-neutral keys (new)
+    "fast"   => $label_fast,
+    "normal" => $label_normal,
+    "slow"   => $label_slow,
+    // legacy Korean literals
+    "빠르게" => $label_fast,
+    "보통"   => $label_normal,
+    "천천히" => $label_slow,
+    // legacy English literals
+    "Fast"   => $label_fast,
+    "Normal" => $label_normal,
+    "Slow"   => $label_slow,
+);
+
+$pouring_rouse_translations = array(
+    // locale-neutral keys (new)
+    "yes" => $label_yes,
+    "no"  => $label_no,
+    // legacy Korean literals
+    "예"   => $label_yes,
+    "아니오" => $label_no,
+    // legacy English literals
+    "Yes" => $label_yes,
+    "No"  => $label_no,
+);
+
 // Bootstrap layout containers
 if (($section == "admin") || ($view == "admin")) {
     $container_main = "container-fluid";

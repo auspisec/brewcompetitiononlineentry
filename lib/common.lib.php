@@ -234,6 +234,35 @@ function translate_mead_req_value($value) {
 
 }
 
+/**
+ * Translate a stored pouring instruction (brewPouring JSON: 'pouring').
+ * Handles locale-neutral keys (new entries) and legacy locale-dependent
+ * literals (Korean/English) so any entry displays in the current language.
+ * Maps are defined in constants_post_lang.inc.php (after language load).
+ */
+function translate_pouring_value($value) {
+
+	global $pouring_translations;
+
+	if (isset($pouring_translations[$value])) return $pouring_translations[$value];
+	return $value;
+
+}
+
+/**
+ * Translate a stored rouse-yeast answer (brewPouring JSON:
+ * 'pouring_rouse'). Same locale-neutral + legacy handling as
+ * translate_pouring_value().
+ */
+function translate_pouring_rouse_value($value) {
+
+	global $pouring_rouse_translations;
+
+	if (isset($pouring_rouse_translations[$value])) return $pouring_rouse_translations[$value];
+	return $value;
+
+}
+
 function designations($judge_array,$display) {
 	$return = "";
 	$rank1 = explode(",",$judge_array);
