@@ -263,6 +263,19 @@ function translate_pouring_rouse_value($value) {
 
 }
 
+/**
+ * Translate a stored mead strength value (brewMead3:
+ * Hydromel/Standard/Sack). Unknown values pass through unchanged.
+ */
+function translate_mead_strength_value($value) {
+
+	global $mead_strength_translations;
+
+	if (isset($mead_strength_translations[$value])) return $mead_strength_translations[$value];
+	return $value;
+
+}
+
 function designations($judge_array,$display) {
 	$return = "";
 	$rank1 = explode(",",$judge_array);

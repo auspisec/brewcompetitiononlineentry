@@ -75,6 +75,15 @@ $pouring_rouse_translations = array(
     "No"  => $label_no,
 );
 
+/**
+ * Mead strength map (brewMead3): Hydromel/Standard/Sack.
+ */
+$mead_strength_translations = array(
+    "Hydromel" => $label_hydromel,
+    "Standard" => $label_standard,
+    "Sack"     => $label_sack,
+);
+
 // Bootstrap layout containers
 if (($section == "admin") || ($view == "admin")) {
     $container_main = "container-fluid";
