@@ -44,6 +44,8 @@ if (((!empty($_SESSION['session_set_'.$prefix_session])) && ($_SESSION['session_
 		session_destroy();
 		session_write_close();
 	}
+	// TEMP DIAGNOSTIC - remove after tracking down the "headers already sent" warning.
+	if (headers_sent($diag_hs_file, $diag_hs_line)) error_log("DIAGNOSTIC: headers already sent before session_start() in common.db.php - output started at $diag_hs_file:$diag_hs_line");
 	session_name($prefix_session);
 	session_start();
 	session_regenerate_id(true);
@@ -129,6 +131,7 @@ if ((!isset($_SESSION['prefs'.$prefix_session])) || (empty($_SESSION['prefs'.$pr
 					$_SESSION['style_set_mead'] = $style_set_data['style_set_mead'];
 					$_SESSION['style_set_cider'] = $style_set_data['style_set_cider'];
 					$_SESSION['style_set_category_end'] = $style_set_data['style_set_category_end'];
+					$_SESSION['style_set_no_numbering'] = !empty($style_set_data['style_set_no_numbering']);
 				}
 			}
 		}
@@ -138,11 +141,11 @@ if ((!isset($_SESSION['prefs'.$prefix_session])) || (empty($_SESSION['prefs'.$pr
 		 * As of April 2018, BreweryDB is not issuing any further API keys
 		 */
 
-		if ((isset($_SESSION['prefsStyleSet'])) && ($_SESSION['prefsStyleSet'] == "BA")) {
+		if ((isset($_SESSION['prefsStyleSet'])) && ($_SESSION['style_set_no_numbering'])) {
 
 			include(INCLUDES.'ba_constants.inc.php');
 
-			$db_conn->where ('brewStyleVersion', 'BA');
+			$db_conn->where ('brewStyleVersion', $_SESSION['prefsStyleSet']);
 			$db_conn->returnType = 'array'; 
 			$return_ba_style = $db_conn->get($prefix."styles");
 			$totalRows_ba_style = $db_conn->count;

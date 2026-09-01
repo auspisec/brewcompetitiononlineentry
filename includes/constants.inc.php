@@ -585,7 +585,7 @@ $no_entry_form_array = array("0","1","2","E","C");
 if ($logged_in) $location_target = "_blank";
 else $location_target = "_self";
 
-if ((isset($_SESSION['prefsStyleSet'])) && ($_SESSION['prefsStyleSet'] == "BA")) {
+if ((isset($_SESSION['prefsStyleSet'])) && ($_SESSION['style_set_no_numbering'])) {
     $optional_info_styles = array();
 }
 elseif ((isset($_SESSION['prefsStyleSet'])) && ($_SESSION['prefsStyleSet'] == "AABC")) {
@@ -699,7 +699,8 @@ if ((strpos($section, 'step') === FALSE) && (check_setup($prefix."bcoem_sys",$da
                         'brewStyle' => sterilize($row_styles_default['brewStyle']),
                         'brewStyleGroup' => sterilize($row_styles_default['brewStyleGroup']),
                         'brewStyleNum' => sterilize($row_styles_default['brewStyleNum']),
-                        'brewStyleVersion' => sterilize($row_styles_default['brewStyleVersion'])
+                        'brewStyleVersion' => sterilize($row_styles_default['brewStyleVersion']),
+                        'brewStyleType' => sterilize($row_styles_default['brewStyleType'])
                     );
                 }
             }

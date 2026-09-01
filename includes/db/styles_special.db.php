@@ -237,7 +237,7 @@ else $styles_entry_text = array();
 
 // --------------------------------------If Non-BA Styles --------------------------------------
 
-if ($_SESSION['prefsStyleSet'] != "BA") $styleSet = str_replace("2"," 2",$_SESSION['prefsStyleSet']);
+if (!$_SESSION['style_set_no_numbering']) $styleSet = str_replace("2"," 2",$_SESSION['prefsStyleSet']);
 else $styleSet = $_SESSION['prefsStyleSet'];
 
 /**
@@ -289,7 +289,7 @@ foreach ($rows_required_optional as $row_required_optional) {
 		$req_special_ing_styles[] = $style_id;
 	}
 
-	if ($_SESSION['prefsStyleSet'] == "BA") {
+	if ($_SESSION['style_set_no_numbering']) {
 		if (!empty($row_required_optional['brewStyleInfo'])) $styles_entry_text[$style_id] = $row_required_optional['brewStyleInfo'];
 	}
 	
@@ -309,9 +309,9 @@ foreach ($rows_required_optional as $row_required_optional) {
 
 			// <div> wrapper (not <p>) so author-authored <p> tags render as proper
 			// paragraphs — a <p> wrapper would nest/auto-close against inner <p> tags.
-			if ($_SESSION['prefsStyleSet'] != "BA") $info .= str_replace($replacement1,$replacement2,"<div>".$row_required_optional['brewStyleInfo']."</div>");
-			
-			if ($_SESSION['prefsStyleSet'] == "BA") $info .= "<p>".$entry_info_text_052."</p>";
+			if (!$_SESSION['style_set_no_numbering']) $info .= str_replace($replacement1,$replacement2,"<div>".$row_required_optional['brewStyleInfo']."</div>");
+
+			if ($_SESSION['style_set_no_numbering']) $info .= "<p>".$entry_info_text_052."</p>";
 
 			if ($row_required_optional['brewStyleOwn'] == "custom") $styleSet = "Custom"; else $styleSet = $styleSet;
 
@@ -358,7 +358,7 @@ foreach ($rows_required_optional as $row_required_optional) {
 			}
 			else $styleColor = "&nbsp;";
 
-			if ($styleSet == "BA") $style_name = $styleSet." Style: ".$row_required_optional['brewStyle'];
+			if ($_SESSION['style_set_no_numbering']) $style_name = $styleSet." Style: ".$row_required_optional['brewStyle'];
 			elseif ($styleSet == "AABC") $style_name = $styleSet." Style ".ltrim($row_required_optional['brewStyleGroup'],"0").".".ltrim($row_required_optional['brewStyleNum'],"0").": ".$row_required_optional['brewStyle'];
 			else $style_name = $_SESSION['style_set_short_name']." Style ".ltrim($row_required_optional['brewStyleGroup'],"0").ltrim($row_required_optional['brewStyleNum'],"0").": ".$row_required_optional['brewStyle'];
 

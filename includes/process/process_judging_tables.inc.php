@@ -38,7 +38,11 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 	$tableNumber = sterilize($_POST['tableNumber']);
 	$tableLocation = sterilize($_POST['tableLocation']);
-	$tableEntryLimit = sterilize($_POST['tableEntryLimit']);
+	// The Total Entry Limit field only exists in the form when Tables Planning
+	// Mode + per-table limits are both on (add form), or is rendered disabled
+	// outside planning mode (edit form) - a disabled/absent field is never
+	// submitted, so it's not always present in $_POST.
+	$tableEntryLimit = isset($_POST['tableEntryLimit']) ? sterilize($_POST['tableEntryLimit']) : "";
 
 	if ($action == "add") {
 
@@ -120,21 +124,21 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 		foreach (array_unique($a) as $value) {
 
-			if ($_SESSION['prefsStyleSet'] != "BA") {
+			if (!$_SESSION['style_set_no_numbering']) {
 				$db_conn->where('id', $value);
 				$row_styles = $db_conn->getOne($styles_db_table, "brewStyleGroup,brewStyleNum");
 			}
 
 			if ($_SESSION['jPrefsTablePlanning'] == 1) {
 
-				if ($_SESSION['prefsStyleSet'] == "BA") { $db_conn->where('brewSubCategory', $value); }
+				if ($_SESSION['style_set_no_numbering']) { $db_conn->where('brewSubCategory', $value); }
 				else { $db_conn->where('brewCategorySort', $row_styles['brewStyleGroup']); $db_conn->where('brewSubCategory', $row_styles['brewStyleNum']); }
 
 			}
 
 			else {
 
-				if ($_SESSION['prefsStyleSet'] == "BA") { $db_conn->where('brewSubCategory', $value); $db_conn->where('brewReceived', '1'); }
+				if ($_SESSION['style_set_no_numbering']) { $db_conn->where('brewSubCategory', $value); $db_conn->where('brewReceived', '1'); }
 				else { $db_conn->where('brewCategorySort', $row_styles['brewStyleGroup']); $db_conn->where('brewSubCategory', $row_styles['brewStyleNum']); $db_conn->where('brewReceived', '1'); }
 
 			}
@@ -145,6 +149,19 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 				$update_table = $prefix."judging_scores";
 				$data = array('scoreTable' => $row_table['id']);
+				$db_conn->where ('eid', $row_entries['id']);
+				$result = $db_conn->update ($update_table, $data);
+				if (!$result) {
+					$error_output[] = $db_conn->getLastError();
+					$errors = TRUE;
+				}
+
+				// Keep any existing evaluation submissions' table association in
+				// sync too - otherwise evalTable stays pinned to whatever table
+				// the entry was at when a judge submitted, and the entry silently
+				// drops out of its new table's "scored entries" count.
+				$update_table = $prefix."evaluation";
+				$data = array('evalTable' => $row_table['id']);
 				$db_conn->where ('eid', $row_entries['id']);
 				$result = $db_conn->update ($update_table, $data);
 				if (!$result) {
@@ -204,9 +221,11 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 		if (!empty($error_output)) $_SESSION['error_output'] = $error_output;
 
+		// return-to-add-table is a checkbox - it's simply absent from $_POST
+		// when unchecked, not "0", so presence (isset) is the right check.
 		if (empty($_POST['tableStyles'])) $insertGoTo = $insertGoTo;
-		elseif (($_POST['return-to-add-table'] == 1) && (!empty($_POST['tableStyles']))) $insertGoTo = $base_url."index.php?section=admin&go=judging_tables&action=add&msg=1";
-		elseif (($_POST['return-to-add-table'] == 0) && (!empty($_POST['tableStyles']))) $insertGoTo = $base_url."index.php?section=admin&go=judging_tables&msg=1";
+		elseif ((isset($_POST['return-to-add-table'])) && (!empty($_POST['tableStyles']))) $insertGoTo = $base_url."index.php?section=admin&go=judging_tables&action=add&msg=1";
+		elseif ((!isset($_POST['return-to-add-table'])) && (!empty($_POST['tableStyles']))) $insertGoTo = $base_url."index.php?section=admin&go=judging_tables&msg=1";
 		else $insertGoTo = $_POST['relocate']."&msg=13";
 		if ($errors) $insertGoTo = $_POST['relocate']."&msg=3";
 
@@ -226,24 +245,67 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 		// If so...
 		if ($tableStyles != $row_table['tableStyles']) {
 
-			// Delete all associated scores
-			$update_table = $prefix."judging_scores";
-			$db_conn->where ('scoreTable', $id);
-			$result = $db_conn->delete ($update_table);
-			if (!$result) {
-				$error_output[] = $db_conn->getLastError();
-				$errors = TRUE;
-			}
+			// Only touch entries for styles that were actually added or
+			// removed from this table. This used to delete every score and
+			// flight assignment for the WHOLE table the moment any single
+			// style changed - even just adding one more style - then
+			// rebuilt everything from scratch with flightNumber hardcoded
+			// to 1, silently discarding any flight distribution already
+			// done for styles that hadn't changed at all.
+			$old_styles = array_filter(explode(",", (string) ($row_table['tableStyles'] ?? "")), function($v) { return $v !== ""; });
+			$new_styles = array_unique(array_filter($a, function($v) { return $v !== ""; }));
 
-			// Delete all entries in flights table that were previously assigned
-			// Fool-proof way to avoid breaking system when adding new tables
+			$removed_styles = array_diff($old_styles, $new_styles);
+			$added_styles = array_diff($new_styles, $old_styles);
 
-			$update_table = $prefix."judging_flights";
-			$db_conn->where ('flightTable', $id);
-			$result = $db_conn->delete ($update_table);
-			if (!$result) {
-				$error_output[] = $db_conn->getLastError();
-				$errors = TRUE;
+			// Styles no longer on this table: their entries no longer belong
+			// here, so clear their score/flight assignment to it outright.
+			foreach ($removed_styles as $value) {
+
+				// $value is a bare brewSubCategory for no-numbering style sets (tableStyles
+				// stores brewSubCategory directly), or a styles-table id otherwise (looked
+				// up below for its group/num) - same split as the "add" action above.
+				if ($_SESSION['style_set_no_numbering']) {
+
+					$db_conn->where('brewSubCategory', $value);
+
+				}
+
+				else {
+
+					$db_conn->where('id', $value);
+					$row_styles = $db_conn->getOne($styles_db_table, "brewStyleGroup,brewStyleNum");
+
+					$db_conn->where('brewCategorySort', $row_styles['brewStyleGroup']);
+					$db_conn->where('brewSubCategory', $row_styles['brewStyleNum']);
+
+				}
+
+				if ($_SESSION['jPrefsTablePlanning'] != 1) $db_conn->where('brewReceived', '1');
+				$rows_entries = $db_conn->get($brewing_db_table, null, "id");
+
+				foreach ($rows_entries as $row_entries) {
+
+					$update_table = $prefix."judging_scores";
+					$db_conn->where ('eid', $row_entries['id']);
+					$db_conn->where ('scoreTable', $id);
+					$result = $db_conn->delete ($update_table);
+					if (!$result) {
+						$error_output[] = $db_conn->getLastError();
+						$errors = TRUE;
+					}
+
+					$update_table = $prefix."judging_flights";
+					$db_conn->where ('flightEntryID', $row_entries['id']);
+					$db_conn->where ('flightTable', $id);
+					$result = $db_conn->delete ($update_table);
+					if (!$result) {
+						$error_output[] = $db_conn->getLastError();
+						$errors = TRUE;
+					}
+
+				}
+
 			}
 
 			// Add back in
@@ -254,17 +316,42 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 			$row_table_rounds = $db_conn->getOne($judging_locations_db_table, "judgingRounds");
 			if ($row_table_rounds['judgingRounds'] == 1) $rounds = "1"; else $rounds = "";
 
-			foreach (array_unique($a) as $value) {
+			// Newly added entries go into a fresh flight after any that
+			// already exist for this table, rather than always flight 1 -
+			// flight 1 may already be a deliberately organized judging
+			// group, and dumping newly added styles' entries into it would
+			// disrupt that. All styles added in this same edit share one
+			// new flight together, so a further manual split stays a
+			// separate, deliberate step rather than something assumed here.
+			$db_conn->where('flightTable', $id);
+			$db_conn->orderBy('flightNumber', 'DESC');
+			$row_last_flight = $db_conn->getOne($judging_flights_db_table, "flightNumber");
+			$next_flight_number = (!empty($row_last_flight['flightNumber'])) ? ((int) $row_last_flight['flightNumber'] + 1) : 1;
 
-				if ($_SESSION['prefsStyleSet'] != "BA") {
+			// Styles newly added to this table: assign their entries to it.
+			// Styles that were already on the table are untouched entirely -
+			// their existing flight/score assignments stay exactly as-is.
+			foreach ($added_styles as $value) {
+
+				// $value is a bare brewSubCategory for no-numbering style sets (tableStyles
+				// stores brewSubCategory directly), or a styles-table id otherwise (looked
+				// up below for its group/num) - same split as the "add" action above.
+				if ($_SESSION['style_set_no_numbering']) {
+
+					$db_conn->where('brewSubCategory', $value);
+
+				}
+
+				else {
 
 					$db_conn->where('id', $value);
 					$row_styles = $db_conn->getOne($styles_db_table, "brewStyleGroup,brewStyleNum");
 
+					$db_conn->where('brewCategorySort', $row_styles['brewStyleGroup']);
+					$db_conn->where('brewSubCategory', $row_styles['brewStyleNum']);
+
 				}
 
-				$db_conn->where('brewCategorySort', $row_styles['brewStyleGroup']);
-				$db_conn->where('brewSubCategory', $row_styles['brewStyleNum']);
 				if ($_SESSION['jPrefsTablePlanning'] != 1) $db_conn->where('brewReceived', '1');
 				$rows_entries = $db_conn->get($brewing_db_table, null, "id");
 
@@ -272,6 +359,19 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 					$update_table = $prefix."judging_scores";
 					$data = array('scoreTable' => $row_table['id']);
+					$db_conn->where ('eid', $row_entries['id']);
+					$result = $db_conn->update ($update_table, $data);
+					if (!$result) {
+						$error_output[] = $db_conn->getLastError();
+						$errors = TRUE;
+					}
+
+					// Keep any existing evaluation submissions' table association in
+					// sync too - otherwise evalTable stays pinned to whatever table
+					// the entry was at when a judge submitted, and the entry silently
+					// drops out of its new table's "scored entries" count.
+					$update_table = $prefix."evaluation";
+					$data = array('evalTable' => $row_table['id']);
 					$db_conn->where ('eid', $row_entries['id']);
 					$result = $db_conn->update ($update_table, $data);
 					if (!$result) {
@@ -304,7 +404,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 						$update_table = $prefix."judging_flights";
 						$data = array(
 							'flightTable' => $id,
-							'flightNumber' => 1,
+							'flightNumber' => $next_flight_number,
 							'flightEntryID' => $row_entries['id'],
 							'flightRound' => blank_to_null($rounds)
 						);
@@ -318,15 +418,15 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 				}
 
-				// Finally change the flightPlanning status for all records
-				$update_table = $prefix."judging_flights";
-				$data = array('flightPlanning' => blank_to_null($flightPlanning));
-				$result = $db_conn->update ($update_table, $data);
-				if (!$result) {
-					$error_output[] = $db_conn->getLastError();
-					$errors = TRUE;
-				}
+			}
 
+			// Finally change the flightPlanning status for all records
+			$update_table = $prefix."judging_flights";
+			$data = array('flightPlanning' => blank_to_null($flightPlanning));
+			$result = $db_conn->update ($update_table, $data);
+			if (!$result) {
+				$error_output[] = $db_conn->getLastError();
+				$errors = TRUE;
 			}
 
 		} // End if ($tableStyles != $row_table['tableStyles'])
@@ -416,7 +516,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 				$db_conn->where('id', $id);
 				$row_entry = $db_conn->getOne($brewing_db_table, "brewCategorySort,brewSubCategory");
 
-				if ($_SESSION['prefsStyleSet'] != "BA") {
+				if (!$_SESSION['style_set_no_numbering']) {
 
 					if ($_SESSION['prefsStyleSet'] == "BJCP2025") {
 					    $first_character = mb_substr($row_entry['brewCategorySort'], 0, 1);

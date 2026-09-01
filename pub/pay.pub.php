@@ -89,7 +89,7 @@ else {
 	}
 	$primary_page_info .= "<p class=\"lead\">";
 	if ($total_to_pay_user == 0) $primary_page_info .= sprintf("<small><span class=\"me-1 fa fa-fw fa-lg fa-check-circle text-success-emphasis\"></span> %s <strong class=\"text-success-emphasis\">%s</strong>.",$pay_text_008,$currency_symbol.number_format($total_entry_fees_user,2));
-	else $primary_page_info .= sprintf("<small><span class=\"me-2 fa fa-fw fa-fw fa-lg fa-info-circle text-primary-emphasis\"></span> %s <strong class=\"text-primary-emphasis\">%s</strong>.",$pay_text_008,$currency_symbol.number_format($total_entry_fees_user,2));
+	else $primary_page_info .= sprintf("<small><span class=\"me-2 fa fa-fw fa-lg fa-info-circle text-primary-emphasis\"></span>%s <strong class=\"text-primary-emphasis\">%s</strong>.",$pay_text_008,$currency_symbol.number_format($total_entry_fees_user,2));
 	if ($total_to_pay_user == 0) $primary_page_info .= sprintf(" %s <strong class=\"text-success-emphasis\">%s</strong>",$pay_text_009,$currency_symbol.number_format($total_to_pay_user,2));
 	else $primary_page_info .= sprintf(" %s <strong class=\"text-primary-emphasis\">%s</strong>",$pay_text_009,$currency_symbol.number_format($total_to_pay_user,2));
 	if (($_SESSION['prefsTransFee'] == "Y") && ($total_to_pay_user > 0)) $primary_page_info .= "<strong><span class=\"text-primary-emphasis\">*</span></strong>";
@@ -108,7 +108,7 @@ else {
 				if ($row_log_confirmed['brewPaid'] != "1") {
 					$entry_name = html_entity_decode($row_log_confirmed['brewName'],ENT_QUOTES|ENT_XML1,"UTF-8");
     				$entry_name = htmlentities($entry_name,ENT_QUOTES|ENT_SUBSTITUTE|ENT_HTML5,"UTF-8");
-					if ($_SESSION['prefsStyleSet'] == "BA") $style = $row_log_confirmed['brewStyle'];
+					if ($_SESSION['style_set_no_numbering']) $style = $row_log_confirmed['brewStyle'];
 					else $style = sprintf("%s%s &ndash; %s",$row_log_confirmed['brewCategory'],$row_log_confirmed['brewSubCategory'],$row_log_confirmed['brewStyle']);
 					$entry_no = sprintf("%06s",$row_log_confirmed['id']);
 					$primary_page_info .= sprintf("<li class=\"mb-1\">%s #%s: <strong>%s</strong><small class=\"ms-2 text-muted\"><em>%s</em></small></li>",$label_entry,$entry_no,$entry_name,$style);
@@ -139,11 +139,11 @@ else {
 		if ($_SESSION['prefsPaypal'] == "Y")  {
 
 			/**
-			 * August 1, 2021
+			 * 1 August 2021
 			 * PayPal fees were split. Checkout transaction rate is 3.49% + fixed fee.
 			 * @see https://www.paypal.com/us/webapps/mpp/merchant-fees#statement-2
 			 * 
-			 * June 23, 2022
+			 * 23 June 2022
 			 * Adjusted PayPal fixed fees by currency - the 0.49 flat fee used 
 			 * previously wasn't accurate for all currencies accepted by PayPal.
 			 * @see https://www.paypal.com/us/webapps/mpp/merchant-fees#fixed-fees-commercialtrans
@@ -153,40 +153,66 @@ else {
 			 * will actually end up with the correct amount after those fees are 
 			 * deducted from the paid total.
 			 * @see https://github.com/geoffhumphrey/brewcompetitiononlineentry/issues/1317
+			 * 
+			 * 30 August 2026
+			 * Each currency's own DOMESTIC PayPal commercial-transaction rate,
+			 * verified directly against paypal.com/{cc}/webapps/mpp/merchant-fees
+			 * for each currency's country. Previously this was two
+			 * separate arrays (fixed fee per currency, but a single flat 3.49%
+			 * percentage for everyone) built from PayPal's US page's "fixed fee by 
+			 * currency received" table - the rate for a US merchant receiving a
+			 * cross-border foreign-currency payment, not that currency's own
+			 * domestic rate - so nearly every entry was wrong.
+			 * T$ (TWD) and p. (RUB) keep their old fixed fee but default the
+			 * percentage: PayPal's Taiwan page only publishes a cross-border rate,
+			 * and PayPal has been suspended in Russia since March 2022 so the rate
+			 * is moot either way. R (ZAR) has a confirmed percentage but no
+			 * published fixed fee. tlira (TRY) and krw (KRW) are intentionally
+			 * absent entirely - PayPal ceased all operations in Turkey in June
+			 * 2016, and no verified domestic KRW rate could be found - both fall
+			 * through to the default below.
 			 */
 			
 			if ($_SESSION['prefsTransFee'] == "Y") {
 				
-				$pp_fixed_fees_arr = array(
-					"$" => 0.49,
-					"R$" => 2.90,
-					"pound" => 0.39,
-					"euro" => 0.39,
-					"A$" => 0.59,
-					"C$" => 0.59,
-					"H$" => 3.79,
-					"N$" => 0.69,
-					"S$" => 0.69,
-					"T$" => 14.00,
-					"Ft" => 149.00,
-					"shekel" => 1.60,
-					"yen" => 49.00,
-					"nkr" => 3.90,
-					"kr" => 2.90,
-					"RM" => 2.00,
-					"M$" => 9.00,
-					"phpeso" => 25.00,
-					"pol" => 1.89,
-					"p." => 39.00,
-					"skr" => 4.09,
-					"sfranc" => 0.49,
-					"baht" => 15.00,
+				$pp_fees_arr = array(
+					"$"        => array('fixed_fee' => 0.49,  'percentage' => 0.0349),
+					"R$"       => array('fixed_fee' => 0.60,  'percentage' => 0.0479),
+					"pound"    => array('fixed_fee' => 0.30,  'percentage' => 0.0290),
+					"euro"     => array('fixed_fee' => 0.39,  'percentage' => 0.0299),
+					"A$"       => array('fixed_fee' => 0.30,  'percentage' => 0.0290),
+					"C$"       => array('fixed_fee' => 0.30,  'percentage' => 0.0290),
+					"H$"       => array('fixed_fee' => 2.35,  'percentage' => 0.0390),
+					"N$"       => array('fixed_fee' => 0.45,  'percentage' => 0.0340),
+					"S$"       => array('fixed_fee' => 0.50,  'percentage' => 0.0390),
+					"T$"       => array('fixed_fee' => 14.00, 'percentage' => 0.0349), // TWD: no verified domestic % published
+					"Ft"       => array('fixed_fee' => 90.00, 'percentage' => 0.0340),
+					"shekel"   => array('fixed_fee' => 1.20,  'percentage' => 0.0340),
+					"yen"      => array('fixed_fee' => 40.00, 'percentage' => 0.0360),
+					"nkr"      => array('fixed_fee' => 2.80,  'percentage' => 0.0340),
+					"kr"       => array('fixed_fee' => 2.60,  'percentage' => 0.0340),
+					"RM"       => array('fixed_fee' => 2.00,  'percentage' => 0.0390),
+					"M$"       => array('fixed_fee' => 4.00,  'percentage' => 0.0395),
+					"phpeso"   => array('fixed_fee' => 15.00, 'percentage' => 0.0340),
+					"pol"      => array('fixed_fee' => 1.35,  'percentage' => 0.0290),
+					"p."       => array('fixed_fee' => 39.00, 'percentage' => 0.0349), // RUB: PayPal suspended in Russia since Mar 2022
+					"skr"      => array('fixed_fee' => 3.25,  'percentage' => 0.0340),
+					"sfranc"   => array('fixed_fee' => 0.55,  'percentage' => 0.0340),
+					"baht"     => array('fixed_fee' => 11.00, 'percentage' => 0.0390),
+					"czkoruna" => array('fixed_fee' => 10.00, 'percentage' => 0.0340),
+					"rupee"    => array('fixed_fee' => 3.00,  'percentage' => 0.0440),
+					"R"        => array('fixed_fee' => 0,     'percentage' => 0.0340), // ZAR: no fixed fee published anywhere found
 				);
 
-				if ((isset($_SESSION['prefsCurrency'])) && (array_key_exists($_SESSION['prefsCurrency'],$pp_fixed_fees_arr))) $pp_fixed_fee = $pp_fixed_fees_arr[$_SESSION['prefsCurrency']];
-				else $pp_fixed_fee = 0;
+				if ((isset($_SESSION['prefsCurrency'])) && (array_key_exists($_SESSION['prefsCurrency'],$pp_fees_arr))) {
+					$pp_fixed_fee = $pp_fees_arr[$_SESSION['prefsCurrency']]['fixed_fee'];
+					$pp_percentage = $pp_fees_arr[$_SESSION['prefsCurrency']]['percentage'];
+				} else {
+					$pp_fixed_fee = 0;
+					$pp_percentage = 0.0349;
+				}
 
-				$payment_amount = (($total_to_pay_user + $pp_fixed_fee) / 0.9651);
+				$payment_amount = (($total_to_pay_user + $pp_fixed_fee) / (1 - $pp_percentage));
 				$fee = number_format($payment_amount - $total_to_pay_user, 2, '.', '');
 
 
@@ -227,36 +253,6 @@ else {
 			$page_info4 .= "</div>";
 			$page_info4 .= "</div>";
 			$page_info4 .= "</form>\n";
-
-			/*
-
-			$page_info4 .= "<!-- Form submit confirmation modal -->";
-			$page_info4 .= "<!-- Refer to bcoem_custom.js for configuration -->";
-			$page_info4 .= "<div class=\"modal modal-lg fade\" id=\"confirm-submit\" tabindex=\"-1\" role=\"dialog\" aria-hidden=\"true\">";
-			$page_info4 .= "<div class=\"modal-dialog\">";
-			$page_info4 .= "<div class=\"modal-content\">";
-			$page_info4 .= "<div class=\"modal-header\">";
-			
-
-			if ((isset($_SESSION['prefsPaypalIPN'])) && ($_SESSION['prefsPaypalIPN'] == 1)) $page_info4 .= sprintf("<h4 class=\"modal-title\">%s</h4>",$pay_text_031);
-			else $page_info4 .= sprintf("<h4 class=\"modal-title\">%s</h4>",$pay_text_022);
-			$page_info4 .= "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>";
-
-			$page_info4 .= "</div>";
-
-			if ((isset($_SESSION['prefsPaypalIPN'])) && ($_SESSION['prefsPaypalIPN'] == 1)) $page_info4 .= sprintf("<div class=\"modal-body\"><p>%s</p>",$pay_text_030);
-			else $page_info4 .= sprintf("<div class=\"modal-body\"><p>%s</p>",$pay_text_021);
-
-			$page_info4 .= "</div>";
-			$page_info4 .= "<div class=\"modal-footer\">";
-			$page_info4 .= sprintf("<button type=\"button\" class=\"btn btn-danger\" data-bs-dismiss=\"modal\">%s</button>",$label_cancel);
-			$page_info4 .= sprintf("<a href=\"#\" id=\"submit\" class=\"btn btn-primary\">%s</a>",$label_understand);
-			$page_info4 .= "</div>";
-			$page_info4 .= "</div>";
-			$page_info4 .= "</div>";
-			$page_info4 .= "</div>";
-
-			*/
 
 		} // end if ($_SESSION['prefsPaypal'] == "Y")
 

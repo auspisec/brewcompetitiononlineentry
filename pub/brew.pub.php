@@ -17,7 +17,7 @@ if ((!isset($_SESSION['loginUsername'])) || ((isset($_SESSION['loginUsername']))
 */
 
 include (DB.'styles.db.php');
-if ($_SESSION['prefsStyleSet'] == "BA") include (INCLUDES.'ba_constants.inc.php');
+if ($_SESSION['style_set_no_numbering']) include (INCLUDES.'ba_constants.inc.php');
 include (DB.'styles_special.db.php');
 
 // Disable fields trigger
@@ -990,7 +990,7 @@ if ($_SESSION['prefsStyleSet'] == "NWCiderCup") {
     </div>
 <?php } // end if ($_SESSION['prefsStyleSet'] == "NWCiderCup") ?>
 
-<?php if (($_SESSION['prefsSpecific'] == 0) && ($_SESSION['prefsStyleSet'] != "BA")) { ?>
+<?php if (($_SESSION['prefsSpecific'] == 0) && (!$_SESSION['style_set_no_numbering'])) { ?>
     <!-- Brewer's Specifics -->
     <div class="mb-3 row">
         <label for="brewComments" class="col-xs-12 col-sm-3 col-lg-2 col-form-label"><strong><?php echo $label_brewer_specifics; ?></strong></label>
@@ -1029,7 +1029,14 @@ if ($_SESSION['prefsStyleSet'] == "NWCiderCup") {
 		</div>
 	</div>
 
-<?php if (($action == "add") && ($remaining_entries > 1) && ($bid == "default")) { ?>
+<?php
+// $remaining_entries is set to a hardcoded 1 (constants.inc.php) when this
+// competition has no per-user entry limit configured at all - not a real
+// count. ">1" alone would never be true for that sentinel, so the checkbox
+// never showed for the common no-limit case; checking for no limit directly
+// via prefsUserEntryLimit distinguishes that from an actual real limit of
+// exactly 1 remaining (where offering "add another" would be wrong).
+if (($action == "add") && ((empty($row_limits['prefsUserEntryLimit'])) || ($remaining_entries > 1)) && ($bid == "default")) { ?>
 	<!-- Return to Add Another Entry -->
 	<div class="mb-3 row">
 		<div class="col-xs-12 col-sm-3 col-lg-2"></div>

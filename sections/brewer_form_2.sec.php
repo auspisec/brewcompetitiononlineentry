@@ -22,7 +22,7 @@ $styles_selected = json_decode($_SESSION['prefsSelectedStyles'],true);
 
 if (!empty($styles_selected)) {
 
-    if ($_SESSION['prefsStyleSet'] == "BA") array_multisort(array_column($styles_selected, 'brewStyle'), SORT_ASC, array_column($styles_selected, 'brewStyleNum'), SORT_ASC, $styles_selected);
+    if ($_SESSION['style_set_no_numbering']) array_multisort(array_column($styles_selected, 'brewStyle'), SORT_ASC, array_column($styles_selected, 'brewStyleNum'), SORT_ASC, $styles_selected);
     else array_multisort(array_column($styles_selected, 'brewStyleGroup'), SORT_ASC, array_column($styles_selected, 'brewStyleNum'), SORT_ASC, $styles_selected);
 
     $j_likes_form_elements = "";
@@ -49,7 +49,7 @@ if (!empty($styles_selected)) {
             $style_selected_dislikes = "";
             if (in_array($value['id'], $b)) $style_selected_dislikes = "CHECKED";
 
-            if ($_SESSION['prefsStyleSet'] == "BA") {
+            if ($_SESSION['style_set_no_numbering']) {
                 $style_display .= $value['brewStyle'];
             }
             
@@ -170,7 +170,7 @@ if (!$entrant_type_brewery) {
                     </div>
                     <div class="radio">
                         <label>
-                             <input type="radio" name="brewerJudgeRank[]" value="Provisional" <?php if (($action == "edit") && in_array("Provisional",$judge_array)) echo "CHECKED"; ?>> Provisional **
+                             <input type="radio" name="brewerJudgeRank[]" value="Mead/Cider Only" <?php if (($action == "edit") && in_array("Mead/Cider Only",$judge_array)) echo "CHECKED"; ?>> BJCP Certified Mead and/or Cider Only
                         </label>
                     </div>
                     <div class="radio">
@@ -185,7 +185,17 @@ if (!$entrant_type_brewery) {
                     </div>
                     <div class="radio">
                         <label>
+                            <input type="radio" name="brewerJudgeRank[]" value="Distinguished Certified" <?php if (($action == "edit") && in_array("Distinguished Certified",$judge_array)) echo "CHECKED"; ?>> Distinguished Certified
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
                             <input type="radio" name="brewerJudgeRank[]" value="National" <?php if (($action == "edit") && in_array("National",$judge_array)) echo "CHECKED"; ?>> National
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="brewerJudgeRank[]" value="Distinguished National" <?php if (($action == "edit") && in_array("Distinguished National",$judge_array)) echo "CHECKED"; ?>> Distinguished National
                         </label>
                     </div>
                     <div class="radio">

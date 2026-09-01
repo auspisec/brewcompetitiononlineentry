@@ -10,7 +10,7 @@ if ((!isset($_SESSION['loginUsername'])) || ((isset($_SESSION['loginUsername']))
 
 include (DB.'styles.db.php');
 include (DB.'styles_special.db.php');
-if ($_SESSION['prefsStyleSet'] == "BA") include (INCLUDES.'ba_constants.inc.php');
+if ($_SESSION['style_set_no_numbering']) include (INCLUDES.'ba_constants.inc.php');
 $eval_db_table = FALSE;
 
 $header1_1 = "";
@@ -285,7 +285,7 @@ if ($totalRows_log > 0) {
 		}
 
 		// Entry Style
-		if ($style_set == "BA") {
+		if (style_set_no_numbering($style_set)) {
 			if ($row_log['brewCategory'] <= 14) $entry_style_display .= h($row_log['brewStyle']);
 			else $entry_style_display .= "Custom: ".h($row_log['brewStyle']);
 		}
@@ -792,9 +792,9 @@ $(document).ready(function () {
 					<?php if ($_SESSION['userAdminObfuscate'] == 0) { ?>
 					<li class="small"><a data-fancybox data-type="iframe" class="modal-window-link hide-loader" href="<?php echo $base_url; ?>includes/output.inc.php?section=admin&amp;go=entries&amp;action=print&amp;psort=judging_number">By Judging Number</a></li>
 					<?php } ?>
-					<li class="small"><a class="hide-loader" href="<?php echo $base_url; ?>includes/output.inc.php?section=admin&amp;go=entries&amp;action=print&amp;psort=category">By Style</a></li>
-					<li class="small"><a class="hide-loader" href="<?php echo $base_url; ?>includes/output.inc.php?section=admin&amp;go=entries&amp;action=print&amp;psort=brewer_name"><?php if ($pro_edition == 0) echo "By Brewer Last Name"; else echo "By Organization Name"; ?></a></li>
-					<li class="small"><a class="hide-loader" href="<?php echo $base_url; ?>includes/output.inc.php?section=admin&amp;go=entries&amp;action=print&amp;psort=entry_name">By Entry Name</a></li>
+					<li class="small"><a data-fancybox data-type="iframe" class="hide-loader" href="<?php echo $base_url; ?>includes/output.inc.php?section=admin&amp;go=entries&amp;action=print&amp;psort=category">By Style</a></li>
+					<li class="small"><a data-fancybox data-type="iframe" class="hide-loader" href="<?php echo $base_url; ?>includes/output.inc.php?section=admin&amp;go=entries&amp;action=print&amp;psort=brewer_name"><?php if ($pro_edition == 0) echo "By Brewer Last Name"; else echo "By Organization Name"; ?></a></li>
+					<li class="small"><a data-fancybox data-type="iframe" class="hide-loader" href="<?php echo $base_url; ?>includes/output.inc.php?section=admin&amp;go=entries&amp;action=print&amp;psort=entry_name">By Entry Name</a></li>
 				</ul>
 			</div>
 			<?php if (($totalRows_entry_count > $limit) && ($filter == "default")) { ?>

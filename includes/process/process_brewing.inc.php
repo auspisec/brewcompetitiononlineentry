@@ -97,7 +97,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 	if (($action == "add") || ($action == "edit")) {
 
-		if ($_SESSION['prefsStyleSet'] == "BA") include (INCLUDES.'ba_constants.inc.php');
+		if ($_SESSION['style_set_no_numbering']) include (INCLUDES.'ba_constants.inc.php');
 		include (DB.'styles_special.db.php');
 
 		// Set up vars
@@ -558,12 +558,24 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 			if ($section == "admin") {
 				if (empty($brewInfo)) $insertGoTo = $base_url."index.php?section=brew&go=entries&filter=$filter&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				else {
+					// The style-requirement checks below this one can each
+					// overwrite $insertGoTo again on their own success branch,
+					// silently discarding return-to-add every time - re-check
+					// it here so it isn't lost whenever the submitted style
+					// happens to need special-ingredient/carb/sweetness/
+					// strength info.
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=admin&go=entries&action=add&filter=admin&msg=1";
+					else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				}
 			}
 
 			else {
 				if (empty($brewInfo)) $insertGoTo = $base_url."index.php?section=brew&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				else {
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=brew&go=entries&action=add&msg=1";
+					else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				}
 			}
 
 		 }
@@ -586,12 +598,24 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 			if ($section == "admin") {
 				if ((empty($brewMead1)) || (empty($brewMead2))) $insertGoTo = $base_url."index.php?section=brew&go=entries&filter=$filter&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				else {
+					// The style-requirement checks below this one can each
+					// overwrite $insertGoTo again on their own success branch,
+					// silently discarding return-to-add every time - re-check
+					// it here so it isn't lost whenever the submitted style
+					// happens to need special-ingredient/carb/sweetness/
+					// strength info.
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=admin&go=entries&action=add&filter=admin&msg=1";
+					else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				}
 			}
 
 			else {
 				if (empty($brewMead1)) $insertGoTo = $base_url."index.php?section=brew&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				else {
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=brew&go=entries&action=add&msg=1";
+					else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				}
 			}
 
 		 }
@@ -614,12 +638,24 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 			if ($section == "admin") {
 				if (empty($brewMead2)) $insertGoTo = $base_url."index.php?section=brew&go=entries&filter=$filter&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				else {
+					// The style-requirement checks below this one can each
+					// overwrite $insertGoTo again on their own success branch,
+					// silently discarding return-to-add every time - re-check
+					// it here so it isn't lost whenever the submitted style
+					// happens to need special-ingredient/carb/sweetness/
+					// strength info.
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=admin&go=entries&action=add&filter=admin&msg=1";
+					else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				}
 			}
 
 			else {
 				if (empty($brewMead2)) $insertGoTo = $base_url."index.php?section=brew&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				else {
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=brew&go=entries&action=add&msg=1";
+					else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				}
 			}
 
 		 }
@@ -642,12 +678,24 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 			if ($section == "admin") {
 				if (empty($brewMead3)) $insertGoTo = $base_url."index.php?section=brew&go=entries&filter=$filter&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				else {
+					// The style-requirement checks below this one can each
+					// overwrite $insertGoTo again on their own success branch,
+					// silently discarding return-to-add every time - re-check
+					// it here so it isn't lost whenever the submitted style
+					// happens to need special-ingredient/carb/sweetness/
+					// strength info.
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=admin&go=entries&action=add&filter=admin&msg=1";
+					else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				}
 			}
 
 			else {
 				if (empty($brewMead3)) $insertGoTo = $base_url."index.php?section=brew&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				else {
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=brew&go=entries&action=add&msg=1";
+					else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				}
 			}
 		}
 
@@ -668,12 +716,24 @@ if ((isset($_SERVER['HTTP_REFERER'])) && ((isset($_SESSION['loginUsername'])) &&
 
 			if ($section == "admin") {
 				if ((empty($brewMead1)) || (empty($brewMead2)) || (empty($brewMead3)))  $insertGoTo = $base_url."index.php?section=brew&go=entries&filter=$filter&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				else {
+					// The style-requirement checks below this one can each
+					// overwrite $insertGoTo again on their own success branch,
+					// silently discarding return-to-add every time - re-check
+					// it here so it isn't lost whenever the submitted style
+					// happens to need special-ingredient/carb/sweetness/
+					// strength info.
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=admin&go=entries&action=add&filter=admin&msg=1";
+					else $insertGoTo = $base_url."index.php?section=admin&go=entries&msg=2";
+				}
 			}
 
 			else {
 				if ((empty($brewMead1)) || (empty($brewMead2)) || (empty($brewMead3))) $insertGoTo = $base_url."index.php?section=brew&action=edit&id=$id&view=$styleReturn&msg=1-".$styleReturn;
-				else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				else {
+					if ((isset($_POST['return-to-add'])) && ($_POST['return-to-add'] == 1)) $insertGoTo = $base_url."index.php?section=brew&go=entries&action=add&msg=1";
+					else $insertGoTo = $base_url."index.php?section=list&msg=2";
+				}
 			}
 
 		 }

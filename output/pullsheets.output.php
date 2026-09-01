@@ -337,6 +337,16 @@ if ($go == "all_entry_info") {
 
 			foreach ($rows_assignments as $row_assignments) {
 
+				// output_assignments.db.php's query isn't scoped to $round - it
+				// only filters by assignment type/table/location - so a judge with
+				// assignments in more than one round would otherwise get a section
+				// for every round they've worked, regardless of which one was
+				// requested. Non-queued assignments carry their own round via
+				// assignRound; queued mode doesn't tie an assignment to a single
+				// round the same way, so it's filtered per-entry further below
+				// instead (queued judges can see entries across rounds).
+				if (($_SESSION['jPrefsQueued'] == "N") && (!check_flight_round($row_assignments['assignRound'], $round))) continue;
+
 				$show_table = FALSE;
 				// Pulled from the batched maps above instead of fresh
 				// judge_info()/get_table_info() queries per judging assignment.
@@ -414,6 +424,14 @@ if ($go == "all_entry_info") {
 											if ($ji_flight_num == $row_assignments['assignFlight']) $judge_entry_count += 1;
 										}
 
+										// Queued judges aren't tied to one round via their
+										// assignment (filtered above for non-queued mode
+										// instead), so check each entry's own round here.
+										else {
+											$ji_entry_round = $flight_by_entry_id_ps[$row_entries['id']]['flightRound'] ?? null;
+											if (!check_flight_round($ji_entry_round, $round)) $display_entry = FALSE;
+										}
+
 										if ($display_entry) {
 
 											$table_entry_count += 1;
@@ -426,7 +444,7 @@ if ($go == "all_entry_info") {
 											$table_flight_tbody .= "</td>";
 
 											$table_flight_tbody .= "<td>";
-											if ($_SESSION['prefsStyleSet'] == "BA") $table_flight_tbody .= $row_entries['brewStyle'];
+											if ($_SESSION['style_set_no_numbering']) $table_flight_tbody .= $row_entries['brewStyle'];
 											else $table_flight_tbody .= $style." ".$row_entries['brewStyle']."<em><br>".$style_convert_1_ps($row_entries['brewCategorySort'])."</em>";
 											$table_flight_tbody .= "</td>";
 
@@ -648,7 +666,13 @@ if ($go == "all_entry_info") {
 
 							if ((!empty($row_entries['brewPossAllergens'])) || (!empty($row_entries['brewInfo'])) || (!empty($row_entries['brewMead1'])) || (!empty($row_entries['brewMead2'])) || (!empty($row_entries['brewMead3'])) || (!empty($row_entries['brewInfoOptional'])) || (!empty($row_entries['brewComments'])) || (!empty($row_entries['brewStaffNotes']))) $show_record = TRUE;
 
-							if ((!empty($row_entries['brewCategorySort'])) && ($show_record)) {
+							// The table-level gate above only confirms this table has
+							// *some* flight in the requested round - this view has no
+							// per-flight loop, so without this check every entry for the
+							// table's styles gets listed regardless of its own round.
+							$ai_entry_round = $flight_by_entry_id_ps[$row_entries['id']]['flightRound'] ?? null;
+
+							if ((!empty($row_entries['brewCategorySort'])) && ($show_record) && (check_flight_round($ai_entry_round, $round))) {
 
 								$table_flight_tbody .= "<tr>";
 
@@ -658,7 +682,7 @@ if ($go == "all_entry_info") {
 								$table_flight_tbody .= "</td>";
 
 								$table_flight_tbody .= "<td>";
-								if ($_SESSION['prefsStyleSet'] == "BA") $table_flight_tbody .= $row_entries['brewStyle'];
+								if ($_SESSION['style_set_no_numbering']) $table_flight_tbody .= $row_entries['brewStyle'];
 								else $table_flight_tbody .= $style." ".$row_entries['brewStyle']."<em><br>".$style_convert_1_ps($row_entries['brewCategorySort'])."</em>";
 								$table_flight_tbody .= "</td>";
 
@@ -842,7 +866,7 @@ if ($go == "mini_bos") {
 			$table_flight_tbody .= "</td>";
 
 			$table_flight_tbody .= "<td>";
-			if ($_SESSION['prefsStyleSet'] == "BA") $table_flight_tbody .= $row_entries_mini['brewStyle'];
+			if ($_SESSION['style_set_no_numbering']) $table_flight_tbody .= $row_entries_mini['brewStyle'];
 			else $table_flight_tbody .= $style." ".$row_entries_mini['brewStyle']."<em><br>".$style_convert_1_ps($row_entries_mini['brewCategorySort'])."</em>";
 			$table_flight_tbody .= "</td>";
 
@@ -1035,7 +1059,7 @@ if ($go == "judging_scores_bos") {
 						$table_flight_tbody .= "</td>";
 
 						$table_flight_tbody .= "<td>";
-						if ($_SESSION['prefsStyleSet'] == "BA") $table_flight_tbody .= $row_bos['brewStyle'];
+						if ($_SESSION['style_set_no_numbering']) $table_flight_tbody .= $row_bos['brewStyle'];
 						else $table_flight_tbody .= $style." ".$row_bos['brewStyle']."<em><br>".$style_convert_1_ps($row_bos['brewCategorySort'])."</em>";
 						$table_flight_tbody .= "</td>";
 
@@ -1262,7 +1286,15 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 
 							foreach ($rows_entries as $row_entries) {
 
-								if (!empty($row_entries['brewCategorySort'])) {
+								// The table-level gate above only confirms this table has
+								// *some* flight in the requested round - queued judging has
+								// no per-flight loop to filter individual entries the way
+								// non-queued mode does, so without this check every entry
+								// for the table's styles gets listed regardless of which
+								// round it's actually assigned to.
+								$entry_flight_round = $flight_by_entry_id_ps[$row_entries['id']]['flightRound'] ?? null;
+
+								if ((!empty($row_entries['brewCategorySort'])) && (check_flight_round($entry_flight_round, $round))) {
 
 									$table_flight_tbody .= "<tr>";
 									$table_flight_tbody .= "<td>";
@@ -1275,7 +1307,7 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 									$table_flight_tbody .= "</td>";
 
 									$table_flight_tbody .= "<td>";
-									if ($_SESSION['prefsStyleSet'] == "BA") $table_flight_tbody .= $row_entries['brewStyle'];
+									if ($_SESSION['style_set_no_numbering']) $table_flight_tbody .= $row_entries['brewStyle'];
 									else $table_flight_tbody .= $style." ".$row_entries['brewStyle']."<em><br>".$style_convert_1_ps($row_entries['brewCategorySort'])."</em>";
 									$table_flight_tbody .= "</td>";
 									$table_flight_tbody .= "<td>";
@@ -1483,7 +1515,15 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 
 							foreach ($rows_entries as $row_entries) {
 
-								if (!empty($row_entries['brewCategorySort'])) {
+								// The table-level gate above only confirms this table has
+								// *some* flight in the requested round - queued judging has
+								// no per-flight loop to filter individual entries the way
+								// non-queued mode does, so without this check every entry
+								// for the table's styles gets listed regardless of which
+								// round it's actually assigned to.
+								$entry_flight_round = $flight_by_entry_id_ps[$row_entries['id']]['flightRound'] ?? null;
+
+								if ((!empty($row_entries['brewCategorySort'])) && (check_flight_round($entry_flight_round, $round))) {
 
 									$table_flight_tbody .= "<tr>";
 									$table_flight_tbody .= "<td>";
@@ -1496,7 +1536,7 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 									$table_flight_tbody .= "</td>";
 
 									$table_flight_tbody .= "<td>";
-									if ($_SESSION['prefsStyleSet'] == "BA") $table_flight_tbody .= $row_entries['brewStyle'];
+									if ($_SESSION['style_set_no_numbering']) $table_flight_tbody .= $row_entries['brewStyle'];
 									else $table_flight_tbody .= $style." ".$row_entries['brewStyle']."<em><br>".$style_convert_1_ps($row_entries['brewCategorySort'])."</em>";
 									$table_flight_tbody .= "</td>";
 									$table_flight_tbody .= "<td>";
@@ -1615,6 +1655,11 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 
 				foreach ($rows_tables as $row_tables) {
 
+					// A specific round was requested but this table has no flight
+					// in it at all - skip the table entirely rather than printing
+					// its header with nothing beneath it.
+					if (($round != "default") && (($flight_round_count_by_table_round_ps[$row_tables['id'].'|'.$round] ?? 0) < 1)) continue;
+
 					// Reset Vars
 					$table_info_location = "";
 					$table_info_notes = "";
@@ -1726,7 +1771,7 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 										$table_flight_tbody .= "</td>";
 
 										$table_flight_tbody .= "<td>";
-										if ($_SESSION['prefsStyleSet'] == "BA") $table_flight_tbody .= $row_entries['brewStyle'];
+										if ($_SESSION['style_set_no_numbering']) $table_flight_tbody .= $row_entries['brewStyle'];
 										else $table_flight_tbody .= $style." ".$row_entries['brewStyle']."<em><br>".$style_convert_1_ps($row_entries['brewCategorySort'])."</em>";
 										$table_flight_tbody .= "</td>";
 										$table_flight_tbody .= "<td>";
@@ -1844,6 +1889,13 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 
 				foreach ($rows_tables as $row_tables) {
 
+					// A specific round was requested but this table has no flight
+					// in it at all - skip the table entirely rather than printing
+					// its header/location/entry-count block with nothing beneath
+					// it (every flight below would be skipped by the per-flight
+					// check further down, leaving an empty-looking section).
+					if (($round != "default") && (($flight_round_count_by_table_round_ps[$row_tables['id'].'|'.$round] ?? 0) < 1)) continue;
+
 					// Reset Vars
 					$table_info_location = "";
 					$table_info_notes = "";
@@ -1894,6 +1946,13 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 						// Pulled from the batched flights map above instead of a
 						// fresh query per table per flight.
 						$row_round_check = array('flightRound' => $flight_round_by_table_flight_ps[$row_tables['id'].'|'.$i] ?? null);
+
+						// A specific round was requested but this flight belongs to a
+						// different one (or the table only has flights for other rounds
+						// at all) - skip the whole flight section rather than printing
+						// its header and an empty table, which is all that's left once
+						// the per-entry check_flight_round() below filters every row out.
+						if (!check_flight_round($row_round_check['flightRound'], $round)) continue;
 
 						$table_flight .= "<h3>".sprintf("%s %s: %s - %s %s, %s %s",$label_table,$row_tables['tableNumber'],$row_tables['tableName'],$label_flight,$i,$label_round,$row_round_check['flightRound'])."</h3>";
 
@@ -1960,7 +2019,7 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 									else $table_flight_tbody .= sprintf("%06s",$row_entries['brewJudgingNumber']);
 									$table_flight_tbody .= "</td>";
 									$table_flight_tbody .= "<td>";
-									if ($_SESSION['prefsStyleSet'] == "BA") $table_flight_tbody .= $row_entries['brewStyle'];
+									if ($_SESSION['style_set_no_numbering']) $table_flight_tbody .= $row_entries['brewStyle'];
 									else $table_flight_tbody .= $style." ".$row_entries['brewStyle']."<em><br>".$style_convert_1_ps($row_entries['brewCategorySort'])."</em>";
 									$table_flight_tbody .= "</td>";
 									$table_flight_tbody .= "<td>";
@@ -2069,6 +2128,8 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 				}
 			}
 
+			if (empty($pullsheet_output)) $pullsheet_output = "<p>No entries available for this round.</p>";
+
 		} // end if ($tables_all)
 
 		// Or just a single table
@@ -2079,6 +2140,17 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 			$table_info_location = "";
 			$table_info_notes = "";
 			$table_info_header = "";
+
+			// A specific round was requested but this table has no flight in it
+			// at all - skip straight to a "no entries" message rather than
+			// printing the header/location/entry-count block with nothing
+			// beneath it (every flight below would be skipped by the per-flight
+			// check further down, leaving an empty-looking section).
+			if (($round != "default") && (($flight_round_count_by_table_round_ps[$row_tables['id'].'|'.$round] ?? 0) < 1)) {
+				$pullsheet_output .= "No entries available.";
+			}
+
+			else {
 
 			// Pulled from the batched map above instead of a fresh number_of_flights() query.
 			$flights = $number_of_flights_ps($row_tables['id']);
@@ -2161,6 +2233,13 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 					// Pulled from the batched flights map above instead of a
 					// fresh query per table per flight.
 					$row_round_check = array('flightRound' => $flight_round_by_table_flight_ps[$row_tables['id'].'|'.$i] ?? null);
+
+					// A specific round was requested but this flight belongs to a
+					// different one (or the table only has flights for other rounds
+					// at all) - skip the whole flight section rather than printing
+					// its header and an empty table, which is all that's left once
+					// the per-entry check_flight_round() below filters every row out.
+					if (!check_flight_round($row_round_check['flightRound'], $round)) continue;
 
 					$table_flight .= "<h3>".sprintf("%s %s: %s - %s %s, %s %s",$label_table,$row_tables['tableNumber'],$row_tables['tableName'],$label_flight,$i,$label_round,$row_round_check['flightRound'])."</h3>";
 
@@ -2246,7 +2325,7 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 
 								// Style
 								$table_flight_tbody .= "<td>";
-								if ($_SESSION['prefsStyleSet'] == "BA") $table_flight_tbody .= $row_entries['brewStyle'];
+								if ($_SESSION['style_set_no_numbering']) $table_flight_tbody .= $row_entries['brewStyle'];
 								else $table_flight_tbody .= $style." ".$row_entries['brewStyle']."<em><br>".$style_convert_1_ps($row_entries['brewCategorySort'])."</em>";
 								$table_flight_tbody .= "</td>";
 								
@@ -2385,6 +2464,8 @@ elseif (($go != "judging_scores_bos") && ($go != "mini_bos") && ($go != "all_ent
 			}
 
 			$pullsheet_output .= "<div style=\"page-break-after:always;\"></div>";
+
+			} // end else (round has a matching flight for this table)
 
 		} // end else
 
