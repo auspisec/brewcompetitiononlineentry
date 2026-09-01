@@ -415,21 +415,21 @@ if ($entry_found) {
   if (!empty($row_entry_info['brewMead1'])) {
     $entry_info_html .= "<div class=\"row bcoem-admin-element\">";
     $entry_info_html .= "<div class=\"col col-lg-3 col-md-4 col-sm-4 col-xs-12\"><strong>".$label_carbonation."</strong></div>";
-    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".$row_entry_info['brewMead1']."</div>";
+    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".h(translate_mead_req_value($row_entry_info['brewMead1']))."</div>";
     $entry_info_html .= "</div>";
   }
 
   if (!empty($row_entry_info['brewMead3'])) {
     $entry_info_html .= "<div class=\"row bcoem-admin-element\">";
     $entry_info_html .= "<div class=\"col col-lg-3 col-md-4 col-sm-4 col-xs-12\"><strong>".$label_strength."</strong></div>";
-    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".$row_entry_info['brewMead3']."</div>";
+    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".h(translate_mead_strength_value($row_entry_info['brewMead3']))."</div>";
     $entry_info_html .= "</div>";
   }
 
   if (!empty($row_entry_info['brewMead2'])) {
     $entry_info_html .= "<div class=\"row bcoem-admin-element\">";
     $entry_info_html .= "<div class=\"col col-lg-3 col-md-4 col-sm-4 col-xs-12\"><strong>".$label_sweetness."</strong></div>";
-    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".$row_entry_info['brewMead2']."</div>";
+    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".h(translate_mead_req_value($row_entry_info['brewMead2']))."</div>";
     $entry_info_html .= "</div>";
   }
 
@@ -494,7 +494,7 @@ if ($entry_found) {
 
     $entry_info_html .= "<div class=\"row bcoem-admin-element\">";
     $entry_info_html .= "<div class=\"col col-lg-3 col-md-4 col-sm-4 col-xs-12\"><strong>".$label_pouring."</strong></div>";
-    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".$pouring_arr['pouring']."</div>";
+    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".h(translate_pouring_value($pouring_arr['pouring']))."</div>";
     $entry_info_html .= "</div>";
 
     if ((isset($pouring_arr['pouring_notes'])) && (!empty($pouring_arr['pouring_notes'])))  {
@@ -506,7 +506,7 @@ if ($entry_found) {
 
     $entry_info_html .= "<div class=\"row bcoem-admin-element\">";
     $entry_info_html .= "<div class=\"col col-lg-3 col-md-4 col-sm-4 col-xs-12\"><strong>".$label_rouse_yeast."</strong></div>";
-    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".$pouring_arr['pouring_rouse']."</div>";
+    $entry_info_html .= "<div class=\"col col-lg-9 col-md-8 col-sm-8 col-xs-12\">".h(translate_pouring_rouse_value($pouring_arr['pouring_rouse']))."</div>";
     $entry_info_html .= "</div>";
 
   }
