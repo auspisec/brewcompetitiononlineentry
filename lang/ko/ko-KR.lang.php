@@ -904,10 +904,10 @@ $brewer_entries_text_008 = "Entry Form and";
 $brewer_entries_text_009 = "Bottle Labels";
 $brewer_entries_text_010 = "Print Recipe Form for";
 $brewer_entries_text_011 = "Also, you will not be able to add another entry since the entry limit for the competition has been reached. Select Cancel in this box and then edit the entry instead if you wish to keep it.";
-$brewer_entries_text_012 = "Are you sure you want to delete the entry called";
-$brewer_entries_text_013 = "You will be able to add entries on or after";
+$brewer_entries_text_012 = "다음 출품작을 정말 삭제하시겠습니까:";
+$brewer_entries_text_013 = "출품작은 다음 날짜부터 등록하실 수 있습니다:";
 $brewer_entries_text_014 = "시스템에 출품작을 추가하지 않으셨습니다.";
-$brewer_entries_text_015 = "You cannot delete your entry at this time.";
+$brewer_entries_text_015 = "현재는 출품작을 삭제할 수 없습니다.";
 
 /**
  * ------------------------------------------
