@@ -1134,7 +1134,7 @@ $volunteers_text_004 = "자원봉사를 원하시면 등록해주세요";
 $volunteers_text_005 = "이미 등록하셨습니다. '내 계정'에서 심사위원/스튜어드 자원봉사 여부를 확인하세요.";
 $volunteers_text_006 = "access your account";
 $volunteers_text_007 = "to see if you have volunteered to be a judge or steward";
-$volunteers_text_008 = "If you are willing to judge or steward, please return to register on or after";
+$volunteers_text_008 = "심사위원 또는 스튜어드로 참여를 원하시면 다음 일시 이후에 다시 방문하여 등록해 주십시오:";
 $volunteers_text_009 = "대회 스태프로 자원봉사하고 싶으시면 계정을 등록하거나, 기존 계정에서 참여 의사를 표시해 업데이트해 주세요.";
 $volunteers_text_010 = "Staff can indicate their availability for the following non-judging sessions:";
 
