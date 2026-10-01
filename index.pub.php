@@ -1029,6 +1029,8 @@ if ($logged_in) {
 // table) are echoed here, outside the reveal-element sections whose CSS
 // transform would trap position:fixed modals behind the backdrop.
 if (!empty($style_info_modals)) echo $style_info_modals;
+// Dropoff location info modals are echoed here too, for the same reason.
+if (!empty($dropoff_modals)) echo $dropoff_modals;
 ?>
 
 </body>
